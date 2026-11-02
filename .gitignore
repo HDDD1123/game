@@ -1,0 +1,55 @@
+# ===== 系统文件 =====
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ===== 编辑器 / IDE =====
+.vscode/
+.idea/
+*.suo
+*.user
+*.swp
+
+# ===== Node / Web（如果用网页小游戏）=====
+node_modules/
+dist/
+build/
+.next/
+.vite/
+*.local
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===== Python（如果用 pygame 之类）=====
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# ===== Unity（如果用，建议配 Git LFS）=====
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+*.csproj
+*.unityproj
+*.sln
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+
+# ===== Godot =====
+.godot/
+*.translation
+
+# ===== 日志 / 临时文件 =====
+*.log
+*.tmp
+*.temp
+*.cache
