@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "slots": [
+    {"id": "housing", "label": "民居", "active": true, "texture": ""},
+    {"id": "farm", "label": "农田", "active": true, "texture": ""},
+    {"id": "forge", "label": "铁匠铺", "active": true, "texture": ""},
+    {"id": "reserved_1", "label": "预留地块", "active": false, "texture": ""},
+    {"id": "reserved_2", "label": "预留地块", "active": false, "texture": ""},
+    {"id": "reserved_3", "label": "预留地块", "active": false, "texture": ""},
+    {"id": "reserved_4", "label": "预留地块", "active": false, "texture": ""}
+  ]
+}
