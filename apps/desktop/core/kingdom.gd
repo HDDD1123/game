@@ -99,8 +99,14 @@ func view() -> Dictionary:
 		"mine_unlocked": _state.progress.ruins == 3 and _state.forge >= 1,
 		"housing_capacity": _skills.housing_capacity(int(_state.housing)),
 		"housing_level": int(_state.housing_level),
-		"farm": _farm.view(), "skills": _skills_view(),
-		"expedition_wood_cost": _skills.expedition_wood_cost(2, 1)}
+		"food_shortfall": maxi(0, int(_state.population) - int(_state.food)),
+		"drought_reduction_percent": roundi((1.0 - B.DROUGHT_FACTOR) * 100) - int(_skills.modifiers().drought_percentage_points),
+		"farm": _farm.view(), "skills": _skills_view()}
+
+func expedition_quote(troops: int) -> Dictionary:
+	var attack: int = _skills.expedition_attack(2 + int(_state.forge))
+	return {"food": maxi(0, troops), "wood": _skills.expedition_wood_cost(maxi(0, troops)),
+		"attack_per_troop": attack, "power": maxi(0, troops) * attack}
 
 func _record(message: String) -> void:
 	_state.records.append(date_label() + "｜" + message)
@@ -199,10 +205,11 @@ func act(command: String, args: Dictionary = {}) -> Dictionary:
 			if not problem.is_empty():
 				return _reply(false, problem)
 			var troops: int = int(args.troops)
-			_state.food -= troops
-			_state.wood -= _skills.expedition_wood_cost(troops, 1)
+			var quote: Dictionary = expedition_quote(troops)
+			_state.food -= quote.food
+			_state.wood -= quote.wood
 			_state.expedition = {"site": args.site, "mode": args.mode, "troops": troops,
-				"initial_troops": troops, "attack": _skills.expedition_attack(2 + int(_state.forge)), "room": 0,
+				"initial_troops": troops, "attack": quote.attack_per_troop, "room": 0,
 				"goal": 1 if args.mode == "clear" else 3, "loot": {"food": 0, "wood": 0, "ore": 0}}
 			_state.battle_log = []
 			_battle_record("%d人出征%s，出征不推进月份。" % [troops, B.SITES[args.site].name])
@@ -230,8 +237,8 @@ func dispatch_problem(args: Dictionary) -> String:
 		return "先探索通过入口，才能清理。"
 	if not _integer(args.get("troops"), 2, int(_state.population) - 1):
 		return "至少出征2人，并留1名居民在城内。"
-	var wood_cost: int = _skills.expedition_wood_cost(int(args.troops), 1)
-	if _state.food < args.troops or _state.wood < wood_cost:
+	var quote: Dictionary = expedition_quote(int(args.troops))
+	if _state.food < quote.food or _state.wood < quote.wood:
 		return "出征粮食或木材不足。"
 	return ""
 
@@ -415,6 +422,10 @@ func _normalize(value: Variant) -> Variant:
 func import_snapshot(value: Variant) -> bool:
 	if not value is Dictionary:
 		return false
+	# 先校验类型再转换；损坏的 JSON 字段必须正常拒绝，不能触发脚本错误。
+	for key in ["agriculture", "housing_level", "forge", "months"]:
+		if not _integer(value.get(key)):
+			return false
 	var farm_snapshot = value.get("farm")
 	var skills_snapshot = value.get("skills")
 	if not farm_snapshot is Dictionary or not skills_snapshot is Dictionary:
@@ -425,7 +436,7 @@ func import_snapshot(value: Variant) -> bool:
 	if not temp_skills.restore(skills_snapshot, earned):
 		return false
 	var temp_farm = FarmBuffer.new()
-	if not temp_farm.restore(farm_snapshot):
+	if not temp_farm.restore(farm_snapshot) or farm_snapshot.month != value.months:
 		return false
 	var base: Dictionary = value.duplicate(true)
 	base.erase("farm")
@@ -438,9 +449,11 @@ func import_snapshot(value: Variant) -> bool:
 	return true
 
 func import_v3(old: Variant) -> bool:
-	if not old is Dictionary:
+	if not old is Dictionary or not _integer(old.get("housing")):
 		return false
 	var candidate: Dictionary = old.duplicate(true)
+	candidate.erase("farm")
+	candidate.erase("skills")
 	candidate["housing_level"] = maxi(1, 1 + int(floor((float(candidate.get("housing", 0)) - 14.0) / 6.0)))
 	var temp_skills = BuildingSkills.new()
 	if not _valid_base(candidate, temp_skills):

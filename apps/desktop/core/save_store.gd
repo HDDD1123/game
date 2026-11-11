@@ -5,8 +5,12 @@ const VERSION = 4
 const MAX_BYTES = 2097152
 const PATH_V4 = "user://kingdom-save-v4.json"
 const PATH_V3 = "user://kingdom-save-v3.json"
+var primary_path := PATH_V4
+var legacy_path := PATH_V3
 
-func save_game(game: RefCounted, path: String = PATH_V4) -> Dictionary:
+func save_game(game: RefCounted, path: String = "") -> Dictionary:
+	if path.is_empty():
+		path = primary_path
 	var raw: String = JSON.stringify({"version": VERSION, "state": game.snapshot()}, "\t")
 	var temporary: String = path + ".tmp"
 	var file := FileAccess.open(temporary, FileAccess.WRITE)
@@ -33,10 +37,12 @@ func save_game(game: RefCounted, path: String = PATH_V4) -> Dictionary:
 		return {"ok": false, "message": "替换存档失败，原文件已恢复。"}
 	return {"ok": true, "message": "已手动保存（格式4）。下次打开点击读取，不补算离线时间。"}
 
-func load_game(game: RefCounted, path: String = PATH_V4) -> Dictionary:
+func load_game(game: RefCounted, path: String = "") -> Dictionary:
+	if path.is_empty():
+		path = primary_path
 	if FileAccess.file_exists(path):
 		return _load_v4(game, path)
-	if FileAccess.file_exists(PATH_V3):
+	if path == primary_path and FileAccess.file_exists(legacy_path):
 		return _migrate_v3(game)
 	return {"ok": false, "message": "没有可读取的存档，或文件无法打开。"}
 
@@ -64,7 +70,7 @@ func _load_v4(game: RefCounted, path: String) -> Dictionary:
 	return {"ok": true, "message": "已恢复资源、事件、远征、农田与技能，未推进月份。"}
 
 func _migrate_v3(game: RefCounted) -> Dictionary:
-	var parsed: Dictionary = _read_json(PATH_V3)
+	var parsed: Dictionary = _read_json(legacy_path)
 	if parsed.is_empty() or parsed.get("version") != 3:
 		return {"ok": false, "message": "旧存档无法识别，当前进度未改变。"}
 	if not game.import_v3(parsed.get("state")):

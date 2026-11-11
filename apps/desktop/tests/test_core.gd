@@ -1,7 +1,6 @@
 extends SceneTree
 ## 任务005：粮食模型从“每月自动入库”改为“农田待收 + 手动收获”。
-## 本文件保留原有覆盖范围（初始、结算、暂停、接纳、出征、战斗、结束、重开、存档、损坏存档），
-## 但相关数值断言已按新规则更新；原来的“自动入库”断言不再适用。
+## 基础流程按新粮食模型验证；远征完整生命周期、迁移组合与损坏字段见 test_v04_regressions.gd。
 const Kingdom = preload("res://core/kingdom.gd")
 const SaveStore = preload("res://core/save_store.gd")
 var checks: int = 0

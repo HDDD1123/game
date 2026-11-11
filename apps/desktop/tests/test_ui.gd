@@ -15,6 +15,7 @@ func _initialize() -> void:
 func run_checks() -> void:
 	var packed = load("res://ui/main.tscn")
 	var scene = packed.instantiate()
+	scene.window_config_path = "user://test-ui-" + str(Time.get_ticks_usec()) + ".json"
 	root.add_child(scene)
 	await process_frame
 	check(scene.stats.text.contains("第1年1月"), "initial label")

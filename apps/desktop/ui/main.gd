@@ -11,6 +11,11 @@ const STREET_HEIGHT := 280
 
 var game = Kingdom.new()
 var saves = SaveStore.new()
+# 验证脚本可注入临时配置路径，不覆盖玩家的窗口偏好。
+var window_config_path := WINDOW_CONFIG
+var normal_size := NORMAL_DEFAULT
+var panel_restore_rect := Rect2i()
+var content_margin: MarginContainer
 
 # 普通管理视图（004B 起保留）
 var stats: Label
@@ -35,6 +40,9 @@ var displayed_event_id: String = ""
 var normal_root: VBoxContainer
 var street_root: VBoxContainer
 var info_label: Label
+var street_notice: Label
+var street_next_button: Button
+var harvest_button: Button
 var street_row: HBoxContainer
 var slot_buttons: Array = []
 var slots: Array = []
@@ -66,6 +74,7 @@ func _ready() -> void:
 	win.focus_entered.connect(_clamp_window)
 
 	var margin := MarginContainer.new()
+	content_margin = margin
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right", "top", "bottom"]:
 		margin.add_theme_constant_override("margin_" + side, 10)
@@ -85,6 +94,7 @@ func _ready() -> void:
 	_build_detail()
 	_build_skill_panel()
 	_build_close_dialog()
+	resized.connect(_layout_panels)
 	_apply_window_config()
 	_refresh()
 
@@ -113,6 +123,7 @@ func _build_normal() -> void:
 	normal_root.add_child(buildings)
 	housing_button = _button(buildings, "扩建住房", func(): _act("build_housing"))
 	farm_button = _button(buildings, "改善农业", func(): _act("improve_agriculture"))
+	harvest_button = _button(buildings, "收取农田", func(): _act("harvest_farm"))
 	forge_button = _button(buildings, "升级铁匠铺", func(): _act("upgrade_forge"))
 	next_button = _button(buildings, "推进一个月", func(): _act("advance_month"))
 	_button(buildings, "研究技能", func(): _open_skills())
@@ -162,7 +173,7 @@ func _build_street() -> void:
 	street_root.add_child(street_row)
 	var actions := HBoxContainer.new()
 	street_root.add_child(actions)
-	_button(actions, "推进一个月", func(): _act("advance_month"))
+	street_next_button = _button(actions, "推进一个月", func(): _act("advance_month"))
 	_button(actions, "研究", func(): _open_skills())
 	_button(actions, "保存", func(): _show_save_result(saves.save_game(game)))
 	_button(actions, "读取", func(): _show_save_result(saves.load_game(game)))
@@ -172,6 +183,7 @@ func _build_street() -> void:
 	reserved_hint.add_theme_color_override("font_color", Color(0.45, 0.42, 0.36))
 	reserved_hint.add_theme_font_size_override("font_size", 11)
 	street_root.add_child(reserved_hint)
+	street_notice = _label(street_root)
 	for slot in slots:
 		var button := Button.new()
 		button.custom_minimum_size = Vector2(0, 84)
@@ -200,59 +212,71 @@ func _on_slot_pressed(slot_id: String) -> void:
 func _build_detail() -> void:
 	detail_panel = PanelContainer.new()
 	detail_panel.visible = false
-	detail_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	detail_panel.custom_minimum_size = Vector2(520, 240)
 	add_child(detail_panel)
 	var column := VBoxContainer.new()
 	detail_panel.add_child(column)
 	var bar := HBoxContainer.new()
 	column.add_child(bar)
-	_button(bar, "关闭", func(): detail_panel.visible = false)
+	_button(bar, "关闭", _close_panels)
 	detail_label = RichTextLabel.new()
 	detail_label.bbcode_enabled = false
-	detail_label.custom_minimum_size = Vector2(480, 100)
+	detail_label.custom_minimum_size = Vector2(0, 90)
+	detail_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(detail_label)
 	detail_actions = HBoxContainer.new()
 	column.add_child(detail_actions)
 
 func _open_detail(slot_id: String) -> void:
 	selected_slot = slot_id
+	_show_panel(detail_panel)
+	_render_detail()
+	_layout_panels.call_deferred()
+
+func _clear_children(parent: Node) -> void:
+	for child in parent.get_children():
+		parent.remove_child(child)
+		child.queue_free()
+
+func _render_detail() -> void:
 	var v: Dictionary = game.view()
 	var s: Dictionary = game.snapshot()
-	detail_panel.visible = true
-	for child in detail_actions.get_children():
-		child.queue_free()
-	if slot_id == "housing":
+	_clear_children(detail_actions)
+	if selected_slot == "housing":
 		detail_label.text = "民居 %d 级\n基础住房 %d，有效容量 %d\n技能点：累计 %d / 可用 %d" % [v.housing_level, s.housing, v.housing_capacity, v.skills.housing.earned, v.skills.housing.available]
-		_button(detail_actions, "扩建住房（%d木材，容量+6）" % v.housing_cost, func(): _act("build_housing"))
+		var upgrade := _button(detail_actions, "扩建住房（%d木材，容量+6）" % v.housing_cost, func(): _act("build_housing"))
+		upgrade.disabled = housing_button.disabled
 		_button(detail_actions, "研究", func(): _open_skills())
-	elif slot_id == "forge":
+	elif selected_slot == "forge":
 		detail_label.text = "铁匠铺 %d/3 级\n升级消耗 %d木 + %d矿\n技能点：累计 %d / 可用 %d" % [s.forge, v.forge_cost.wood, v.forge_cost.ore, v.skills.forge.earned, v.skills.forge.available]
-		_button(detail_actions, "升级铁匠铺", func(): _act("upgrade_forge"))
+		var upgrade := _button(detail_actions, "升级铁匠铺", func(): _act("upgrade_forge"))
+		upgrade.disabled = forge_button.disabled
 		_button(detail_actions, "研究", func(): _open_skills())
 
 # ---------- 技能树 ----------
 func _build_skill_panel() -> void:
 	skill_panel = PanelContainer.new()
 	skill_panel.visible = false
-	skill_panel.set_anchors_preset(Control.PRESET_CENTER)
-	skill_panel.custom_minimum_size = Vector2(700, 460)
 	add_child(skill_panel)
 	var outer := VBoxContainer.new()
 	skill_panel.add_child(outer)
 	var bar := HBoxContainer.new()
 	outer.add_child(bar)
-	_button(bar, "关闭", func(): skill_panel.visible = false)
+	_button(bar, "关闭", _close_panels)
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(660, 400)
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	outer.add_child(scroll)
 	skill_content = VBoxContainer.new()
+	skill_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(skill_content)
 
 func _open_skills() -> void:
-	skill_panel.visible = true
-	for child in skill_content.get_children():
-		child.queue_free()
+	_show_panel(skill_panel)
+	_render_skills()
+	_layout_panels.call_deferred()
+
+func _render_skills() -> void:
+	_clear_children(skill_content)
 	var v: Dictionary = game.view()
 	for tree_id in ["farm", "housing", "forge"]:
 		var tree: Dictionary = v.skills[tree_id]
@@ -267,11 +291,12 @@ func _open_skills() -> void:
 			var state := "已解锁" if node.unlocked else ("可解锁" if node.available else ("未满足：" + str(node.problem)))
 			label.text = "  %s — %s [%s]" % [node.name, node.description, state]
 			label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			label.custom_minimum_size = Vector2(520, 0)
+			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			row.add_child(label)
 			var unlock := Button.new()
 			unlock.text = "解锁"
-			unlock.disabled = not node.available
+			unlock.disabled = game.snapshot().ended or not node.available
+			unlock.set_meta("skill_id", node.id)
 			unlock.pressed.connect(func(): _act("unlock_skill", {"tree": tree_id, "node": node.id}))
 			row.add_child(unlock)
 
@@ -309,7 +334,7 @@ func _refresh() -> void:
 	var s: Dictionary = game.snapshot()
 	var v: Dictionary = game.view()
 	stats.text = "%s   人口 %d/%d   粮仓 %d   待收 %d   木材 %d   矿石 %d" % [v.date, s.population, v.housing_capacity, s.food, v.farm.ready_food, s.wood, s.ore]
-	economy.text = "城内%d人；每批产粮%d，需求%d，木材%d。农田%d级，铁匠铺%d级，民居%d级。%s" % [v.home_population, v.batch_food, v.food_demand, v.wood_production, s.agriculture, s.forge, v.housing_level, "当前旱季减产40%。" if v.drought else "每年7—9月旱季减产40%。"]
+	economy.text = "城内%d人；每批产粮%d，需求%d，木材%d。农田%d级，铁匠铺%d级，民居%d级。%s减产%d%%。" % [v.home_population, v.batch_food, v.food_demand, v.wood_production, s.agriculture, s.forge, v.housing_level, "当前旱季" if v.drought else "每年7—9月旱季", v.drought_reduction_percent]
 	displayed_event_id = s.pending.get("id", "")
 	event_label.text = "%d名流民等待决定，时间暂不推进。" % s.pending.visitors if not s.pending.is_empty() else "下次来访：%s，%d人。" % [game.date_label(v.next_refugees.month), v.next_refugees.visitors]
 	if s.ended:
@@ -317,6 +342,9 @@ func _refresh() -> void:
 	accept_button.disabled = s.ended or s.pending.is_empty() or s.population + s.pending.get("visitors", 0) > v.housing_capacity
 	reject_button.disabled = s.ended or s.pending.is_empty()
 	next_button.disabled = s.ended or not s.pending.is_empty()
+	street_next_button.disabled = next_button.disabled
+	harvest_button.text = "收取农田 · %d粮" % v.farm.ready_food
+	harvest_button.disabled = s.ended or v.farm.ready_food <= 0
 	housing_button.text = "住房+6 · %d木材" % v.housing_cost
 	housing_button.disabled = s.ended or s.wood < v.housing_cost
 	farm_button.text = "改善农业 · %d木材" % v.farm_cost
@@ -330,7 +358,8 @@ func _refresh() -> void:
 	if not e.is_empty():
 		expedition_label.text = "%s：在外%d人，已完成%d/%d层，战利品归来入库。" % [v.sites[e.site].name, e.troops, e.room, e.goal]
 	else:
-		expedition_label.text = "出征耗%d粮+%d木；初始战力%d。%s" % [args.troops, v.expedition_wood_cost, args.troops * (2 + s.forge), problem]
+		var quote: Dictionary = game.expedition_quote(args.troops)
+		expedition_label.text = "出征耗%d粮+%d木；初始战力%d。%s" % [quote.food, quote.wood, quote.power, problem]
 	var lines: PackedStringArray = ["宰相手记"]
 	for entry in s.journal:
 		lines.append(game.date_label(entry.month) + "｜" + entry.text)
@@ -344,8 +373,18 @@ func _refresh() -> void:
 		lines.append(entry)
 	details.text = "\n".join(lines)
 	_refresh_street(s, v)
+	if detail_panel.visible:
+		_render_detail()
+	if skill_panel.visible:
+		_render_skills()
 
 func _refresh_street(s: Dictionary, v: Dictionary) -> void:
+	street_notice.text = message.text
+	if s.ended:
+		street_notice.text = "王国已无居民，请展开管理后重开，或读取存档。 " + message.text
+	elif v.food_shortfall > 0:
+		street_notice.text = "口粮警报：推进前粮仓还差%d粮，田里待收%d粮；请先收获或补足口粮。 " % [v.food_shortfall, v.farm.ready_food] + message.text
+	street_notice.add_theme_color_override("font_color", Color("9e3228") if s.ended or v.food_shortfall > 0 else Color("263b31"))
 	info_label.text = "%s   人口 %d/%d   粮仓 %d   待收 %d   木材 %d   矿石 %d   每批产粮 %d   需求 %d   木材/月 %d" % [v.date, s.population, v.housing_capacity, s.food, v.farm.ready_food, s.wood, s.ore, v.batch_food, v.food_demand, v.wood_production]
 	if not s.pending.is_empty():
 		info_label.text += "   ⚠ 流民待决定"
@@ -372,26 +411,72 @@ func _on_pin_toggled(enabled: bool) -> void:
 	_save_window_config()
 
 func _toggle_street() -> void:
-	street_mode = not street_mode
+	_close_panels()
 	var win := get_window()
+	if not street_mode:
+		normal_size = win.size
+	street_mode = not street_mode
 	if street_mode:
-		win.min_size = Vector2i(720, 180)
-		win.size = Vector2i(win.size.x, STREET_HEIGHT + 40)
+		win.min_size = Vector2i(720, STREET_HEIGHT)
+		_dock_street(win)
 	else:
+		var bottom := win.position.y + win.size.y
 		win.min_size = NORMAL_MIN
-		win.size = NORMAL_DEFAULT
+		win.size = normal_size
+		win.position.y = bottom - win.size.y
 	_sync_views()
 	_clamp_window()
 	_save_window_config()
 	_refresh()
 
 func _sync_views() -> void:
+	if content_margin:
+		content_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		if street_mode:
+			content_margin.anchor_top = 1.0
+			content_margin.offset_top = -STREET_HEIGHT
 	if normal_root:
 		normal_root.visible = not street_mode
 	if street_root:
 		street_root.visible = street_mode
 	if street_toggle_button:
 		street_toggle_button.text = "展开管理" if street_mode else "收起街景"
+	_layout_panels.call_deferred()
+
+func _show_panel(panel: PanelContainer) -> void:
+	var win := get_window()
+	if street_mode:
+		if not panel_restore_rect.has_area():
+			panel_restore_rect = Rect2i(win.position, win.size)
+		var usable := _usable_rect()
+		win.min_size = Vector2i(mini(720, usable.size.x), mini(STREET_HEIGHT + 200, usable.size.y))
+		var height := STREET_HEIGHT + (480 if panel == skill_panel else 260)
+		var desired := Rect2i(panel_restore_rect.position, Vector2i(maxi(720, win.size.x), height))
+		desired.position.y = panel_restore_rect.end.y - height
+		_set_window_rect(fit_window_rect(desired, _usable_rect()))
+	detail_panel.visible = panel == detail_panel
+	skill_panel.visible = panel == skill_panel
+	_layout_panels()
+
+func _close_panels() -> void:
+	detail_panel.hide()
+	skill_panel.hide()
+	if panel_restore_rect.has_area():
+		var restore := panel_restore_rect
+		panel_restore_rect = Rect2i()
+		get_window().min_size = Vector2i(720, STREET_HEIGHT)
+		_set_window_rect(fit_window_rect(restore, _usable_rect()))
+
+func _layout_panels() -> void:
+	if detail_panel == null or skill_panel == null:
+		return
+	var available_height := maxf(100.0, size.y - (STREET_HEIGHT if street_mode else 0) - 20)
+	for panel in [detail_panel, skill_panel]:
+		if not panel.visible:
+			continue
+		var height := minf(460.0 if panel == skill_panel else 240.0, available_height)
+		panel.size = Vector2(minf(720.0, size.x - 20), height)
+		panel.position = Vector2((size.x - panel.size.x) / 2, 10 if street_mode else (size.y - panel.size.y) / 2)
 
 func _request_close() -> void:
 	if close_dialog:
@@ -412,32 +497,46 @@ func _on_close_custom(action: String) -> void:
 		get_tree().quit()
 
 func _clamp_window() -> void:
-	if DisplayServer.get_name() == "headless":
-		return
 	var win := get_window()
-	var idx := DisplayServer.window_get_current_screen()
-	var usable := DisplayServer.screen_get_usable_rect(idx)
-	if usable.size.x <= 0 or usable.size.y <= 0:
-		return
-	var size := win.size
-	var pos := win.position
-	pos.x = clampi(pos.x, usable.position.x, maxi(usable.position.x + usable.size.x - size.x, usable.position.x))
-	pos.y = clampi(pos.y, usable.position.y, maxi(usable.position.y + usable.size.y - size.y, usable.position.y))
-	win.position = pos
+	var usable := _usable_rect()
+	win.min_size = Vector2i(mini(win.min_size.x, usable.size.x), mini(win.min_size.y, usable.size.y))
+	_set_window_rect(fit_window_rect(Rect2i(win.position, win.size), usable))
+
+func _usable_rect() -> Rect2i:
+	if DisplayServer.get_name() != "headless":
+		var usable := DisplayServer.screen_get_usable_rect(DisplayServer.window_get_current_screen())
+		if usable.has_area():
+			return usable
+	# 无窗口测试的确定性画布，不代表真实显示器验收。
+	return Rect2i(0, 0, 1920, 1080)
+
+static func fit_window_rect(rect: Rect2i, usable: Rect2i) -> Rect2i:
+	var fitted_size := Vector2i(clampi(rect.size.x, 1, usable.size.x), clampi(rect.size.y, 1, usable.size.y))
+	var position := Vector2i(clampi(rect.position.x, usable.position.x, usable.end.x - fitted_size.x),
+		clampi(rect.position.y, usable.position.y, usable.end.y - fitted_size.y))
+	return Rect2i(position, fitted_size)
+
+func _set_window_rect(rect: Rect2i) -> void:
+	get_window().size = rect.size
+	get_window().position = rect.position
 
 func _save_window_config() -> void:
 	var win := get_window()
-	var data := {"position": [win.position.x, win.position.y], "size": [win.size.x, win.size.y],
-		"street_mode": street_mode, "always_on_top": win.always_on_top}
-	var f := FileAccess.open(WINDOW_CONFIG, FileAccess.WRITE)
+	var rect := panel_restore_rect if panel_restore_rect.has_area() else Rect2i(win.position, win.size)
+	if not street_mode:
+		normal_size = win.size
+	var data := {"position": [rect.position.x, rect.position.y], "size": [rect.size.x, rect.size.y],
+		"street_mode": street_mode, "always_on_top": win.always_on_top,
+		"normal_size": [normal_size.x, normal_size.y]}
+	var f := FileAccess.open(window_config_path, FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(data))
 		f.close()
 
 func _load_window_config() -> Dictionary:
-	if not FileAccess.file_exists(WINDOW_CONFIG):
+	if not FileAccess.file_exists(window_config_path):
 		return {}
-	var f := FileAccess.open(WINDOW_CONFIG, FileAccess.READ)
+	var f := FileAccess.open(window_config_path, FileAccess.READ)
 	if not f:
 		return {}
 	var parsed = JSON.parse_string(f.get_as_text())
@@ -446,6 +545,11 @@ func _load_window_config() -> Dictionary:
 
 func _to_vec2i(value) -> Vector2i:
 	if value is Array and value.size() == 2:
+		for component in value:
+			if not (component is int or component is float):
+				return Vector2i.ZERO
+			if not is_finite(float(component)) or absf(float(component)) > 100000 or float(component) != floorf(float(component)):
+				return Vector2i.ZERO
 		return Vector2i(int(value[0]), int(value[1]))
 	return Vector2i.ZERO
 
@@ -453,8 +557,11 @@ func _apply_window_config() -> void:
 	var cfg := _load_window_config()
 	var win := get_window()
 	var fresh := not cfg.has("street_mode")
-	street_mode = true if fresh else bool(cfg["street_mode"])
-	win.min_size = Vector2i(720, 180) if street_mode else NORMAL_MIN
+	street_mode = cfg.get("street_mode", true) != false
+	var remembered_normal := _to_vec2i(cfg.get("normal_size"))
+	if remembered_normal.x >= NORMAL_MIN.x and remembered_normal.y >= NORMAL_MIN.y:
+		normal_size = remembered_normal
+	win.min_size = Vector2i(720, STREET_HEIGHT) if street_mode else NORMAL_MIN
 	if fresh:
 		_dock_street(win)
 	else:
@@ -464,11 +571,10 @@ func _apply_window_config() -> void:
 				win.size = s
 		if cfg.has("position"):
 			var p := _to_vec2i(cfg["position"])
-			if p != Vector2i.ZERO:
-				win.position = p
-	var top := bool(cfg.get("always_on_top", false))
+			win.position = p
+	var top: bool = cfg.get("always_on_top", false) == true
 	win.always_on_top = top
-	pin_check.button_pressed = top
+	pin_check.set_pressed_no_signal(top)
 	_sync_views()
 	_clamp_window()
 

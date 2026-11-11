@@ -1,6 +1,6 @@
 extends RefCounted
 ## 技能规则模块。由Kingdom提供建筑累计获得的点数，UI不能自行发点。
-## 本模块尚未接入v0.3主场景；接线要求见任务005。
+## 已通过 Kingdom 接入 v0.4 主场景。
 const TREES = {
 	"farm": {"name": "农田", "nodes": [
 		{"id": "farm_tools", "name": "精细采收", "description": "每批正常产粮+2，再计算旱季影响。", "requires": [], "effect": "farm_yield_flat", "amount": 2},
