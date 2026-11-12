@@ -20,6 +20,7 @@ var content_margin: MarginContainer
 # 普通管理视图（004B 起保留）
 var stats: Label
 var economy: Label
+var forecast_label: Label
 var message: Label
 var event_label: Label
 var next_button: Button
@@ -43,6 +44,11 @@ var info_label: Label
 var street_notice: Label
 var street_next_button: Button
 var harvest_button: Button
+var street_events: HFlowContainer
+var street_event_label: Label
+var street_accept_button: Button
+var street_reject_button: Button
+var street_housing_button: Button
 var street_row: HBoxContainer
 var slot_buttons: Array = []
 var slots: Array = []
@@ -51,6 +57,9 @@ var detail_label: RichTextLabel
 var detail_actions: HBoxContainer
 var skill_panel: PanelContainer
 var skill_content: VBoxContainer
+var skill_headers: Dictionary = {}
+var skill_rows: Dictionary = {}
+var detail_upgrade_button: Button
 var pin_check: CheckButton
 var street_toggle_button: Button
 var close_dialog: ConfirmationDialog
@@ -67,7 +76,7 @@ func _ready() -> void:
 	theme = palette
 
 	var win := get_window()
-	win.title = "桌面王国 v0.4 · 底部街景"
+	win.title = "桌面王国 v0.4.2 · 底部街景"
 	win.min_size = NORMAL_MIN
 	get_tree().auto_accept_quit = false
 	win.close_requested.connect(_request_close)
@@ -112,6 +121,7 @@ func _build_normal() -> void:
 	_button(toolbar, "收起街景", func(): _toggle_street())
 	stats = _label(normal_root)
 	economy = _label(normal_root)
+	forecast_label = _label(normal_root)
 	message = _label(normal_root)
 	message.text = "手动推进月份；成熟粮食留在农田，点击农田收取。"
 	event_label = _label(normal_root)
@@ -174,15 +184,18 @@ func _build_street() -> void:
 	var actions := HBoxContainer.new()
 	street_root.add_child(actions)
 	street_next_button = _button(actions, "推进一个月", func(): _act("advance_month"))
+	_button(actions, "农田详情", func(): _open_detail("farm"))
 	_button(actions, "研究", func(): _open_skills())
 	_button(actions, "保存", func(): _show_save_result(saves.save_game(game)))
 	_button(actions, "读取", func(): _show_save_result(saves.load_game(game)))
 	street_toggle_button = _button(actions, "展开管理", func(): _toggle_street())
-	var reserved_hint := Label.new()
-	reserved_hint.text = "预留地块：暂无生产与升级"
-	reserved_hint.add_theme_color_override("font_color", Color(0.45, 0.42, 0.36))
-	reserved_hint.add_theme_font_size_override("font_size", 11)
-	street_root.add_child(reserved_hint)
+	street_events = HFlowContainer.new()
+	street_root.add_child(street_events)
+	street_event_label = _label(street_events)
+	street_event_label.custom_minimum_size.x = 160
+	street_accept_button = _button(street_events, "接纳", func(): _act("accept_refugees", {"event_id": displayed_event_id}))
+	street_reject_button = _button(street_events, "拒绝", func(): _act("reject_refugees", {"event_id": displayed_event_id}))
+	street_housing_button = _button(street_events, "扩建住房", func(): _open_detail("housing"))
 	street_notice = _label(street_root)
 	for slot in slots:
 		var button := Button.new()
@@ -200,7 +213,7 @@ func _on_slot_pressed(slot_id: String) -> void:
 		else:
 			var r: Dictionary = game.act("assist_farm", {"source": "click", "count": 1})
 			message.text = r.message
-			_refresh()
+			_refresh(r.state, r.view)
 		return
 	if slot_id == "housing" or slot_id == "forge":
 		_open_detail(slot_id)
@@ -225,6 +238,8 @@ func _build_detail() -> void:
 	column.add_child(detail_label)
 	detail_actions = HBoxContainer.new()
 	column.add_child(detail_actions)
+	detail_upgrade_button = _button(detail_actions, "升级", _upgrade_selected_building)
+	_button(detail_actions, "研究", _open_skills)
 
 func _open_detail(slot_id: String) -> void:
 	selected_slot = slot_id
@@ -232,25 +247,26 @@ func _open_detail(slot_id: String) -> void:
 	_render_detail()
 	_layout_panels.call_deferred()
 
-func _clear_children(parent: Node) -> void:
-	for child in parent.get_children():
-		parent.remove_child(child)
-		child.queue_free()
+func _upgrade_selected_building() -> void:
+	var commands := {"housing": "build_housing", "forge": "upgrade_forge", "farm": "improve_agriculture"}
+	if commands.has(selected_slot):
+		_act(commands[selected_slot])
 
-func _render_detail() -> void:
-	var v: Dictionary = game.view()
-	var s: Dictionary = game.snapshot()
-	_clear_children(detail_actions)
+func _render_detail(v: Dictionary = {}, s: Dictionary = {}) -> void:
+	if v.is_empty(): v = game.view()
+	if s.is_empty(): s = game.snapshot()
 	if selected_slot == "housing":
 		detail_label.text = "民居 %d 级\n基础住房 %d，有效容量 %d\n技能点：累计 %d / 可用 %d" % [v.housing_level, s.housing, v.housing_capacity, v.skills.housing.earned, v.skills.housing.available]
-		var upgrade := _button(detail_actions, "扩建住房（%d木材，容量+6）" % v.housing_cost, func(): _act("build_housing"))
-		upgrade.disabled = housing_button.disabled
-		_button(detail_actions, "研究", func(): _open_skills())
+		detail_upgrade_button.text = "扩建住房（%d木材，容量+6）" % v.housing_cost
+		detail_upgrade_button.disabled = housing_button.disabled
 	elif selected_slot == "forge":
 		detail_label.text = "铁匠铺 %d/3 级\n升级消耗 %d木 + %d矿\n技能点：累计 %d / 可用 %d" % [s.forge, v.forge_cost.wood, v.forge_cost.ore, v.skills.forge.earned, v.skills.forge.available]
-		var upgrade := _button(detail_actions, "升级铁匠铺", func(): _act("upgrade_forge"))
-		upgrade.disabled = forge_button.disabled
-		_button(detail_actions, "研究", func(): _open_skills())
+		detail_upgrade_button.text = "升级铁匠铺"
+		detail_upgrade_button.disabled = forge_button.disabled
+	elif selected_slot == "farm":
+		detail_label.text = "农田 %d 级，每批%d粮\n待收%d/%d批，共%d粮；本月助耕剩余%d%%\n技能点：累计%d / 可用%d。成熟后手动收取；满3批暂停生长。" % [s.agriculture, v.batch_food, v.farm.ready_batches, v.farm.capacity, v.farm.ready_food, int(v.farm.activity_left * 100 / v.farm.full_batch), v.skills.farm.earned, v.skills.farm.available]
+		detail_upgrade_button.text = "改善农业（%d木材）" % v.farm_cost
+		detail_upgrade_button.disabled = farm_button.disabled
 
 # ---------- 技能树 ----------
 func _build_skill_panel() -> void:
@@ -275,30 +291,40 @@ func _open_skills() -> void:
 	_render_skills()
 	_layout_panels.call_deferred()
 
-func _render_skills() -> void:
-	_clear_children(skill_content)
-	var v: Dictionary = game.view()
+func _render_skills(v: Dictionary = {}) -> void:
+	if v.is_empty(): v = game.view()
+	if skill_headers.is_empty():
+		_create_skill_rows(v.skills)
 	for tree_id in ["farm", "housing", "forge"]:
 		var tree: Dictionary = v.skills[tree_id]
+		skill_headers[tree_id].text = "%s（累计 %d / 可用 %d）" % [tree.name, tree.earned, tree.available]
+		for node in tree.nodes:
+			var controls: Dictionary = skill_rows[node.id]
+			var state := "已解锁" if node.unlocked else ("可解锁" if node.available else ("未满足：" + str(node.problem)))
+			controls.label.text = "  %s — %s [%s]" % [node.name, node.description, state]
+			controls.button.disabled = v.ended or not node.available
+
+func _create_skill_rows(trees: Dictionary) -> void:
+	# 固定目录只建一次；资源变化更新文字/状态，保留滚动位置和控件身份。
+	for tree_id in ["farm", "housing", "forge"]:
+		var tree: Dictionary = trees[tree_id]
 		var header := Label.new()
-		header.text = "%s（累计 %d / 可用 %d）" % [tree.name, tree.earned, tree.available]
 		header.add_theme_font_size_override("font_size", 16)
 		skill_content.add_child(header)
+		skill_headers[tree_id] = header
 		for node in tree.nodes:
 			var row := HBoxContainer.new()
 			skill_content.add_child(row)
 			var label := Label.new()
-			var state := "已解锁" if node.unlocked else ("可解锁" if node.available else ("未满足：" + str(node.problem)))
-			label.text = "  %s — %s [%s]" % [node.name, node.description, state]
 			label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			row.add_child(label)
 			var unlock := Button.new()
 			unlock.text = "解锁"
-			unlock.disabled = game.snapshot().ended or not node.available
 			unlock.set_meta("skill_id", node.id)
 			unlock.pressed.connect(func(): _act("unlock_skill", {"tree": tree_id, "node": node.id}))
 			row.add_child(unlock)
+			skill_rows[node.id] = {"label": label, "button": unlock}
 
 # ---------- 公共 ----------
 func _button(parent: Control, text: String, action: Callable) -> Button:
@@ -322,27 +348,46 @@ func _army_args() -> Dictionary:
 func _act(command: String, args: Dictionary = {}) -> void:
 	var result: Dictionary = game.act(command, args)
 	message.text = result.message
-	_refresh()
+	_refresh(result.state, result.view)
 
 func _show_save_result(result: Dictionary) -> void:
 	message.text = result.message
 	_refresh()
 
-func _refresh() -> void:
+func _settlement_text(preview: Dictionary) -> String:
+	var text := "下次口粮结算：需%d粮，粮仓余%d；木材+%d。" % [preview.demand, preview.food_after, preview.wood_gain]
+	if preview.shortfall > 0:
+		text = "直接推进将因缺粮死亡%d人；先收粮后预计%d人。" % [preview.starvation_losses, preview.after_harvest.starvation_losses]
+	if preview.battle_pending:
+		text += "战斗伤亡与战利品另算。"
+	return text
+
+func _refugee_text(preview: Dictionary) -> String:
+	var housing := "住房足够" if preview.beds_missing == 0 else "还缺%d床" % preview.beds_missing
+	var text := "接纳后%d人：月口粮%d，木材%d（+%d）；%s。" % [preview.population_after, preview.rations.demand, preview.wood_after, preview.wood_gain, housing]
+	if preview.rations.shortfall > 0:
+		text += "口粮缺%d，先收粮后仍缺%d。" % [preview.rations.shortfall, preview.after_harvest.shortfall]
+	return text
+
+func _refresh(s: Dictionary = {}, v: Dictionary = {}) -> void:
 	if details == null:
 		return
-	var s: Dictionary = game.snapshot()
-	var v: Dictionary = game.view()
+	if s.is_empty(): s = game.snapshot()
+	if v.is_empty(): v = game.view()
+	forecast_label.text = _settlement_text(v.settlement) if not s.ended else "本轮已结束。"
+	forecast_label.add_theme_color_override("font_color", Color("9e3228") if v.food_shortfall > 0 else Color("263b31"))
 	stats.text = "%s   人口 %d/%d   粮仓 %d   待收 %d   木材 %d   矿石 %d" % [v.date, s.population, v.housing_capacity, s.food, v.farm.ready_food, s.wood, s.ore]
 	economy.text = "城内%d人；每批产粮%d，需求%d，木材%d。农田%d级，铁匠铺%d级，民居%d级。%s减产%d%%。" % [v.home_population, v.batch_food, v.food_demand, v.wood_production, s.agriculture, s.forge, v.housing_level, "当前旱季" if v.drought else "每年7—9月旱季", v.drought_reduction_percent]
 	displayed_event_id = s.pending.get("id", "")
-	event_label.text = "%d名流民等待决定，时间暂不推进。" % s.pending.visitors if not s.pending.is_empty() else "下次来访：%s，%d人。" % [game.date_label(v.next_refugees.month), v.next_refugees.visitors]
+	event_label.text = "%d名流民等待决定，时间暂停。%s" % [s.pending.visitors, _refugee_text(v.refugees)] if not s.pending.is_empty() else "下次来访：%s，%d人。" % [game.date_label(v.next_refugees.month), v.next_refugees.visitors]
 	if s.ended:
 		event_label.text = "王国已无居民，请读档或重新开始。"
 	accept_button.disabled = s.ended or s.pending.is_empty() or s.population + s.pending.get("visitors", 0) > v.housing_capacity
 	reject_button.disabled = s.ended or s.pending.is_empty()
 	next_button.disabled = s.ended or not s.pending.is_empty()
 	street_next_button.disabled = next_button.disabled
+	next_button.tooltip_text = forecast_label.text
+	street_next_button.tooltip_text = forecast_label.text
 	harvest_button.text = "收取农田 · %d粮" % v.farm.ready_food
 	harvest_button.disabled = s.ended or v.farm.ready_food <= 0
 	housing_button.text = "住房+6 · %d木材" % v.housing_cost
@@ -374,16 +419,26 @@ func _refresh() -> void:
 	details.text = "\n".join(lines)
 	_refresh_street(s, v)
 	if detail_panel.visible:
-		_render_detail()
+		_render_detail(v, s)
 	if skill_panel.visible:
-		_render_skills()
+		_render_skills(v)
 
 func _refresh_street(s: Dictionary, v: Dictionary) -> void:
-	street_notice.text = message.text
+	street_events.visible = not s.pending.is_empty() and not s.ended
+	street_accept_button.disabled = accept_button.disabled
+	street_reject_button.disabled = reject_button.disabled
+	if not s.pending.is_empty():
+		street_event_label.text = "流民%d人等待决定" % s.pending.visitors
+		street_events.tooltip_text = _refugee_text(v.refugees)
+		street_accept_button.tooltip_text = street_events.tooltip_text
+		street_housing_button.visible = v.refugees.beds_missing > 0
+	street_notice.text = _refugee_text(v.refugees) if not v.refugees.is_empty() else _settlement_text(v.settlement)
+	if not message.text.is_empty():
+		street_notice.text += " " + message.text
 	if s.ended:
 		street_notice.text = "王国已无居民，请展开管理后重开，或读取存档。 " + message.text
 	elif v.food_shortfall > 0:
-		street_notice.text = "口粮警报：推进前粮仓还差%d粮，田里待收%d粮；请先收获或补足口粮。 " % [v.food_shortfall, v.farm.ready_food] + message.text
+		street_notice.text = "口粮警报：粮仓还差%d粮，田里待收%d粮。%s" % [v.food_shortfall, v.farm.ready_food, street_notice.text]
 	street_notice.add_theme_color_override("font_color", Color("9e3228") if s.ended or v.food_shortfall > 0 else Color("263b31"))
 	info_label.text = "%s   人口 %d/%d   粮仓 %d   待收 %d   木材 %d   矿石 %d   每批产粮 %d   需求 %d   木材/月 %d" % [v.date, s.population, v.housing_capacity, s.food, v.farm.ready_food, s.wood, s.ore, v.batch_food, v.food_demand, v.wood_production]
 	if not s.pending.is_empty():
@@ -397,7 +452,14 @@ func _refresh_street(s: Dictionary, v: Dictionary) -> void:
 		if sid == "farm":
 			var fv: Dictionary = v.farm
 			var pct := int(int(fv.progress) * 100 / int(fv.full_batch))
-			button.text = "农田\n待收 %d 批/%d\n生长 %d%%" % [fv.ready_batches, fv.ready_food, pct]
+			button.text = "农田\n待收%d/%d批·%d粮\n生长%d%%" % [fv.ready_batches, fv.capacity, fv.ready_food, pct]
+			button.tooltip_text = "点击收取%d粮；待收满%d批会暂停生长。" % [fv.ready_food, fv.capacity] if fv.ready_food > 0 else "点击助耕+5%%；本月剩余额度%d%%。" % int(fv.activity_left * 100 / fv.full_batch)
+			if not s.pending.is_empty() and fv.ready_food == 0:
+				button.tooltip_text = "先处理流民事件，生长与助耕已暂停。"
+			elif fv.ready_food == 0 and fv.activity_left == 0:
+				button.tooltip_text = "本月助耕额度已用完，下个月恢复。"
+			if s.ended:
+				button.tooltip_text = "本轮已结束，请读取存档或重新开始。"
 		elif sid == "housing":
 			button.text = "民居\n%d级 容量%d" % [v.housing_level, v.housing_capacity]
 		elif sid == "forge":

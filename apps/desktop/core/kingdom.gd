@@ -90,7 +90,7 @@ func view() -> Dictionary:
 	var next_month: int = int(_state.months) + 1
 	while refugee_at(next_month).is_empty():
 		next_month += 1
-	return {"date": date_label(), "home_population": _home(),
+	return {"date": date_label(), "ended": _state.ended, "home_population": _home(),
 		"food_demand": _state.population, "batch_food": _batch_food(),
 		"wood_production": _skills.wood_production(_home(), B.WOOD_PER_PERSON),
 		"drought": is_drought(), "next_refugees": refugee_at(next_month),
@@ -101,7 +101,37 @@ func view() -> Dictionary:
 		"housing_level": int(_state.housing_level),
 		"food_shortfall": maxi(0, int(_state.population) - int(_state.food)),
 		"drought_reduction_percent": roundi((1.0 - B.DROUGHT_FACTOR) * 100) - int(_skills.modifiers().drought_percentage_points),
-		"farm": _farm.view(), "skills": _skills_view()}
+		"farm": _farm.view(), "skills": _skills_view(),
+		"settlement": settlement_preview(), "refugees": refugee_preview()}
+
+func _ration_projection(population: int, food: int) -> Dictionary:
+	var shortfall := maxi(0, population - food)
+	return {"demand": population, "stock": food, "food_after": maxi(0, food - population),
+		"shortfall": shortfall, "starvation_losses": mini(population, ceili(shortfall / 2.0))}
+
+func settlement_preview() -> Dictionary:
+	# 只预测当前可确定的口粮结算，不把待收、未来产粮或远征战利品当作粮仓。
+	var preview := _ration_projection(int(_state.population), int(_state.food))
+	preview["after_harvest"] = _ration_projection(int(_state.population), int(_state.food) + int(_farm.view().ready_food))
+	preview["wood_gain"] = _skills.wood_production(_home(), B.WOOD_PER_PERSON)
+	preview["battle_pending"] = not _state.expedition.is_empty()
+	preview["can_advance"] = not _state.ended and _state.pending.is_empty()
+	return preview
+
+func refugee_preview() -> Dictionary:
+	if _state.pending.is_empty():
+		return {}
+	var visitors := int(_state.pending.visitors)
+	var population := int(_state.population) + visitors
+	var capacity: int = _skills.housing_capacity(int(_state.housing))
+	var wood_before: int = _skills.wood_production(_home(), B.WOOD_PER_PERSON)
+	var wood_after: int = _skills.wood_production(_home() + visitors, B.WOOD_PER_PERSON)
+	return {"event_id": _state.pending.id, "visitors": visitors, "population_after": population,
+		"capacity": capacity, "beds_missing": maxi(0, population - capacity),
+		"can_accept": not _state.ended and population <= capacity,
+		"wood_before": wood_before, "wood_after": wood_after, "wood_gain": wood_after - wood_before,
+		"rations": _ration_projection(population, int(_state.food)),
+		"after_harvest": _ration_projection(population, int(_state.food) + int(_farm.view().ready_food))}
 
 func expedition_quote(troops: int) -> Dictionary:
 	var attack: int = _skills.expedition_attack(2 + int(_state.forge))
@@ -291,14 +321,15 @@ func _advance_month() -> void:
 
 	# 2. 只从粮仓扣口粮
 	var available: int = int(_state.food)
-	var shortfall: int = maxi(0, demand - available)
-	_state.food = maxi(0, available - demand)
+	var rations := _ration_projection(demand, available)
+	var shortfall: int = rations.shortfall
+	_state.food = rations.food_after
 	_state.wood += wood_gain
 	var fv: Dictionary = _farm.view()
 	_record("结算：粮仓%d，待收%d批/%d，每批%d，需求%d，缺口%d；木材+%d。" % [int(_state.food), fv.ready_batches, fv.ready_food, batch_food, demand, shortfall, wood_gain])
 
 	if shortfall > 0:
-		var loss: int = mini(int(_state.population), int(ceil(shortfall / 2.0)))
+		var loss: int = rations.starvation_losses
 		var away_loss: int = maxi(0, loss - _home())
 		_state.population -= loss
 		_state.deaths.starvation += loss

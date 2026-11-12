@@ -1,54 +1,13 @@
-﻿# 桌面王国 v0.3：Godot 开发底座
+﻿桌面王国 v0.4.2 · 源码工程
 
-这是一份给 DSH 接手的源码工程，不是已经打包的 Windows 游戏。
-本工程随 GitHub 的 `codex/desktop-foundation-v03` 分支交付，位置为 `apps/desktop/`。你的 Windows 仓库需要自行获取这个分支；原有本地网页代码、提交和未提交文件应保留。
+本目录是 Godot 工程，不是已打包的 Windows 游戏。
+使用 Godot 4.6.3 标准版导入 project.godot，按 F5 运行。
+如果拿到的是 Windows 试玩ZIP，解压后双击 KingdomDesktop.exe，并保留同目录的PCK。
 
-## 已完成
+玩法和存档位置：见 启动说明.txt。
+开发与检查：见 README.md、VERIFICATION.md。
+DSH当前任务：docs/任务006_优化接入与美术准备.md。
+源码分支：codex/kingdom-playability-v042。
 
-- Godot 4 的独立经营规则内核：住房、农业、人口、流民、饥饿、远征、铁匠铺、成就与记录。
-- 一个可以运行的演示界面：按钮已接入规则，包含手动保存、读取、置顶开关。
-- 本地 JSON 存档：格式校验、临时文件替换、上一份备份；读取不补算离线时间。
-- 流民在前期日程结束后继续到来：已过去23个月开始，每3个月6人。
-- 农业改善成本暂改为18×当前等级，旱季暂改为每年7—9月。
-
-新增数值属于试验方案。资源过剩尚未完全解决；没有加入新的建筑、魔王、自然衰老或自动推进。
-
-## 在 Godot 中运行
-
-使用 Godot 4.6.3 标准版（GDScript，不需要 .NET）。在项目管理器导入本目录的 project.godot，按 F5 运行。首次导入可能需要等待编辑器扫描脚本。
-
-本包在 Linux Godot 4.6.3 中通过规则与无图形界面接线测试；尚未通过 Windows 可视化、透明窗口、鼠标穿透、DPI、多屏或 EXE 验收。窗口源码只是功能演示，不代表最终桌面视觉。
-
-## 命令行检查
-
-在项目目录执行（Godot 程序不在 PATH 时，用其完整路径）：
-
-```text
-godot --headless --path . --script res://tests/test_core.gd
-godot --headless --path . --script res://tests/test_ui.gd
-```
-
-期望结果：106 checks, 0 failures；8 checks, 0 failures。Windows 标准版可使用随包的 console.exe 查看日志。测试会使用独立的 core-test-save.json，不覆盖正常游戏的 kingdom-save-v3.json。
-
-## 交接顺序
-
-1. DSH 阅读 docs/任务004_Windows桌面底座.md。
-2. 从交付分支建立独立工作目录与功能分支。本工程已放在 apps/desktop/，无需再次复制套一层目录；保留原工作目录及 prototypes/text/。
-3. 先原样运行检查，再做窗口与界面；规则接口见 docs/核心接口.md。
-4. 在 Windows 导出并试玩，提供包含全部运行文件的 ZIP，不只发一个依赖外部 PCK 的 EXE。
-
-详细设计取舍见 docs/试玩反馈与技术决定.md。当前网页存档格式为2，本包为3，暂不支持跨版本导入；不要将浏览器存档改名冒充桌面存档。
-
-## 目录
-
-```text
-core/balance.gd       集中数值与地点配置
-core/kingdom.gd       无窗口依赖的经营规则
-core/save_store.gd    本地文件存档桥接
-ui/main.tscn          主场景
-ui/main.gd            最小演示界面；DSH 的主要工作区
-tests/               规则和信号接线检查
-docs/                分工、接口与设计记录
-```
-
-本包代码为本项目编写，未附第三方美术或音乐。Godot 引擎本身使用 MIT 许可；发行前在关于/许可证页面保留其要求的许可说明。
+当前是手动按月推进的原型；成熟粮食需要点击收取。
+启动后可点击“读取”恢复手动存档，不补算离线时间。
