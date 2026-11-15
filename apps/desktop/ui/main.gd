@@ -60,6 +60,9 @@ var skill_panel: PanelContainer
 var skill_content: VBoxContainer
 var skill_headers: Dictionary = {}
 var skill_rows: Dictionary = {}
+var overlay_panel: PanelContainer
+var overlay_title: Label
+var overlay_content: VBoxContainer
 var detail_upgrade_button: Button
 var pin_check: CheckButton
 var street_toggle_button: Button
@@ -104,6 +107,7 @@ func _ready() -> void:
 	_build_detail()
 	_build_skill_panel()
 	_build_close_dialog()
+	_build_overlay()
 	resized.connect(_layout_panels)
 	_apply_window_config()
 	_refresh()
@@ -184,11 +188,14 @@ func _build_street() -> void:
 	street_row = HBoxContainer.new()
 	street_row.add_theme_constant_override("separation", 8)
 	street_root.add_child(street_row)
-	var actions := HBoxContainer.new()
+	var actions := HFlowContainer.new()
 	street_root.add_child(actions)
 	street_next_button = _button(actions, "推进一个月", func(): _act("advance_month"))
 	_button(actions, "农田详情", func(): _open_detail("farm"))
 	_button(actions, "研究", func(): _open_skills())
+	_button(actions, "人才", func(): _open_overlay("人才与委任（未接入任务3）", _fill_talents))
+	_button(actions, "手记", func(): _open_overlay("宰相手记 · 向导", _fill_history))
+	_button(actions, "设置", func(): _open_overlay("设置", _fill_settings))
 	_button(actions, "保存", func(): _show_save_result(saves.save_game(game)))
 	_button(actions, "读取", func(): _show_save_result(saves.load_game(game)))
 	street_toggle_button = _button(actions, "展开管理", func(): _toggle_street())
@@ -310,6 +317,11 @@ func _render_skills(v: Dictionary = {}) -> void:
 
 func _create_skill_rows(trees: Dictionary) -> void:
 	# 固定目录只建一次；资源变化更新文字/状态，保留滚动位置和控件身份。
+	var note := Label.new()
+	note.text = "两棵新建筑树（商栈 / 前哨营地）与 24 节点扩展待任务3内容模块接入；当前显示原三树。"
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	note.add_theme_font_size_override("font_size", 12)
+	skill_content.add_child(note)
 	for tree_id in ["farm", "housing", "forge"]:
 		var tree: Dictionary = trees[tree_id]
 		var header := Label.new()
@@ -427,6 +439,20 @@ func _refresh(s: Dictionary = {}, v: Dictionary = {}) -> void:
 	if skill_panel.visible:
 		_render_skills(v)
 
+func _slot_texture(slot: Dictionary, s: Dictionary, v: Dictionary) -> Texture2D:
+	var sid: String = str(slot.id)
+	var path: String = str(slot.get("texture", ""))
+	if sid == "housing" and int(s.housing_level) >= 2:
+		path = "res://assets/buildings/house_upgraded.png"
+	elif sid == "forge" and int(s.forge) >= 1:
+		path = "res://assets/buildings/forge_upgraded.png"
+	elif sid == "farm" and int(s.agriculture) >= 2:
+		path = "res://assets/buildings/farm_upgraded.png"
+	if path.is_empty() or not ResourceLoader.exists(path):
+		return null
+	var res = load(path)
+	return res if res is Texture2D else null
+
 func _refresh_street(s: Dictionary, v: Dictionary) -> void:
 	street_events.visible = not s.pending.is_empty() and not s.ended
 	street_accept_button.disabled = accept_button.disabled
@@ -437,6 +463,8 @@ func _refresh_street(s: Dictionary, v: Dictionary) -> void:
 		street_accept_button.tooltip_text = street_events.tooltip_text
 		street_housing_button.visible = v.refugees.beds_missing > 0
 	street_notice.text = _refugee_text(v.refugees) if not v.refugees.is_empty() else _settlement_text(v.settlement)
+	if not s.pending.is_empty():
+		street_notice.text = "事件暂停中（处理后才继续）。" + street_notice.text
 	if not message.text.is_empty():
 		street_notice.text += " " + message.text
 	if s.ended:
@@ -454,11 +482,16 @@ func _refresh_street(s: Dictionary, v: Dictionary) -> void:
 		var slot: Dictionary = slots[i]
 		var button: Button = slot_buttons[i]
 		var sid: String = str(slot.id)
+		var slot_tex := _slot_texture(slot, s, v)
+		button.icon = slot_tex
+		if slot_tex:
+			button.add_theme_constant_override("icon_max_width", 44)
+		var narrow_slots: bool = get_viewport_rect().size.x < 900
 		if sid == "farm":
 			var fv: Dictionary = v.farm
 			var pct := int(int(fv.progress) * 100 / int(fv.full_batch))
 			var action_word: String = "点击收取" if int(fv.ready_food) > 0 else "点击助耕"
-			button.text = "农田\n待收%d/%d批·%d粮\n%s %d%%" % [fv.ready_batches, fv.capacity, fv.ready_food, action_word, pct]
+			button.text = ("农田\n待收%d/%d" % [fv.ready_batches, fv.capacity]) if narrow_slots else ("农田\n待收%d/%d批·%d粮\n%s %d%%" % [fv.ready_batches, fv.capacity, fv.ready_food, action_word, pct])
 			button.tooltip_text = "点击收取%d粮；待收满%d批会暂停生长。" % [fv.ready_food, fv.capacity] if fv.ready_food > 0 else "点击助耕+5%%；本月剩余额度%d%%。" % int(fv.activity_left * 100 / fv.full_batch)
 			if not s.pending.is_empty() and fv.ready_food == 0:
 				button.tooltip_text = "先处理流民事件，生长与助耕已暂停。"
@@ -467,11 +500,11 @@ func _refresh_street(s: Dictionary, v: Dictionary) -> void:
 			if s.ended:
 				button.tooltip_text = "本轮已结束，请读取存档或重新开始。"
 		elif sid == "housing":
-			button.text = "民居\n%d级 容量%d" % [v.housing_level, v.housing_capacity]
+			button.text = ("民居\n%d级" % v.housing_level) if narrow_slots else ("民居\n%d级 容量%d" % [v.housing_level, v.housing_capacity])
 		elif sid == "forge":
-			button.text = "铁匠铺\n%d/3级" % s.forge
+			button.text = ("铁匠\n%d/3" % s.forge) if narrow_slots else ("铁匠铺\n%d/3级" % s.forge)
 		else:
-			button.text = "预留地块\n商栈/前哨营地"
+			button.text = "预留\n商栈/前哨" if narrow_slots else "预留地块\n商栈/前哨营地"
 
 # ---------- 窗口（沿用 004B） ----------
 func _on_pin_toggled(enabled: bool) -> void:
@@ -657,6 +690,92 @@ func _dock_street(win: Window) -> void:
 			pos = Vector2i(usable.position.x + 12, usable.position.y + usable.size.y - h - 8)
 	win.size = Vector2i(w, h)
 	win.position = pos
+
+# ---------- 通用浮层：人才 / 手记 / 设置 ----------
+func _build_overlay() -> void:
+	overlay_panel = PanelContainer.new()
+	overlay_panel.visible = false
+	overlay_panel.set_anchors_preset(Control.PRESET_CENTER)
+	overlay_panel.custom_minimum_size = Vector2(700, 430)
+	add_child(overlay_panel)
+	var col := VBoxContainer.new()
+	overlay_panel.add_child(col)
+	var bar := HBoxContainer.new()
+	col.add_child(bar)
+	_button(bar, "关闭", func(): overlay_panel.visible = false)
+	overlay_title = Label.new()
+	overlay_title.add_theme_font_size_override("font_size", 16)
+	bar.add_child(overlay_title)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(660, 370)
+	col.add_child(scroll)
+	overlay_content = VBoxContainer.new()
+	scroll.add_child(overlay_content)
+
+func _open_overlay(title: String, build: Callable) -> void:
+	overlay_title.text = title
+	for child in overlay_content.get_children():
+		child.queue_free()
+	build.call(overlay_content)
+	overlay_panel.visible = true
+
+func _hint(text: String) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.custom_minimum_size = Vector2(600, 0)
+	label.add_theme_font_size_override("font_size", 13)
+	return label
+
+func _fill_talents(parent: VBoxContainer) -> void:
+	parent.add_child(_hint("人才面板是任务1的 UI 外壳。职业/性格/寿命由任务3人才模块提供，生命状态由任务2维护；当前显示占位，不虚构属性。"))
+	for entry in [["农务官", "农务 · 勤劳 / 谨慎 / 保守", "委任后每游戏月自动收粮；死亡或离任立即停止。"],
+			["将军", "军事 · 谨慎 / 勇猛 / 贪利 / 尽责", "只重复已通关区域；首次挑战由玩家决定。"],
+			["精灵宰相", "向导 · 固定随行", "长寿豁免，不进入普通人才死亡流程，提供叙事与提示。"]]:
+		var card := PanelContainer.new()
+		var vb := VBoxContainer.new()
+		card.add_child(vb)
+		var name_label := Label.new()
+		name_label.text = entry[0] + "（未接入任务3）"
+		name_label.add_theme_font_size_override("font_size", 15)
+		vb.add_child(name_label)
+		vb.add_child(_hint(entry[1]))
+		vb.add_child(_hint(entry[2]))
+		parent.add_child(card)
+
+func _fill_history(parent: VBoxContainer) -> void:
+	parent.add_child(_hint("本地最小版手记/向导；任务4接入后替换为数据驱动向导与史书组件。"))
+	var s: Dictionary = game.snapshot()
+	var v: Dictionary = game.view()
+	parent.add_child(_hint("当前：%s，人口 %d，粮仓 %d，待收 %d。" % [v.date, s.population, s.food, v.farm.ready_food]))
+	for entry in s.journal:
+		parent.add_child(_hint("成就 · " + str(entry.text)))
+	parent.add_child(_hint("新手指引（本地版）："))
+	for tip in ["点击农田：有成熟先收，否则助耕（每月上限 20%）。", "推进一个月会结算口粮与战斗；事件暂停时先处理事件。", "研究入口独立，不消耗农田点击。", "保存/读取使用格式5；关闭前可选择保存。"]:
+		parent.add_child(_hint("· " + tip))
+
+func _fill_settings(parent: VBoxContainer) -> void:
+	parent.add_child(_hint("设置外壳；音量与减少动画尚未接入音频/动画系统，字号立即可用。"))
+	var volume := HSlider.new()
+	volume.min_value = 0
+	volume.max_value = 100
+	volume.value = 70
+	volume.custom_minimum_size = Vector2(320, 0)
+	parent.add_child(_hint("音量（未接入音频）："))
+	parent.add_child(volume)
+	var reduce := CheckBox.new()
+	reduce.text = "减少动画（未接入动画）"
+	parent.add_child(reduce)
+	parent.add_child(_hint("字号："))
+	var size_pick := OptionButton.new()
+	for item in ["100%", "115%", "130%"]:
+		size_pick.add_item(item)
+	size_pick.item_selected.connect(func(index: int): _apply_font_scale([1.0, 1.15, 1.3][index]))
+	parent.add_child(size_pick)
+
+func _apply_font_scale(value: float) -> void:
+	if theme:
+		theme.default_font_size = int(round(15 * value))
 
 func _build_close_dialog() -> void:
 	close_dialog = ConfirmationDialog.new()
