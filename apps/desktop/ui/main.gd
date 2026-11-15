@@ -41,6 +41,7 @@ var displayed_event_id: String = ""
 var normal_root: VBoxContainer
 var street_root: VBoxContainer
 var info_label: Label
+var info_secondary: Label
 var street_notice: Label
 var street_next_button: Button
 var harvest_button: Button
@@ -178,6 +179,8 @@ func _load_slots() -> void:
 func _build_street() -> void:
 	info_label = _label(street_root)
 	info_label.add_theme_font_size_override("font_size", 14)
+	info_secondary = _label(street_root)
+	info_secondary.add_theme_font_size_override("font_size", 12)
 	street_row = HBoxContainer.new()
 	street_row.add_theme_constant_override("separation", 8)
 	street_root.add_child(street_row)
@@ -201,6 +204,7 @@ func _build_street() -> void:
 		var button := Button.new()
 		button.custom_minimum_size = Vector2(0, 84)
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.clip_text = true
 		button.pressed.connect(_on_slot_pressed.bind(str(slot.id)))
 		street_row.add_child(button)
 		slot_buttons.append(button)
@@ -218,7 +222,7 @@ func _on_slot_pressed(slot_id: String) -> void:
 	if slot_id == "housing" or slot_id == "forge":
 		_open_detail(slot_id)
 		return
-	message.text = "预留地块暂时没有生产或升级。"
+	message.text = "预留地块（未来：商栈 / 前哨营地）暂时不能建造。"
 	_refresh()
 
 # ---------- 建筑详情 ----------
@@ -440,11 +444,12 @@ func _refresh_street(s: Dictionary, v: Dictionary) -> void:
 	elif v.food_shortfall > 0:
 		street_notice.text = "口粮警报：粮仓还差%d粮，田里待收%d粮。%s" % [v.food_shortfall, v.farm.ready_food, street_notice.text]
 	street_notice.add_theme_color_override("font_color", Color("9e3228") if s.ended or v.food_shortfall > 0 else Color("263b31"))
-	info_label.text = "%s   人口 %d/%d   粮仓 %d   待收 %d   木材 %d   矿石 %d   每批产粮 %d   需求 %d   木材/月 %d" % [v.date, s.population, v.housing_capacity, s.food, v.farm.ready_food, s.wood, s.ore, v.batch_food, v.food_demand, v.wood_production]
-	if not s.pending.is_empty():
-		info_label.text += "   ⚠ 流民待决定"
+	var time_word: String = "已暂停" if (not s.pending.is_empty() or s.ended) else "手动推进"
+	info_label.text = "%s ｜ 人口 %d/%d ｜ 粮仓 %d ｜ 待收 %d ｜ %s" % [v.date, s.population, v.housing_capacity, s.food, v.farm.ready_food, time_word]
 	if not s.expedition.is_empty():
-		info_label.text += "   ⚔ 远征在外"
+		info_label.text += " ｜ ⚔ 远征在外"
+	info_secondary.text = "木材 %d ｜ 矿石 %d ｜ 每批产粮 %d ｜ 需求 %d ｜ 木材/月 %d ｜ 下月口粮 %d" % [s.wood, s.ore, v.batch_food, v.food_demand, v.wood_production, int(s.population)]
+	info_secondary.visible = get_viewport_rect().size.x >= 900
 	for i in range(slot_buttons.size()):
 		var slot: Dictionary = slots[i]
 		var button: Button = slot_buttons[i]
@@ -452,7 +457,8 @@ func _refresh_street(s: Dictionary, v: Dictionary) -> void:
 		if sid == "farm":
 			var fv: Dictionary = v.farm
 			var pct := int(int(fv.progress) * 100 / int(fv.full_batch))
-			button.text = "农田\n待收%d/%d批·%d粮\n生长%d%%" % [fv.ready_batches, fv.capacity, fv.ready_food, pct]
+			var action_word: String = "点击收取" if int(fv.ready_food) > 0 else "点击助耕"
+			button.text = "农田\n待收%d/%d批·%d粮\n%s %d%%" % [fv.ready_batches, fv.capacity, fv.ready_food, action_word, pct]
 			button.tooltip_text = "点击收取%d粮；待收满%d批会暂停生长。" % [fv.ready_food, fv.capacity] if fv.ready_food > 0 else "点击助耕+5%%；本月剩余额度%d%%。" % int(fv.activity_left * 100 / fv.full_batch)
 			if not s.pending.is_empty() and fv.ready_food == 0:
 				button.tooltip_text = "先处理流民事件，生长与助耕已暂停。"
@@ -465,7 +471,7 @@ func _refresh_street(s: Dictionary, v: Dictionary) -> void:
 		elif sid == "forge":
 			button.text = "铁匠铺\n%d/3级" % s.forge
 		else:
-			button.text = str(slot.label) + "\n（预留）"
+			button.text = "预留地块\n商栈/前哨营地"
 
 # ---------- 窗口（沿用 004B） ----------
 func _on_pin_toggled(enabled: bool) -> void:
