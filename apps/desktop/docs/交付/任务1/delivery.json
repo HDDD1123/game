@@ -1,0 +1,27 @@
+{
+  "task_id": "task1",
+  "stage_points": 12,
+  "task_revision": "R2",
+  "base_commit": "631df2c",
+  "source_commit": "de75ce6",
+  "completed_packages": ["T1-01", "T1-02"],
+  "ready_for_integration": false,
+  "tests": {
+    "test_core": "42 checks, 0 failures",
+    "test_ui": "8 checks, 0 failures",
+    "test_building_modules": "59 checks, 0 failures",
+    "test_v04_regressions": "63 checks, 0 failures",
+    "verify_004b": "17 checks, 0 failures",
+    "verify_005": "27 checks, 0 failures",
+    "test_decision_preview": "23 checks, 0 failures",
+    "test_street_workflow": "24 checks, 0 failures",
+    "task1_layout": "15 checks, 0 failures (720/960/2536 宽)"
+  },
+  "known_gaps": [
+    "T1-03 至 T1-12 未开始（通用建筑组件、三建筑美术、技能树扩展、人才、事件、远征、向导、键盘、真实操作、三阶段整合）",
+    "真实鼠标操作与视频录制未做；仅程序化/信号验证 + 窗口截图",
+    "125% 缩放与副屏/断开副屏未测（本机 150%、单屏）",
+    "候选建筑/单位/技能尚未接入正式存档，仅纸面与原型"
+  ],
+  "screenshots": ["layout_720.png", "layout_960.png", "layout_full.png"]
+}
