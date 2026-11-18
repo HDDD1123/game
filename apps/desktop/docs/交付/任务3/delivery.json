@@ -1,0 +1,99 @@
+{
+  "task_id": "task3",
+  "task_revision": "R2",
+  "stage_points": 24,
+  "branch": "dsh/task3-balance-v05",
+  "head_commit": "0fe8505",
+  "baseline_commit": "43409a0",
+  "patch_file": "task3-stage24.patch",
+  "content_hash": {
+    "tree": "d3fea6f392018066e4233d68933d9b15b769bbc0",
+    "apps_desktop_subtree": "d3297b5caa97af36c7b4a6c78fd675e0445b57fd",
+    "manifest_file": "content-manifest.json",
+    "manifest_sha256": "30678533b19a3a4df050d5e078e666ffe8936cfdb65eae09a1472626f444329f",
+    "manifest_paths": 35,
+    "hash_note": "manifest 每条 sha256 基于行尾归一(LF)后的内容；模拟器源码指纹同样先做 LF 归一，LF/CRLF 检出结果一致"
+  },
+  "ready_for_integration": false,
+  "integration_mode": "needs_patch",
+  "notes": "本机无法 git clone github(443 不通)，仓库为 codeload zip 快照 + 本地 git init，历史与上游不相干：按 patch 应用，不要按提交号对齐。patch 只含任务3 负责的 6 个路径，未改 core/kingdom.gd、core/balance.gd、ui/main.gd。.uid 由 Godot 4.6.3 --import 生成并提交（含 core/ 与 ui/ 既有脚本的 .uid，源码内容未改，且这些 .uid 不在 patch 内）。",
+  "completed_packages": [
+    "T3-01",
+    "T3-02",
+    "T3-03",
+    "T3-04"
+  ],
+  "tests": [
+    {
+      "name": "T3-02 内容目录与校验器",
+      "command": "godot --headless --path apps/desktop --script res://tests/task3/test_content_catalog.gd",
+      "engine": "Godot 4.6.3.stable.official.7d41c59c4",
+      "checks": 38,
+      "failures": 0,
+      "exit_code": 0
+    },
+    {
+      "name": "T3-03 模拟器可重放性",
+      "command": "godot --headless --path apps/desktop --script res://tests/task3/test_simulator_replay.gd",
+      "engine": "Godot 4.6.3.stable.official.7d41c59c4",
+      "checks": 12,
+      "failures": 0,
+      "exit_code": 0
+    },
+    {
+      "name": "T3-04 六组曲线（与提交数据同一批次）",
+      "command": "godot --headless --path apps/desktop --script res://tools/balance_lab/run_curves.gd",
+      "engine": "Godot 4.6.3.stable.official.7d41c59c4",
+      "data_batch": "curves-20261117T184751.csv / .jsonl / summary-20261117T184751.json",
+      "rows": 720,
+      "exit_code": 0,
+      "fingerprint_lf_normalized": "dc4c347e0b66deba6ca3076c7b71d3e45950df4d6c64ade3cd7a3a71567d871f"
+    },
+    {
+      "name": "T3-04 两个单变量候选（隔离工程）",
+      "command": "GODOT_BIN=<Godot 4.6.3 console> bash apps/desktop/tools/balance_lab/run_candidates.sh",
+      "candidates": [
+        {
+          "id": "cand_a_food_per_level",
+          "change": "FOOD_PER_FARM_LEVEL 6 -> 7",
+          "data_batch": "cand_a_food_per_level/curves-20261117T184806.csv",
+          "fingerprint": "74083134f46019dc47fdebe1c11341e3a8c054a163b3842ada0260455ce709f4"
+        },
+        {
+          "id": "cand_b_drought_factor",
+          "change": "DROUGHT_FACTOR 0.6 -> 0.7",
+          "data_batch": "cand_b_drought_factor/curves-20261117T184808.csv",
+          "fingerprint": "b9d1045bb4ddaccbb4ee7dc6ad13bcab5e2e9d8c96746320610fb55ed71e14e4"
+        }
+      ],
+      "exit_code": 0
+    }
+  ],
+  "deliverables": [
+    "apps/desktop/data/content/catalog.json",
+    "apps/desktop/core/content/content_catalog.gd",
+    "apps/desktop/core/content/content_rules.gd",
+    "apps/desktop/tests/task3/test_content_catalog.gd",
+    "apps/desktop/tests/task3/test_simulator_replay.gd",
+    "apps/desktop/tools/balance_lab/simulator.gd",
+    "apps/desktop/tools/balance_lab/run_curves.gd",
+    "apps/desktop/tools/balance_lab/run_candidates.sh",
+    "apps/desktop/tools/balance_lab/run_candidates.ps1",
+    "apps/desktop/experiments/task3/curves-20261117T184751.csv",
+    "apps/desktop/experiments/task3/candidates/",
+    "apps/desktop/docs/交付/任务3/README.md",
+    "apps/desktop/docs/交付/任务3/创意候选.md",
+    "apps/desktop/docs/交付/任务3/数据报告.md"
+  ],
+  "known_gaps": [
+    "商栈/前哨营地已有数据与计划接口，但 wired_to_kingdom=false：核心尚未实现 construct_building / trade_resources（任务2 负责），因此不可玩",
+    "曲线里的『城镇贸易』暂用『城镇扩张』近似",
+    "未做真实 UI 操作与人工实玩，结论全部来自 headless 模拟",
+    "未验证人才死亡、据点失守、事件并发、技能叠加（属 48/72 点阶段）",
+    "单变量候选只跑两组，无多变量组合与敏感度分析",
+    "本机无 GitHub 凭据（B 类协作者），交付走 ZIP + patch；task3.bundle 仅作历史参考，历史不相干不能直接 merge"
+  ],
+  "base_commit": "631df2c",
+  "source_commit": "0fe8505",
+  "source_commit_note": "0fe8505 是本地孤儿历史中的提交；上游无对应提交，整合按 patch 应用（integration_mode=needs_patch）"
+}

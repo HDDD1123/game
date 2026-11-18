@@ -1,0 +1,342 @@
+{
+  "fingerprint": "74083134f46019dc47fdebe1c11341e3a8c054a163b3842ada0260455ce709f4",
+  "generated": "20261117T184806",
+  "runs": [
+    {
+      "ended": false,
+      "final": {
+        "deaths": {
+          "battle": 0,
+          "starvation": 90
+        },
+        "food": 600,
+        "months": 120,
+        "ore": 0,
+        "population": 147,
+        "progress": {
+          "mine": 0,
+          "ruins": 0
+        },
+        "wood": 429
+      },
+      "harvest": "monthly",
+      "m12": {
+        "agriculture": 3,
+        "food": 15,
+        "forge": 0,
+        "population": 21,
+        "wood": 56
+      },
+      "m120": {
+        "agriculture": 24,
+        "food": 600,
+        "forge": 0,
+        "population": 147,
+        "wood": 429
+      },
+      "m24": {
+        "agriculture": 5,
+        "food": 51,
+        "forge": 0,
+        "population": 37,
+        "wood": 98
+      },
+      "m36": {
+        "agriculture": 8,
+        "food": 1,
+        "forge": 0,
+        "population": 61,
+        "wood": 67
+      },
+      "m6": {
+        "agriculture": 2,
+        "food": 6,
+        "forge": 0,
+        "population": 20,
+        "wood": 36
+      },
+      "months_run": 120,
+      "route": "steady_farm"
+    },
+    {
+      "ended": false,
+      "final": {
+        "deaths": {
+          "battle": 0,
+          "starvation": 115
+        },
+        "food": 648,
+        "months": 120,
+        "ore": 0,
+        "population": 130,
+        "progress": {
+          "mine": 0,
+          "ruins": 0
+        },
+        "wood": 175
+      },
+      "harvest": "quarterly",
+      "m12": {
+        "agriculture": 3,
+        "food": 52,
+        "forge": 0,
+        "population": 15,
+        "wood": 61
+      },
+      "m120": {
+        "agriculture": 24,
+        "food": 648,
+        "forge": 0,
+        "population": 130,
+        "wood": 175
+      },
+      "m24": {
+        "agriculture": 5,
+        "food": 155,
+        "forge": 0,
+        "population": 31,
+        "wood": 61
+      },
+      "m36": {
+        "agriculture": 7,
+        "food": 148,
+        "forge": 0,
+        "population": 55,
+        "wood": 112
+      },
+      "m6": {
+        "agriculture": 2,
+        "food": 33,
+        "forge": 0,
+        "population": 17,
+        "wood": 32
+      },
+      "months_run": 120,
+      "route": "steady_farm"
+    },
+    {
+      "ended": false,
+      "final": {
+        "deaths": {
+          "battle": 0,
+          "starvation": 89
+        },
+        "food": 450,
+        "months": 120,
+        "ore": 0,
+        "population": 148,
+        "progress": {
+          "mine": 0,
+          "ruins": 0
+        },
+        "wood": 207
+      },
+      "harvest": "monthly",
+      "m12": {
+        "agriculture": 3,
+        "food": 16,
+        "forge": 0,
+        "population": 17,
+        "wood": 50
+      },
+      "m120": {
+        "agriculture": 24,
+        "food": 450,
+        "forge": 0,
+        "population": 148,
+        "wood": 207
+      },
+      "m24": {
+        "agriculture": 4,
+        "food": 48,
+        "forge": 0,
+        "population": 33,
+        "wood": 122
+      },
+      "m36": {
+        "agriculture": 7,
+        "food": 2,
+        "forge": 0,
+        "population": 56,
+        "wood": 127
+      },
+      "m6": {
+        "agriculture": 1,
+        "food": 0,
+        "forge": 0,
+        "population": 16,
+        "wood": 54
+      },
+      "months_run": 120,
+      "route": "town_growth"
+    },
+    {
+      "ended": false,
+      "final": {
+        "deaths": {
+          "battle": 0,
+          "starvation": 86
+        },
+        "food": 286,
+        "months": 120,
+        "ore": 0,
+        "population": 159,
+        "progress": {
+          "mine": 0,
+          "ruins": 0
+        },
+        "wood": 588
+      },
+      "harvest": "quarterly",
+      "m12": {
+        "agriculture": 3,
+        "food": 41,
+        "forge": 0,
+        "population": 15,
+        "wood": 46
+      },
+      "m120": {
+        "agriculture": 23,
+        "food": 286,
+        "forge": 0,
+        "population": 159,
+        "wood": 588
+      },
+      "m24": {
+        "agriculture": 4,
+        "food": 97,
+        "forge": 0,
+        "population": 31,
+        "wood": 118
+      },
+      "m36": {
+        "agriculture": 7,
+        "food": 86,
+        "forge": 0,
+        "population": 43,
+        "wood": 101
+      },
+      "m6": {
+        "agriculture": 1,
+        "food": 19,
+        "forge": 0,
+        "population": 17,
+        "wood": 50
+      },
+      "months_run": 120,
+      "route": "town_growth"
+    },
+    {
+      "ended": false,
+      "final": {
+        "deaths": {
+          "battle": 3,
+          "starvation": 229
+        },
+        "food": 23,
+        "months": 120,
+        "ore": 161,
+        "population": 13,
+        "progress": {
+          "mine": 0,
+          "ruins": 2
+        },
+        "wood": 15
+      },
+      "harvest": "monthly",
+      "m12": {
+        "agriculture": 2,
+        "food": 8,
+        "forge": 1,
+        "population": 11,
+        "wood": 13
+      },
+      "m120": {
+        "agriculture": 2,
+        "food": 23,
+        "forge": 1,
+        "population": 13,
+        "wood": 15
+      },
+      "m24": {
+        "agriculture": 2,
+        "food": 5,
+        "forge": 1,
+        "population": 12,
+        "wood": 14
+      },
+      "m36": {
+        "agriculture": 2,
+        "food": 22,
+        "forge": 1,
+        "population": 13,
+        "wood": 14
+      },
+      "m6": {
+        "agriculture": 1,
+        "food": 0,
+        "forge": 0,
+        "population": 24,
+        "wood": 26
+      },
+      "months_run": 120,
+      "route": "adventure_mine"
+    },
+    {
+      "ended": false,
+      "final": {
+        "deaths": {
+          "battle": 3,
+          "starvation": 232
+        },
+        "food": 17,
+        "months": 120,
+        "ore": 161,
+        "population": 10,
+        "progress": {
+          "mine": 0,
+          "ruins": 2
+        },
+        "wood": 19
+      },
+      "harvest": "quarterly",
+      "m12": {
+        "agriculture": 1,
+        "food": 19,
+        "forge": 1,
+        "population": 9,
+        "wood": 17
+      },
+      "m120": {
+        "agriculture": 1,
+        "food": 17,
+        "forge": 1,
+        "population": 10,
+        "wood": 19
+      },
+      "m24": {
+        "agriculture": 1,
+        "food": 13,
+        "forge": 1,
+        "population": 12,
+        "wood": 6
+      },
+      "m36": {
+        "agriculture": 1,
+        "food": 17,
+        "forge": 1,
+        "population": 10,
+        "wood": 15
+      },
+      "m6": {
+        "agriculture": 1,
+        "food": 15,
+        "forge": 0,
+        "population": 21,
+        "wood": 19
+      },
+      "months_run": 120,
+      "route": "adventure_mine"
+    }
+  ]
+}
