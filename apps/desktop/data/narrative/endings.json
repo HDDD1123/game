@@ -1,0 +1,288 @@
+{
+  "schema_version": 1,
+  "document": "ending_templates",
+  "description": "短结局模板素材。每个结局由 requires 中的事实/计数证据触发；paragraphs 每段只提供同义 variants，随机只在这些 variants 之间选择，不能改写事实或结局判定。",
+  "selection_rule": "先排除 preview_only 条目，再收集 requires 全部满足的结局；多个满足时取 priority 数值最小者。没有任何条目满足时使用当前上下文的 neutral_fallback，并标注证据不足。",
+  "tone_values": ["neutral", "somber", "hopeful", "martial", "reflective"],
+  "endings": [
+    {
+      "id": "ending_no_expedition",
+      "category": "no_expedition",
+      "priority": 70,
+      "tone": "reflective",
+      "title": "未曾远行",
+      "preview_only": false,
+      "requires": [
+        {"kind": "counter", "counter": "expedition_count", "op": "==", "value": 0},
+        {"kind": "counter", "counter": "months_played", "op": ">=", "value": 1}
+      ],
+      "paragraphs": [
+        {
+          "id": "p1",
+          "variants": [
+            "一个又一个月过去，边境始终安静，王国的名字没有被写进远方的战场。",
+            "王国的军队守在驻地，边境线上没有出现过远征的旗帜。",
+            "没有队伍越过边境，远方的地图上仍是一整片空白。"
+          ]
+        },
+        {
+          "id": "p2",
+          "variants": [
+            "粮仓与城墙记录着另一种经营：修屋、收粮、招募，按月份排好。",
+            "史书留下的是修屋、收粮和招募的记录，边境一章始终只有空白页。",
+            "这些年没有战报，只有农事与营造的注脚，安静地留在册页里。"
+          ]
+        }
+      ],
+      "neutral_fallback": "手记记录了王国的日常经营；关于远征的部分没有可引用的记录，因此不作判断。"
+    },
+    {
+      "id": "ending_repeated_failure",
+      "category": "repeated_expedition_failure",
+      "priority": 60,
+      "tone": "somber",
+      "title": "屡次折返",
+      "preview_only": false,
+      "requires": [
+        {"kind": "counter", "counter": "expedition_failure_count", "op": ">=", "value": 2},
+        {"kind": "fact", "fact_type": "expedition_failed", "min_count": 2}
+      ],
+      "paragraphs": [
+        {
+          "id": "p1",
+          "variants": [
+            "远征的旗帜几次升起，又几次在同一片边境折返。",
+            "队伍不止一次出发，也不止一次带着残部回到城门。",
+            "通往远方的路被走过好几回，每次都停在半途或退回国境。"
+          ]
+        },
+        {
+          "id": "p2",
+          "variants": [
+            "史书只记下日期、目的地与损失，没有替任何人评价这些决定。",
+            "册页里留下的是出发与归来的月份，以及一批批被划去的名字。",
+            "失败被如实记下，原因写作撤退、补给或战斗，没有额外的评语。"
+          ]
+        }
+      ],
+      "neutral_fallback": "册页记录了若干次远征，但样本不足以确认失败次数；手记不把它写成定论。"
+    },
+    {
+      "id": "ending_starvation",
+      "category": "starvation",
+      "priority": 20,
+      "tone": "somber",
+      "title": "饥馑之月",
+      "preview_only": false,
+      "requires": [
+        {"kind": "counter", "counter": "starvation_month_count", "op": ">=", "value": 1},
+        {"kind": "fact", "fact_type": "starvation", "min_count": 1},
+        {"kind": "fact_field", "fact_type": "ending", "field": "reason", "equals": "starvation", "min_count": 1}
+      ],
+      "paragraphs": [
+        {
+          "id": "p1",
+          "variants": [
+            "粮仓见底的那个月，城里的炊烟比往常稀薄。",
+            "口粮不足的月份被单独标出，配给簿上出现了空白。",
+            "收成没能跟上消耗，饥饿从粮仓门口走进了街巷。"
+          ]
+        },
+        {
+          "id": "p2",
+          "variants": [
+            "史书按月份记下死亡人数与缺口，不评价谁该负责。",
+            "册页记录的是缺口、死亡与之后几个月的恢复，没有责备的句子。",
+            "饥饿的月份被如实写下，原因写作粮仓不足与收成不继。"
+          ]
+        }
+      ],
+      "neutral_fallback": "记录中有收成与消耗的数字，但没有足以确认饥饿结局的证据，手记不作归因。"
+    },
+    {
+      "id": "ending_defeat",
+      "category": "defeat",
+      "priority": 30,
+      "tone": "martial",
+      "title": "战败",
+      "preview_only": false,
+      "requires": [
+        {"kind": "counter", "counter": "battle_loss_count", "op": ">=", "value": 1},
+        {"kind": "fact_field", "fact_type": "ending", "field": "reason", "equals": "defeat", "min_count": 1}
+      ],
+      "paragraphs": [
+        {
+          "id": "p1",
+          "variants": [
+            "城墙上的旗帜换了一次颜色，战报用了很短的句子。",
+            "最后一场战斗在城门外结束，队伍没能回到原来的驻地。",
+            "防线在某个清晨被突破，剩下的部队退向城内的最后一道门。"
+          ]
+        },
+        {
+          "id": "p2",
+          "variants": [
+            "史书留下日期、战场与伤亡，不替任何人认领这场失败。",
+            "册页把战败写成一条事实：时间、地点、损失，以及之后的安排。",
+            "失败被记录，原因归于兵力与补给，没有多余的判断。"
+          ]
+        }
+      ],
+      "neutral_fallback": "手记里有战斗损失的数字，但没有结束原因的记录，无法确认战败是否为最后结局。"
+    },
+    {
+      "id": "ending_kingdom_fallen",
+      "category": "kingdom_fallen",
+      "priority": 10,
+      "tone": "somber",
+      "title": "亡国",
+      "preview_only": false,
+      "requires": [
+        {"kind": "counter", "counter": "total_casualties", "op": ">=", "value": 1},
+        {"kind": "fact_field", "fact_type": "ending", "field": "reason", "equals": "kingdom_fallen", "min_count": 1}
+      ],
+      "paragraphs": [
+        {
+          "id": "p1",
+          "variants": [
+            "城门最后一次关闭之后，王国没有再迎来新的月份。",
+            "最后一条记录停在城破的那天，之后的册页保持空白。",
+            "旗帜落下，人口与驻军的名字停在了同一页。"
+          ]
+        },
+        {
+          "id": "p2",
+          "variants": [
+            "史书按事实收束：失守的据点、伤亡的人数、结束的月份。",
+            "册页记下王国的终点，并保留此前的建设与远征记录。",
+            "结尾没有评语，只有日期、损失与最后一条命令。"
+          ]
+        }
+      ],
+      "neutral_fallback": "记录显示王国承受了重大损失，但没有明确的结束事实，手记不把这一页写成亡国。"
+    },
+    {
+      "id": "ending_player_ended",
+      "category": "player_ended",
+      "priority": 40,
+      "tone": "neutral",
+      "title": "主动收笔",
+      "preview_only": false,
+      "requires": [
+        {"kind": "fact_field", "fact_type": "ending", "field": "reason", "equals": "player_ended", "min_count": 1}
+      ],
+      "paragraphs": [
+        {
+          "id": "p1",
+          "variants": [
+            "王国还亮着灯的时候，这一卷手记停在了这里。",
+            "没有等到城墙失守，也没有等到粮仓见底，这一页由玩家亲手合上。",
+            "故事在仍有炊烟的日子里收尾，结束的日期被写在册页末尾。"
+          ]
+        },
+        {
+          "id": "p2",
+          "variants": [
+            "史书把这一笔记为主动结束：此前的建设、远征与损失都保留在原处。",
+            "册页记录的是收笔的月份，以及此前发生过的每一件事，顺序不变。",
+            "这一卷到此为止，前面的事实没有被改写，也没有被加上评语。"
+          ]
+        }
+      ],
+      "neutral_fallback": "手记停在某一页，但没有结束原因的记录，无法确认这是主动收尾还是中途退出。"
+    },
+    {
+      "id": "ending_long_reign",
+      "category": "long_reign",
+      "priority": 50,
+      "tone": "hopeful",
+      "title": "长治之年",
+      "preview_only": false,
+      "requires": [
+        {"kind": "counter", "counter": "months_played", "op": ">=", "value": 12},
+        {"kind": "fact", "fact_type": "milestone_achieved", "min_count": 1}
+      ],
+      "paragraphs": [
+        {
+          "id": "p1",
+          "variants": [
+            "手记翻到很后面，王国的城墙仍然立着，月份一页页增加。",
+            "许多个游戏月过去，粮仓、街道与驻地都留下了连续的记录。",
+            "册页已经厚了，最早的营造和最近的成就隔着许多个月份。"
+          ]
+        },
+        {
+          "id": "p2",
+          "variants": [
+            "史书把这段岁月写成持续：里程碑与日常并列，没有只挑胜利。",
+            "成就被记下，损失也被记下；长卷把两者放在同一本册子里。",
+            "记录延续到里程碑之后，此前的失败与修补仍然是正文的一部分。"
+          ]
+        }
+      ],
+      "neutral_fallback": "手记跨越了若干月份，但缺少里程碑或足够的计数，暂不称这段岁月为长治。"
+    },
+    {
+      "id": "ending_exited_midway",
+      "category": "exited_midway",
+      "priority": 80,
+      "tone": "neutral",
+      "title": "尚未定论",
+      "preview_only": false,
+      "requires": [
+        {"kind": "fact_absent", "fact_type": "ending"}
+      ],
+      "paragraphs": [
+        {
+          "id": "p1",
+          "variants": [
+            "手记在这一页停下，没有结局记录，也没有最后一条命令。",
+            "册页到此中断，后面的部分仍然是空白。",
+            "记录停在某个普通月份，没有写下结束的原因。"
+          ]
+        },
+        {
+          "id": "p2",
+          "variants": [
+            "现有事实不足以判断王国后来如何，史书只保留已经发生的部分。",
+            "没有足够证据说明这是结束还是暂停，手记不替这一页补写结论。",
+            "缺少结束记录与足够的计数，册页把这一页留作待续。"
+          ]
+        }
+      ],
+      "neutral_fallback": "可用证据不足，手记只陈述已经记录的事实，不对王国的结局作判断。"
+    },
+    {
+      "id": "ending_abdication_inheritance",
+      "category": "abdication_inheritance",
+      "priority": 90,
+      "tone": "reflective",
+      "title": "隐退与继承（预览）",
+      "preview_only": true,
+      "note": "本轮未实现主动隐退与跨局继承；本条仅用于 fixture 预览和校验，正式界面不得显示为可用入口，也不得据此改写已确认的继承规则。",
+      "requires": [
+        {"kind": "counter", "counter": "months_played", "op": ">=", "value": 1},
+        {"kind": "fact_absent", "fact_type": "ending"}
+      ],
+      "paragraphs": [
+        {
+          "id": "p1",
+          "variants": [
+            "（预览）如果王国由下一代接手，这一卷会在此处换一个署名。",
+            "（预览）设想中的隐退发生在某个平静月份，册页随后由继承者续写。",
+            "（预览）手记预留了这一页，用于记录交班与新的开始。"
+          ]
+        },
+        {
+          "id": "p2",
+          "variants": [
+            "（预览）这一页只展示版式与措辞，不代表游戏中存在对应的操作。",
+            "（预览）继承相关的边界尚未实现，本段仅作为素材样例保留。",
+            "（预览）正式版本若提供隐退入口，必须另行定义并验证存档字段。"
+          ]
+        }
+      ],
+      "neutral_fallback": "隐退与继承尚未实现，此处只保留中性的占位说明。"
+    }
+  ]
+}

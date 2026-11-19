@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "document": "history_facts_schema",
+  "description": "结构化史书事实（history facts）与持久累计计数的数据契约。事实由任务2在存档 extensions.history 中提供；任务4的叙事生成器只读本契约描述的数据，不写状态，不补充未记录的事实。",
+  "constraints": {
+    "runtime_ai_dependency": "forbidden",
+    "network_dependency": "forbidden",
+    "fact_source": "task2_save_extensions_history",
+    "randomness": "只允许在结局/手记文案的同义 variants 之间选择，不得改变事实、计数或结局判定",
+    "tone": "没有证据时使用中性叙述，不做责备式归因"
+  },
+  "common_rules": {
+    "fact_record": "每条事实是一个对象，type 为判别字段，取值必须是 fact_types 的键；fact_id 来自任务2的持久计数，跨月份稳定。",
+    "game_month": "从0开始的游戏月序号；0表示第一个游戏月。事实的 game_month 不得大于等于 months_played。",
+    "field_types": ["int", "string", "bool", "enum"],
+    "unknown_fields": "事实中出现 required_fields/optional_fields 之外的字段视为契约不符，不得静默忽略。",
+    "log_window_size": 40,
+    "log_truncation_rule": "明细日志最多保留40条；'从未发生/没有发生'一类结论只能由持久计数证明。例如 no_expedition 只能由 expedition_count == 0 证明，不能由最近40条日志里没有 expedition 记录证明。",
+    "counters_rule": "计数与事实在同一事务内更新；计数不得从渲染次数、日志条数或真实时钟推导。",
+    "narrative_read_only": "叙事生成器输入 facts 与 summary(counters)，输出条目与结局文案；不得据此改写存档，也不得调用外部服务补全缺失事实。"
+  },
+  "fact_types": {
+    "expedition_departed": {
+      "id": "expedition_departed",
+      "summary": "一支远征队离开王国，前往某个目的地。",
+      "required_fields": {
+        "fact_id": {"type": "string", "description": "持久计数生成的稳定事实ID"},
+        "game_month": {"type": "int", "min": 0},
+        "destination_id": {"type": "string", "description": "目的地稳定ID，来自任务3目录"},
+        "troops": {"type": "int", "min": 0, "description": "出发时的兵力"}
+      },
+      "optional_fields": {
+        "general_id": {"type": "string"},
+        "route_id": {"type": "string"},
+        "supply_food": {"type": "int", "min": 0}
+      },
+      "evidence_of": [
+        {"conclusion": "expedition_happened", "note": "证明至少有一次远征出发，并使 expedition_count 增加1"},
+        {"conclusion": "no_expedition", "note": "本类型不能证明'从未出兵'；该结论只能读取 expedition_count == 0"}
+      ]
+    },
+    "expedition_returned": {
+      "id": "expedition_returned",
+      "summary": "远征队返回王国，可能带有战利品，也可能只是残部。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "destination_id": {"type": "string"},
+        "survivors": {"type": "int", "min": 0}
+      },
+      "optional_fields": {
+        "troops_sent": {"type": "int", "min": 0},
+        "loot_food": {"type": "int", "min": 0},
+        "loot_wood": {"type": "int", "min": 0}
+      },
+      "evidence_of": [
+        {"conclusion": "expedition_resolved", "note": "证明该次远征已结算并有人员返回"},
+        {"conclusion": "expedition_success", "note": "返回本身不等于胜利；成功需要 expedition_success_count 或明确的结果字段，不能只凭本类型断言"}
+      ]
+    },
+    "expedition_failed": {
+      "id": "expedition_failed",
+      "summary": "一次远征以战斗失败、撤退或补给耗尽告终。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "destination_id": {"type": "string"},
+        "cause": {"type": "enum", "values": ["defeat", "retreat", "supply", "unknown"]},
+        "losses": {"type": "int", "min": 0, "description": "本次损失人数，可为0"}
+      },
+      "optional_fields": {
+        "survivors": {"type": "int", "min": 0},
+        "general_id": {"type": "string"}
+      },
+      "evidence_of": [
+        {"conclusion": "expedition_failure_happened", "note": "证明一次远征失败，并使 expedition_failure_count 增加1"},
+        {"conclusion": "repeated_expedition_failure", "note": "需要 expedition_failure_count >= 2 或本类型事实至少2条；单条只证明一次失败"}
+      ]
+    },
+    "casualty": {
+      "id": "casualty",
+      "summary": "一次带原因的人口/部队/人才损失。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "amount": {"type": "int", "min": 1},
+        "cause": {"type": "enum", "values": ["starvation", "battle", "expedition", "event", "unknown"]},
+        "subject": {"type": "enum", "values": ["population", "troops", "talent"]}
+      },
+      "optional_fields": {
+        "talent_id": {"type": "string"},
+        "related_fact_id": {"type": "string"}
+      },
+      "evidence_of": [
+        {"conclusion": "loss_happened", "note": "证明一次损失及原因，并使 total_casualties 增加 amount"},
+        {"conclusion": "specific_talent_death", "note": "subject == talent 且带 talent_id 时，才可引用到具体人才"}
+      ]
+    },
+    "construction_completed": {
+      "id": "construction_completed",
+      "summary": "一座建筑完成建造。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "building_id": {"type": "string"}
+      },
+      "optional_fields": {
+        "cost_wood": {"type": "int", "min": 0},
+        "slot_index": {"type": "int", "min": 0}
+      },
+      "evidence_of": [
+        {"conclusion": "building_completed", "note": "证明该建筑已建成，并使 buildings_completed 增加1"},
+        {"conclusion": "construction_happened", "note": "不能据此推断其他未列出的建筑存在"}
+      ]
+    },
+    "talent_recruited": {
+      "id": "talent_recruited",
+      "summary": "一名人才加入王国。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "talent_id": {"type": "string"},
+        "role": {"type": "enum", "values": ["civil", "military", "agri", "unknown"], "description": "叙述分组，不是完整职业表；具体职业由任务3目录给出"}
+      },
+      "optional_fields": {
+        "profession_id": {"type": "string"},
+        "display_key": {"type": "string"}
+      },
+      "evidence_of": [
+        {"conclusion": "talent_joined", "note": "证明该人才已加入，并使 talents_recruited 增加1"},
+        {"conclusion": "talent_alive", "note": "招募事实不能证明该人才后来仍存活；存活需 absence of talent_died 且以 talents_lost 计数辅助，不能只凭最近日志"}
+      ]
+    },
+    "talent_died": {
+      "id": "talent_died",
+      "summary": "一名已加入王国的人才死亡。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "talent_id": {"type": "string"},
+        "cause": {"type": "enum", "values": ["battle", "expedition", "starvation", "age", "event", "unknown"]}
+      },
+      "optional_fields": {
+        "role": {"type": "enum", "values": ["civil", "military", "agri", "unknown"]}
+      },
+      "evidence_of": [
+        {"conclusion": "talent_lost", "note": "证明该人才已死亡，并使 talents_lost 增加1"},
+        {"conclusion": "talent_death_cause", "note": "原因只使用 cause 中的枚举，不推断未记录的动机"}
+      ]
+    },
+    "event_choice": {
+      "id": "event_choice",
+      "summary": "玩家对一个事件做出了选择或被记为未处理结果。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "event_id": {"type": "string"},
+        "choice_id": {"type": "string"},
+        "outcome": {"type": "enum", "values": ["accepted", "rejected", "ignored", "unknown"]}
+      },
+      "optional_fields": {
+        "policy_id": {"type": "string"}
+      },
+      "evidence_of": [
+        {"conclusion": "choice_made", "note": "证明该事件已有选择结果；不证明选择带来了何种长期影响"}
+      ]
+    },
+    "stronghold_gained": {
+      "id": "stronghold_gained",
+      "summary": "王国获得一处据点。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "stronghold_id": {"type": "string"}
+      },
+      "optional_fields": {
+        "garrison": {"type": "int", "min": 0},
+        "source": {"type": "enum", "values": ["expedition", "event", "construction", "unknown"]}
+      },
+      "evidence_of": [
+        {"conclusion": "stronghold_gained", "note": "证明该据点已归入王国，并使 strongholds_gained 增加1"}
+      ]
+    },
+    "stronghold_lost": {
+      "id": "stronghold_lost",
+      "summary": "王国失去一处据点。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "stronghold_id": {"type": "string"},
+        "cause": {"type": "enum", "values": ["battle", "abandoned", "event", "unknown"]}
+      },
+      "optional_fields": {
+        "garrison_lost": {"type": "int", "min": 0}
+      },
+      "evidence_of": [
+        {"conclusion": "stronghold_lost", "note": "证明该据点已失去，并使 strongholds_lost 增加1"},
+        {"conclusion": "kingdom_under_pressure", "note": "单次失去据点不足以断言亡国；亡国需要 ending 事实与计数"}
+      ]
+    },
+    "milestone_achieved": {
+      "id": "milestone_achieved",
+      "summary": "达成一个阶段成就/里程碑。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "milestone_id": {"type": "string"},
+        "tier": {"type": "enum", "values": ["bronze", "silver", "gold"]}
+      },
+      "optional_fields": {
+        "value": {"type": "int", "min": 0}
+      },
+      "evidence_of": [
+        {"conclusion": "milestone_achieved", "note": "证明该里程碑已达成，并使 milestone_count 增加1"},
+        {"conclusion": "long_reign", "note": "长治国需要里程碑事实与 months_played 门槛同时满足，不能只看本月日志"}
+      ]
+    },
+    "ending": {
+      "id": "ending",
+      "summary": "本局结束的原因记录，是判断结局类型的主要证据。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "ending_id": {"type": "string"},
+        "reason": {"type": "enum", "values": ["player_ended", "kingdom_fallen", "starvation", "defeat", "milestone", "unknown"]}
+      },
+      "optional_fields": {
+        "ending_category": {"type": "string"}
+      },
+      "evidence_of": [
+        {"conclusion": "game_ended", "note": "只有本事实能证明本局已正式结束；没有本事实时不得把中途退出写成结局"},
+        {"conclusion": "ending_reason", "note": "结束原因只使用 reason 枚举；未记录时写 unknown，不推测玩家动机"}
+      ]
+    },
+    "harvest_summary": {
+      "id": "harvest_summary",
+      "summary": "某个月的收成、消耗与结余摘要。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "food_harvested": {"type": "int", "min": 0},
+        "food_consumed": {"type": "int", "min": 0}
+      },
+      "optional_fields": {
+        "food_stored": {"type": "int", "min": 0},
+        "starvation_deaths": {"type": "int", "min": 0}
+      },
+      "evidence_of": [
+        {"conclusion": "harvest_recorded", "note": "证明该月有收成与消耗记录"},
+        {"conclusion": "food_shortage_hint", "note": "消耗大于收成只是短缺线索，不能单独断言发生了饥饿；饥饿需 starvation 事实或 starvation_month_count"}
+      ]
+    },
+    "starvation": {
+      "id": "starvation",
+      "summary": "一个月内发生饥饿伤亡。",
+      "required_fields": {
+        "fact_id": {"type": "string"},
+        "game_month": {"type": "int", "min": 0},
+        "deaths": {"type": "int", "min": 0},
+        "severity": {"type": "enum", "values": ["minor", "major", "critical"]}
+      },
+      "optional_fields": {
+        "food_deficit": {"type": "int", "min": 0},
+        "duration_months": {"type": "int", "min": 1}
+      },
+      "evidence_of": [
+        {"conclusion": "starvation_happened", "note": "证明该月发生饥饿，并使 starvation_month_count 增加1"},
+        {"conclusion": "hunger_ending", "note": "饥饿结局需要 starvation 事实或 starvation_month_count >= 1，并用 ending.reason 区分是否因饥饿结束"}
+      ]
+    }
+  },
+  "counters": {
+    "schema_version": 1,
+    "description": "持久累计计数与有限明细日志分开保存。计数用于证明'从未/累计'类结论，日志只用于叙述细节。",
+    "fields": {
+      "expedition_count": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计远征出发次数",
+        "evidence_of": [
+          {"conclusion": "no_expedition", "note": "只有 expedition_count == 0 才能证明从未出兵；最近40条日志里没有相关记录不构成证据"}
+        ]
+      },
+      "expedition_failure_count": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计远征失败次数",
+        "evidence_of": [
+          {"conclusion": "repeated_expedition_failure", "note": "expedition_failure_count >= 2 才能证明多次失败"}
+        ]
+      },
+      "expedition_success_count": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计远征成功次数"
+      },
+      "battle_loss_count": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计战斗失败次数",
+        "evidence_of": [
+          {"conclusion": "battle_defeat", "note": "battle_loss_count >= 1 才可叙述战败；仍以 ending.reason 判断是否因此结束"}
+        ]
+      },
+      "starvation_month_count": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局发生饥饿的月份数",
+        "evidence_of": [
+          {"conclusion": "starvation_happened", "note": "starvation_month_count >= 1 才可叙述饥饿"}
+        ]
+      },
+      "total_casualties": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计伤亡人数"
+      },
+      "buildings_completed": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计建成建筑数"
+      },
+      "talents_recruited": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计招募人才数"
+      },
+      "talents_lost": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计死亡人才数"
+      },
+      "strongholds_gained": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计获得据点数"
+      },
+      "strongholds_lost": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计失去据点数"
+      },
+      "milestone_count": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计达成里程碑数"
+      },
+      "months_played": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局已经历的游戏月数；事实的 game_month 必须小于该值"
+      },
+      "fact_count": {
+        "type": "int",
+        "min": 0,
+        "required_in_snapshot": true,
+        "meaning": "本局累计写入的结构化事实总数，用于判断样例是否被截断"
+      }
+    },
+    "truncation_rule": {
+      "log_window_size": 40,
+      "rule": "明细日志最多保留40条，且只用于叙述细节；'从未/没有发生'的结论必须读取持久计数。例：expedition_count == 0 才可写 no_expedition；最近40条里没有 expedition 记录只能说明该窗口无记录。",
+      "counter_write_rule": "计数在事实提交的同一事务内更新，不因日志轮转而回退。"
+    }
+  }
+}

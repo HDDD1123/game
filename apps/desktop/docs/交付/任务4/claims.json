@@ -1,0 +1,155 @@
+{
+  "task": {
+    "id": "T4",
+    "title": "启动、桌面运行、后台输入与叙事交付（72点，R2）· 返工版",
+    "stage": "24",
+    "branch_intent": "dsh/task4-typing-v05"
+  },
+  "environment": {
+    "engine_installed": true,
+    "engine_expected": "4.6.3",
+    "engine_actual": "4.6.3.stable.official.7d41c59c4",
+    "engine_path": ".tools/godot-4.6.3/Godot_v4.6.3-stable_win64.exe",
+    "git_available": false,
+    "session_integrity": "Low",
+    "notes": "本机已装 Godot 4.6.3 标准版（单文件解压版），三个任务4 引擎测试与 8 组原有回归已真实运行；仍无 git；DSH 会话为低完整性级别，SendInput 被 UIPI 拒绝。"
+  },
+  "modules": [
+    {"name": "platform-settings", "version": "1", "path": "apps/desktop/platform/settings/settings_store.gd"},
+    {"name": "platform-bootstrap", "version": "1", "path": "apps/desktop/platform/bootstrap/startup_service.gd"},
+    {"name": "platform-typing-bridge", "version": "1", "path": "apps/desktop/platform/typing/typing_bridge.gd"},
+    {"name": "platform-desktop-window", "version": "1", "path": "apps/desktop/platform/desktop/window_metrics.gd"},
+    {"name": "platform-narrative", "version": "1", "path": "apps/desktop/platform/narrative/history_renderer.gd"},
+    {"name": "ui-onboarding-model", "version": "1", "path": "apps/desktop/ui/onboarding/onboarding_model.gd"},
+    {"name": "windows-typing-helper", "version": "1", "path": "tools/windows-typing/TypingCounter.cs"},
+    {"name": "narrative-data", "version": "1", "path": "apps/desktop/data/narrative/endings.json"},
+    {"name": "desktop-delivery-tools", "version": "1", "path": "tools/desktop-delivery/build_manifest.py"}
+  ],
+  "tests": [
+    {
+      "id": "godot-platform-services",
+      "name": "引擎测试：平台层（设置/启动诊断/输入桥校验/窗口几何）",
+      "command": "godot --headless --path apps/desktop --script res://tests/task4/test_platform_services.gd",
+      "ran": true,
+      "result": "passed",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/godot-platform-services.log",
+      "note": "48 checks, 0 failures, exit 0（Godot 4.6.3.stable.official.7d41c59c4）；此前 34 项是因为设置分节编译失败提前中止，修好后补回 14 项"
+    },
+    {
+      "id": "godot-narrative-render",
+      "name": "引擎测试：史书/结局渲染",
+      "command": "godot --headless --path apps/desktop --script res://tests/task4/test_narrative_render.gd",
+      "ran": true,
+      "result": "passed",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/godot-narrative-render.log",
+      "note": "66 checks, 0 failures, exit 0"
+    },
+    {
+      "id": "godot-onboarding-model",
+      "name": "引擎测试：向导模型",
+      "command": "godot --headless --path apps/desktop --script res://tests/task4/test_onboarding_model.gd",
+      "ran": true,
+      "result": "passed",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/godot-onboarding-model.log",
+      "note": "12 checks, 0 failures, exit 0"
+    },
+    {
+      "id": "godot-regression-263",
+      "name": "引擎回归：原有 8 组 263 项",
+      "command": "python apps/desktop/tests/task4/run_task4_checks.py（逐条调用 godot --headless --script）",
+      "ran": true,
+      "result": "passed",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/godot-summary.log",
+      "note": "test_core 42 / test_ui 8 / test_building_modules 59 / test_v04_regressions 63 / verify_004b 17 / verify_005 27 / test_decision_preview 23 / test_street_workflow 24，全部 0 失败"
+    },
+    {
+      "id": "typing-helper-build",
+      "name": "C# 助手构建（Windows 自带 csc.exe）",
+      "command": "powershell -ExecutionPolicy Bypass -File tools/windows-typing/build.ps1",
+      "ran": true,
+      "result": "passed",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/typing-build.log",
+      "note": "exit 0；12,288 字节；SHA-256 见日志与 bin/build-manifest.json"
+    },
+    {
+      "id": "typing-selftest",
+      "name": "输入助手判定逻辑自检（合成事件）",
+      "command": "tools/windows-typing/bin/TypingCounter.exe --self-test",
+      "ran": true,
+      "result": "passed",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/typing-selftest.log",
+      "note": "5 项：plain-5 / repeat-1 / modifier-0 / two-keys-2 / injected-filter"
+    },
+    {
+      "id": "typing-protocol-tests",
+      "name": "助手协议行、shutdown、stdin EOF、畸形输入",
+      "command": "python tests/task4/test_typing_helper.py",
+      "ran": true,
+      "result": "passed",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/typing-helper-tests.log",
+      "note": "8 项中 2 项通过、6 项跳过（低完整性会话下 SendInput 被 UIPI 拒绝，无法注入按键）；退出码 0"
+    },
+    {
+      "id": "narrative-data-validation",
+      "name": "叙事数据静态校验（schema/fixtures/文本扫描）",
+      "command": "python apps/desktop/tests/task4/validate_narrative.py --root .",
+      "ran": true,
+      "result": "passed",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/narrative-validation.log",
+      "note": "SUMMARY: OK=32 FAIL=0"
+    },
+    {
+      "id": "gdscript-static-lint",
+      "name": "无引擎 GDScript 静态体检（已被引擎测试取代，保留作快速筛查）",
+      "command": "python apps/desktop/tests/task4/lint_gdscript.py --root .",
+      "ran": true,
+      "result": "passed",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/gdscript-lint.log",
+      "note": "23 文件 0 问题；注意它抓不到类型推断错误（settings_store 的 set_value 就是靠引擎测试才暴露）"
+    },
+    {
+      "id": "delivery-tools-tests",
+      "name": "交付工具单元测试（假仓库/版本不符/路径泄漏/证据规则）",
+      "command": "python -m unittest discover -s tools/desktop-delivery/tests",
+      "ran": true,
+      "result": "passed",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/delivery-tools-tests.log",
+      "note": "13 项通过，exit 0"
+    },
+    {
+      "id": "build-manifest-static",
+      "name": "真实工程静态清单与资源/过滤诊断",
+      "command": "python tools/desktop-delivery/build_manifest.py --root . --json",
+      "ran": true,
+      "result": "passed",
+      "evidence": "tools/desktop-delivery/evidence/build-manifest.json",
+      "note": "PASS 10 / WARN 1 / FAIL 0；唯一 WARN 是负向测试故意用的假 res:// 路径"
+    },
+    {
+      "id": "export-check",
+      "name": "导出链路检查",
+      "command": "python tools/desktop-delivery/export_check.py --root . --json",
+      "ran": true,
+      "result": "unverified",
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/export-check-blocked.log",
+      "note": "引擎已装但 export_check 只做静态准备检查；本轮未安装 4.6.3 导出模板，也没有执行 --export-release，故不做导出声明"
+    }
+  ],
+  "untested": [
+    "启动到首个可操作界面的耗时（冷/热启动，T4-01）",
+    "CPU/GPU/内存采样与渲染优化（T4-07）",
+    "导出包内资源与 PCK 冒烟（T4-08）",
+    "24/48/72 阶段包与干净目录发布验证（T4-12）",
+    "助手统计真实后台打字与注入按键（低完整性会话无法验证）",
+    "游戏失焦时的输入联调与额度只消耗一次（T4-06）",
+    "存档检查逻辑对真实 v4/v5 存档与坏档的表现（只用临时文件测过，未触碰真实存档）",
+    "窗口几何在真实多显示器/DPI 下的表现（只做了纯函数测试）"
+  ],
+  "artifacts": [
+    "tools/windows-typing/bin/TypingCounter.exe",
+    "apps/desktop/docs/交付/任务4/README.md",
+    "apps/desktop/docs/交付/任务4/未测项.md",
+    "apps/desktop/docs/交付/任务4/启动说明.md",
+    "apps/desktop/docs/交付/任务4/content-manifest.json"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "document": "handbook_structure",
+  "title": "王国手记",
+  "description": "可翻阅手记的章节骨架。章节只声明会引用哪些事实类型与空章节文案，不写死任何玩家数据；具体条目由事实在渲染时填入。",
+  "stages": ["new_game", "early", "expansion", "late"],
+  "chapter_rule": "按事实的 game_month 落入 month_range；同一章内按 game_month、fact_id 升序排列。没有事实的章使用 empty_text，不拼造条目。超出最后一段范围的月份并入最后一段。",
+  "sections": [
+    {
+      "id": "chapter_prologue",
+      "stage": "new_game",
+      "month_range": [0, 2],
+      "title": "序章：落笔",
+      "fact_types": ["construction_completed", "talent_recruited", "harvest_summary", "event_choice"],
+      "empty_text": "这一章还没有可引用的事实；等第一次营造、招募或收成之后再落笔。"
+    },
+    {
+      "id": "chapter_first_years",
+      "stage": "early",
+      "month_range": [3, 11],
+      "title": "最初年月：边境与粮仓",
+      "fact_types": ["expedition_departed", "expedition_returned", "expedition_failed", "casualty", "harvest_summary", "starvation"],
+      "empty_text": "这段时间没有远征、伤亡或饥馑的记录；手记只保留月份的空行。"
+    },
+    {
+      "id": "chapter_expansion",
+      "stage": "expansion",
+      "month_range": [12, 35],
+      "title": "开拓：据点与抉择",
+      "fact_types": ["stronghold_gained", "stronghold_lost", "construction_completed", "event_choice", "starvation", "talent_died", "milestone_achieved"],
+      "empty_text": "这一章没有据点、建设或事件选择的记录，册页暂时留白。"
+    },
+    {
+      "id": "chapter_late_reign",
+      "stage": "late",
+      "month_range": [36, 999],
+      "title": "长卷：成就与终章",
+      "fact_types": ["milestone_achieved", "ending", "talent_died", "stronghold_lost", "harvest_summary"],
+      "empty_text": "长卷尚未写到这一章，暂无成就或结束记录。"
+    }
+  ]
+}

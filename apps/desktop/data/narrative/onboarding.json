@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "document": "onboarding_steps",
+  "description": "精灵宰相向导的步骤定义。步骤按真实状态触发，不要求玩家照着固定按钮序列点击；可跳过、可重看。文案中性、不催促、不评价玩家。",
+  "rules": {
+    "ordering": "按 order 升序；同一时刻只展示第一个未看过且条件满足的步骤。",
+    "trigger_kinds": ["always", "fact", "counter"],
+    "fact": "该类型事实至少出现 min_count 条（默认 1）",
+    "counter": "持久计数满足 op/value；计数缺失视为不满足，不猜值",
+    "skip": "玩家跳过只影响本步，不关闭后续步骤；重看使用 reset",
+    "neutral": "任何步骤都不因缺少证据而指责玩家"
+  },
+  "steps": [
+    {
+      "id": "step_welcome",
+      "order": 10,
+      "stage": "new_game",
+      "title": "落笔之前",
+      "text": "这是你的王国。粮仓、农田、人口与边境都在册页上，先看一圈再决定做什么；任何时候都可以跳过向导。",
+      "trigger": {"kind": "always"},
+      "skippable": true
+    },
+    {
+      "id": "step_harvest",
+      "order": 20,
+      "stage": "new_game",
+      "title": "农田与粮仓",
+      "text": "农田成熟后需要手动收取；待收的粮食不算进粮仓。点一次助耕会加速当月生长，额度每月重置。",
+      "trigger": {"kind": "fact", "fact_type": "harvest_summary", "min_count": 1},
+      "skippable": true
+    },
+    {
+      "id": "step_population",
+      "order": 30,
+      "stage": "early",
+      "title": "人口与住房",
+      "text": "人口决定能否扩张驻军与岗位。住房不足时，先修屋再招人，别让粮仓撑不住。",
+      "trigger": {"kind": "counter", "counter": "population", "op": ">=", "value": 12},
+      "skippable": true
+    },
+    {
+      "id": "step_skills",
+      "order": 40,
+      "stage": "early",
+      "title": "技能树",
+      "text": "底部街景里可以打开技能面板；升级消耗的是当月额度与资源，效果由核心统一计算，界面只读展示。",
+      "trigger": {"kind": "fact", "fact_type": "construction_completed", "min_count": 1},
+      "skippable": true
+    },
+    {
+      "id": "step_expedition",
+      "order": 50,
+      "stage": "expansion",
+      "title": "第一次远征",
+      "text": "远征要带足粮与人手。出发后无法随时召回；撤退由将领个性和事先可见的条件在边界决定。",
+      "trigger": {"kind": "fact", "fact_type": "expedition_departed", "min_count": 1},
+      "skippable": true
+    },
+    {
+      "id": "step_assignment",
+      "order": 60,
+      "stage": "expansion",
+      "title": "委任",
+      "text": "已经招募的人才可以委任到岗位。同一人口不会同时任职、驻军和出征；离任或死亡会立即撤销增益。",
+      "trigger": {"kind": "fact", "fact_type": "talent_recruited", "min_count": 1},
+      "skippable": true
+    },
+    {
+      "id": "step_save",
+      "order": 70,
+      "stage": "early",
+      "title": "存档与继续",
+      "text": "关闭游戏不会补算进度。存档写在本地；读取前会先校验，校验不通过就保持当前进度不动。",
+      "trigger": {"kind": "counter", "counter": "months_played", "op": ">=", "value": 3},
+      "skippable": true
+    },
+    {
+      "id": "step_crisis",
+      "order": 80,
+      "stage": "late",
+      "title": "危机提示",
+      "text": "缺粮、事件待决或结束状态都会在街景上标出。看到提示时先处理它，再决定要不要继续推进月份。",
+      "trigger": {"kind": "fact", "fact_type": "starvation", "min_count": 1},
+      "skippable": true
+    }
+  ]
+}

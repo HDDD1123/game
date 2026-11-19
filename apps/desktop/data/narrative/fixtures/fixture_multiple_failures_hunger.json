@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "fixture_notice": "虚构样例，仅用于校验/预览；不是真实存档，也不代表任何真实玩家数据。",
+  "scenario_id": "fixture_multiple_failures_hunger",
+  "scenario": "三次远征全部失败，随后出现一个饥饿月份；没有结局事实，按证据选'屡次折返'。",
+  "facts": [
+    {
+      "type": "expedition_departed",
+      "fact_id": "fx2-f-0001",
+      "game_month": 2,
+      "destination_id": "east_pass",
+      "troops": 40,
+      "general_id": "fx-general-01"
+    },
+    {
+      "type": "expedition_failed",
+      "fact_id": "fx2-f-0002",
+      "game_month": 4,
+      "destination_id": "east_pass",
+      "cause": "supply",
+      "losses": 12
+    },
+    {
+      "type": "expedition_departed",
+      "fact_id": "fx2-f-0003",
+      "game_month": 6,
+      "destination_id": "salt_marsh",
+      "troops": 35
+    },
+    {
+      "type": "expedition_failed",
+      "fact_id": "fx2-f-0004",
+      "game_month": 8,
+      "destination_id": "salt_marsh",
+      "cause": "retreat",
+      "losses": 9
+    },
+    {
+      "type": "expedition_departed",
+      "fact_id": "fx2-f-0005",
+      "game_month": 11,
+      "destination_id": "east_pass",
+      "troops": 30
+    },
+    {
+      "type": "expedition_failed",
+      "fact_id": "fx2-f-0006",
+      "game_month": 13,
+      "destination_id": "east_pass",
+      "cause": "defeat",
+      "losses": 18
+    },
+    {
+      "type": "starvation",
+      "fact_id": "fx2-f-0007",
+      "game_month": 14,
+      "deaths": 6,
+      "severity": "major",
+      "food_deficit": 30
+    },
+    {
+      "type": "casualty",
+      "fact_id": "fx2-f-0008",
+      "game_month": 14,
+      "amount": 6,
+      "cause": "starvation",
+      "subject": "population"
+    },
+    {
+      "type": "harvest_summary",
+      "fact_id": "fx2-f-0009",
+      "game_month": 15,
+      "food_harvested": 80,
+      "food_consumed": 130,
+      "starvation_deaths": 6
+    }
+  ],
+  "counters": {
+    "expedition_count": 3,
+    "expedition_failure_count": 3,
+    "expedition_success_count": 0,
+    "battle_loss_count": 1,
+    "starvation_month_count": 1,
+    "total_casualties": 6,
+    "buildings_completed": 0,
+    "talents_recruited": 0,
+    "talents_lost": 0,
+    "strongholds_gained": 0,
+    "strongholds_lost": 0,
+    "milestone_count": 0,
+    "months_played": 17,
+    "fact_count": 9
+  },
+  "expected": {
+    "eligible_ending_ids": ["ending_repeated_failure", "ending_exited_midway"],
+    "selected_ending_id": "ending_repeated_failure",
+    "evidence_sufficient": true
+  }
+}
