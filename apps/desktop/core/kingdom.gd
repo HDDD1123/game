@@ -8,6 +8,10 @@ const BuildingSkills = preload("res://core/building_skills.gd")
 var _state: Dictionary
 var _farm = FarmBuffer.new()
 var _skills = BuildingSkills.new()
+const MONTH_MS := 150000
+var _clock := {"month_elapsed_ms": 0, "growth_remainder": 0}
+var _auto_running := false
+var _blocked := {}
 
 func _init() -> void:
 	_reset()
@@ -20,11 +24,16 @@ func _reset() -> void:
 	_farm = FarmBuffer.new()
 	_farm.begin_month(int(_state.months))
 	_skills = BuildingSkills.new()
+	_clock = {"month_elapsed_ms": 0, "growth_remainder": 0}
+	_auto_running = false
+	_blocked = {}
 
 func snapshot() -> Dictionary:
 	var result: Dictionary = _state.duplicate(true)
 	result["farm"] = _farm.snapshot()
 	result["skills"] = _skills.snapshot()
+	result["clock"] = {"version": 1, "month_elapsed_ms": int(_clock.month_elapsed_ms),
+		"growth_remainder": int(_clock.growth_remainder)}
 	return result
 
 func date_label(months: int = -1) -> String:
@@ -102,7 +111,8 @@ func view() -> Dictionary:
 		"food_shortfall": maxi(0, int(_state.population) - int(_state.food)),
 		"drought_reduction_percent": roundi((1.0 - B.DROUGHT_FACTOR) * 100) - int(_skills.modifiers().drought_percentage_points),
 		"farm": _farm.view(), "skills": _skills_view(),
-		"settlement": settlement_preview(), "refugees": refugee_preview()}
+		"settlement": settlement_preview(), "refugees": refugee_preview(),
+		"clock": _clock_view()}
 
 func _ration_projection(population: int, food: int) -> Dictionary:
 	var shortfall := maxi(0, population - food)
@@ -246,7 +256,26 @@ func act(command: String, args: Dictionary = {}) -> Dictionary:
 		"advance_month":
 			if not _state.pending.is_empty():
 				return _reply(false, "先处理来访事件，时间暂不推进。")
-			_advance_month()
+			if _auto_running:
+				return _reply(false, "自动时间运行中，请先暂停再手动推进。")
+			_advance_manual()
+		"set_auto_running":
+			var enabled = args.get("enabled", false)
+			if not enabled is bool:
+				return _reply(false, "enabled 必须是布尔值。")
+			return set_auto_running(enabled)
+		"tick":
+			var elapsed = args.get("elapsed_ms", 0)
+			if not _integer(elapsed, 0, 1000):
+				return _reply(false, "tick 只接受 0—1000 毫秒。")
+			var tick_result: Dictionary = tick(int(elapsed))
+			return _reply(bool(tick_result.ok), str(tick_result.message))
+		"set_time_blocked":
+			var reason = args.get("reason", "")
+			var blocked = args.get("blocked", false)
+			if not reason is String or not blocked is bool:
+				return _reply(false, "参数无效。")
+			return set_time_blocked(reason, bool(blocked))
 		_:
 			return _reply(false, "未知操作。")
 	return _reply(true)
@@ -308,18 +337,89 @@ func _settle_battle() -> void:
 	if e.room == e.goal:
 		_return_expedition("任务完成")
 
-func _advance_month() -> void:
+# ---------------- 时间与连续生产（任务2） ----------------
+func _clock_view() -> Dictionary:
+	var reasons: Array = []
+	if not _auto_running:
+		reasons.append("manual")
+	if _state.ended:
+		reasons.append("ended")
+	if not _state.pending.is_empty():
+		reasons.append("event")
+	for reason in _blocked:
+		reasons.append("external:" + str(reason))
+	var elapsed: int = int(_clock.month_elapsed_ms)
+	var duration: int = MONTH_MS
+	return {"running": _auto_running, "blocked": not _blocked.is_empty(),
+		"pause_reasons": reasons, "month_elapsed_ms": elapsed, "month_duration_ms": duration,
+		"remaining_ms": maxi(0, duration - elapsed),
+		"month_progress": clampf(float(elapsed) / float(duration), 0.0, 1.0),
+		"can_step": (not _auto_running) and (not _state.ended) and _state.pending.is_empty() and _blocked.is_empty()}
+
+func set_auto_running(enabled: bool) -> Dictionary:
+	_auto_running = enabled
+	return _reply(true, "自动时间已开启。" if enabled else "自动时间已暂停。")
+
+func set_time_blocked(reason: String, blocked: bool) -> Dictionary:
+	if reason.is_empty():
+		return _reply(false, "阻塞原因不能为空。")
+	if blocked:
+		_blocked[reason] = true
+	else:
+		_blocked.erase(reason)
+	return _reply(true)
+
+func _apply_growth(elapsed_ms: int) -> void:
+	if elapsed_ms <= 0:
+		return
+	var home: int = _home()
+	var fv: Dictionary = _farm.view()
+	if home <= 0 or bool(fv.get("full", false)):
+		_clock.growth_remainder = 0
+		return
+	var work: int = _skills.natural_growth_points(FarmBuffer.FULL_BATCH)
+	var total: int = elapsed_ms * work + int(_clock.growth_remainder)
+	var points: int = total / MONTH_MS
+	_clock.growth_remainder = total % MONTH_MS
+	if points > 0:
+		_farm.grow_naturally(points, _batch_food(), false)
+
+func tick(elapsed_ms: int) -> Dictionary:
+	if elapsed_ms < 0 or elapsed_ms > 1000:
+		return {"ok": false, "changed": false, "months_advanced": 0, "message": "tick 只接受 0—1000 毫秒。"}
+	if elapsed_ms == 0:
+		return {"ok": true, "changed": false, "months_advanced": 0, "message": ""}
+	if _state.ended or not _state.pending.is_empty() or not _auto_running or not _blocked.is_empty():
+		return {"ok": true, "changed": false, "months_advanced": 0, "message": "时间未推进（暂停、阻塞或自动关闭）。"}
+	var remaining: int = elapsed_ms
+	var months: int = 0
+	var guard: int = 0
+	while remaining > 0 and guard < 16:
+		guard += 1
+		var need: int = MONTH_MS - int(_clock.month_elapsed_ms)
+		var step: int = mini(remaining, need)
+		_apply_growth(step)
+		_clock.month_elapsed_ms += step
+		remaining -= step
+		if int(_clock.month_elapsed_ms) >= MONTH_MS:
+			_settle_month()
+			months += 1
+			if _state.ended or not _state.pending.is_empty():
+				break
+	return {"ok": true, "changed": true, "months_advanced": months, "message": "推进 %d 毫秒。" % elapsed_ms}
+
+func _advance_manual() -> void:
+	var need: int = MONTH_MS - int(_clock.month_elapsed_ms)
+	_apply_growth(need)
+	_clock.month_elapsed_ms = MONTH_MS
+	_settle_month()
+
+func _settle_month() -> void:
 	var home: int = _home()
 	var batch_food: int = _batch_food()
-	var natural_work: int = _skills.natural_growth_points(FarmBuffer.FULL_BATCH)
 	var demand: int = int(_state.population)
 	var wood_gain: int = _skills.wood_production(home, B.WOOD_PER_PERSON)
 
-	# 1. 农田自然生长：进入待收区，不进粮仓
-	if home > 0:
-		_farm.grow_naturally(natural_work, batch_food, false)
-
-	# 2. 只从粮仓扣口粮
 	var available: int = int(_state.food)
 	var rations := _ration_projection(demand, available)
 	var shortfall: int = rations.shortfall
@@ -341,6 +441,8 @@ func _advance_month() -> void:
 
 	_state.months += 1
 	_farm.begin_month(int(_state.months))
+	_clock.month_elapsed_ms = 0
+	_clock.growth_remainder = 0
 	if _state.population > 0:
 		_settle_battle()
 	if _state.population == 0:
@@ -469,15 +571,34 @@ func import_snapshot(value: Variant) -> bool:
 	var temp_farm = FarmBuffer.new()
 	if not temp_farm.restore(farm_snapshot) or farm_snapshot.month != value.months:
 		return false
+	var clock_value = value.get("clock")
+	if not clock_value is Dictionary or not _valid_clock(clock_value):
+		return false
 	var base: Dictionary = value.duplicate(true)
 	base.erase("farm")
 	base.erase("skills")
+	base.erase("clock")
 	if not _valid_base(base, temp_skills):
 		return false
 	_state = _normalize(base)
 	_skills = temp_skills
 	_farm = temp_farm
+	_clock = {"month_elapsed_ms": int(clock_value.month_elapsed_ms), "growth_remainder": int(clock_value.growth_remainder)}
+	_auto_running = false
+	_blocked = {}
 	return true
+
+func _valid_clock(value: Dictionary) -> bool:
+	if int(value.get("version", 0)) != 1:
+		return false
+	return _integer(value.get("month_elapsed_ms"), 0, MONTH_MS - 1) and _integer(value.get("growth_remainder"), 0, MONTH_MS - 1)
+
+func import_v4(old: Variant) -> bool:
+	if not old is Dictionary:
+		return false
+	var candidate: Dictionary = old.duplicate(true)
+	candidate["clock"] = {"version": 1, "month_elapsed_ms": 0, "growth_remainder": 0}
+	return import_snapshot(candidate)
 
 func import_v3(old: Variant) -> bool:
 	if not old is Dictionary or not _integer(old.get("housing")):
@@ -493,4 +614,7 @@ func import_v3(old: Variant) -> bool:
 	_skills = temp_skills
 	_farm = FarmBuffer.new()
 	_farm.begin_month(int(_state.months))
+	_clock = {"month_elapsed_ms": 0, "growth_remainder": 0}
+	_auto_running = false
+	_blocked = {}
 	return true

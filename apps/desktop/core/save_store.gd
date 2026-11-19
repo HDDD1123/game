@@ -1,12 +1,15 @@
 extends RefCounted
-## 存档桥接层（格式4）。写入临时文件成功后才替换，保留上一份 .bak。
-## 格式3迁移：仅当尚无格式4文件时读取旧文件并迁移，旧文件保留。
-const VERSION = 4
+## 存档桥接层（格式5）。写入临时文件成功后才替换，保留上一份 .bak。
+## 读取优先级：5 -> 4 -> 3；只有较新文件不存在才试较旧文件。
+## 较新文件存在但损坏必须报错，不能静默回退旧档。
+const VERSION = 5
 const MAX_BYTES = 2097152
+const PATH_V5 = "user://kingdom-save-v5.json"
 const PATH_V4 = "user://kingdom-save-v4.json"
 const PATH_V3 = "user://kingdom-save-v3.json"
-var primary_path := PATH_V4
-var legacy_path := PATH_V3
+var primary_path := PATH_V5
+var legacy_path := PATH_V4
+var ancient_path := PATH_V3
 
 func save_game(game: RefCounted, path: String = "") -> Dictionary:
 	if path.is_empty():
@@ -35,15 +38,17 @@ func save_game(game: RefCounted, path: String = "") -> Dictionary:
 			if restore_error != OK:
 				return {"ok": false, "message": "替换及恢复失败，原存档保留在 .bak，请勿删除。"}
 		return {"ok": false, "message": "替换存档失败，原文件已恢复。"}
-	return {"ok": true, "message": "已手动保存（格式4）。下次打开点击读取，不补算离线时间。"}
+	return {"ok": true, "message": "已手动保存（格式5）。下次打开点击读取，不补算离线时间。"}
 
 func load_game(game: RefCounted, path: String = "") -> Dictionary:
-	if path.is_empty():
-		path = primary_path
-	if FileAccess.file_exists(path):
-		return _load_v4(game, path)
-	if path == primary_path and FileAccess.file_exists(legacy_path):
-		return _migrate_v3(game)
+	if not path.is_empty():
+		return _load_any(game, path)
+	if FileAccess.file_exists(primary_path):
+		return _load_any(game, primary_path)
+	if FileAccess.file_exists(legacy_path):
+		return _load_any(game, legacy_path)
+	if FileAccess.file_exists(ancient_path):
+		return _load_any(game, ancient_path)
 	return {"ok": false, "message": "没有可读取的存档，或文件无法打开。"}
 
 func _read_json(path: String) -> Dictionary:
@@ -61,18 +66,21 @@ func _read_json(path: String) -> Dictionary:
 	var parsed = parser.data
 	return parsed if parsed is Dictionary else {}
 
-func _load_v4(game: RefCounted, path: String) -> Dictionary:
+func _load_any(game: RefCounted, path: String) -> Dictionary:
 	var parsed: Dictionary = _read_json(path)
-	if parsed.is_empty() or parsed.get("version") != VERSION:
-		return {"ok": false, "message": "存档格式或版本不符，当前进度未改变。"}
-	if not game.import_snapshot(parsed.get("state")):
-		return {"ok": false, "message": "存档数据校验失败，当前进度未改变。"}
-	return {"ok": true, "message": "已恢复资源、事件、远征、农田与技能，未推进月份。"}
-
-func _migrate_v3(game: RefCounted) -> Dictionary:
-	var parsed: Dictionary = _read_json(legacy_path)
-	if parsed.is_empty() or parsed.get("version") != 3:
-		return {"ok": false, "message": "旧存档无法识别，当前进度未改变。"}
-	if not game.import_v3(parsed.get("state")):
-		return {"ok": false, "message": "旧存档校验失败，当前进度未改变。"}
-	return {"ok": true, "message": "已从格式3迁移（旧文件保留）；本次不追补历史产出。"}
+	if parsed.is_empty():
+		return {"ok": false, "message": "存档无法解析或过大，当前进度未改变。"}
+	var version: int = int(parsed.get("version", -1))
+	if version == VERSION:
+		if not game.import_snapshot(parsed.get("state")):
+			return {"ok": false, "message": "存档数据校验失败，当前进度未改变。"}
+		return {"ok": true, "message": "已恢复资源、事件、远征、农田、技能与时钟，未推进月份。"}
+	if version == 4:
+		if not game.import_v4(parsed.get("state")):
+			return {"ok": false, "message": "格式4存档校验失败，当前进度未改变。"}
+		return {"ok": true, "message": "已从格式4迁移（旧文件保留）；时钟置0，不追补产出。"}
+	if version == 3:
+		if not game.import_v3(parsed.get("state")):
+			return {"ok": false, "message": "格式3存档校验失败，当前进度未改变。"}
+		return {"ok": true, "message": "已从格式3迁移（旧文件保留）；不追补历史产出。"}
+	return {"ok": false, "message": "存档格式或版本不符，当前进度未改变。"}

@@ -1,0 +1,37 @@
+{
+  "task_id": "task2",
+  "task_revision": "R2",
+  "stage_points": 18,
+  "base_commit": "631df2c",
+  "source_commit": "self (integration/v05-four-dsh)",
+  "branch": "integration/v05-four-dsh",
+  "completed_packages": ["T2-02", "T2-03", "T2-04"],
+  "partial_packages": ["T2-01", "T2-09", "T2-10", "T2-11", "T2-12"],
+  "not_started_packages": ["T2-05", "T2-06", "T2-07", "T2-08"],
+  "ready_for_integration": true,
+  "integration_mode": "commit",
+  "tests": {
+    "task2_clock": "33 checks, 0 failures",
+    "test_core": "42 checks, 0 failures",
+    "test_ui": "8 checks, 0 failures",
+    "test_building_modules": "59 checks, 0 failures",
+    "test_v04_regressions": "63 checks, 0 failures",
+    "verify_004b": "17 checks, 0 failures",
+    "verify_005": "27 checks, 0 failures",
+    "test_decision_preview": "23 checks, 0 failures",
+    "test_street_workflow": "24 checks, 0 failures",
+    "task3": "38 + 12 checks, 0 failures",
+    "task4": "48 + 66 + 12 checks, 0 failures"
+  },
+  "known_gaps": [
+    "T2-05 事件队列/期限/多暂停原因未实现（当前仍是单流民事件暂停）",
+    "T2-06 人才生命状态未实现",
+    "T2-07 委任与将军性格未实现",
+    "T2-08 内容模块权威接线（商栈/前哨/技能/战斗命令）未实现",
+    "T2-09 运行开销未做实测采样与缓存优化",
+    "T2-10 确定性回放工具未实现（480 月回放未做）",
+    "T2-11 只读槽位诊断/备份恢复接口未实现",
+    "T2-01 参考调研与 6/4/12 候选未做",
+    "时钟按 150000ms/月、tick 上限 1000ms；长卡顿丢弃，不补跑"
+  ]
+}
