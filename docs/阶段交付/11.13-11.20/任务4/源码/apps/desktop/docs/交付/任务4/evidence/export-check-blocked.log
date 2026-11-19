@@ -1,0 +1,143 @@
+﻿{
+  "schema": "desktop-delivery/export-check/1",
+  "tool_version": "1.0.0",
+  "generated_at_utc": null,
+  "status": "blocked",
+  "reason": "godot-not-installed",
+  "run": false,
+  "godot": {
+    "found": false,
+    "path": null,
+    "searched": [
+      "PATH:godot.exe",
+      "PATH:godot4.exe",
+      "PATH:Godot.exe",
+      "PATH:godot",
+      "PATH:godot4",
+      "C:\\Program Files\\Godot",
+      "C:\\Program Files\\Godot Engine",
+      "C:\\Program Files (x86)\\Godot",
+      "C:\\Program Files (x86)\\Godot Engine",
+      "C:\\Users\\86135\\AppData\\Local\\Programs\\Godot",
+      "C:\\Users\\86135\\AppData\\Local\\Godot",
+      "C:\\Godot"
+    ]
+  },
+  "preflight": {
+    "project_dir": "apps/desktop",
+    "project_godot_exists": true,
+    "presets_file_exists": true,
+    "preset_names": [
+      "Windows Desktop"
+    ],
+    "selected_preset": "Windows Desktop",
+    "selected_platform": "Windows Desktop",
+    "include_filter": "*.json",
+    "export_path": "builds/windows/KingdomDesktop.exe",
+    "output_path": "C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\windows\\KingdomDesktop.exe",
+    "output_dir_exists": false,
+    "pack_path": "C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\export-check\\Windows-Desktop.pck",
+    "import_cache_exists": false,
+    "templates": {
+      "root": "%APPDATA%/Godot/export_templates",
+      "found": false,
+      "versions": [],
+      "windows_template": null
+    }
+  },
+  "plan": {
+    "steps": [
+      {
+        "name": "version-probe",
+        "argv": [
+          "godot",
+          "--headless",
+          "--path",
+          "C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop",
+          "--version"
+        ],
+        "note": "核对引擎版本；导出模板必须与编辑器版本完全一致。",
+        "ran": false,
+        "exit_code": null,
+        "log_path": null,
+        "tail": [],
+        "display": "godot --headless --path C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop --version"
+      },
+      {
+        "name": "export-pack",
+        "argv": [
+          "godot",
+          "--headless",
+          "--path",
+          "C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop",
+          "--export-pack",
+          "Windows Desktop",
+          "C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\export-check\\Windows-Desktop.pck"
+        ],
+        "note": "冒烟：只导出 PCK，不需要导出模板；用于先暴露脚本/资源/过滤问题。",
+        "ran": false,
+        "exit_code": null,
+        "log_path": null,
+        "tail": [],
+        "display": "godot --headless --path C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop --export-pack \"Windows Desktop\" C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\export-check\\Windows-Desktop.pck"
+      },
+      {
+        "name": "pack-smoke-run",
+        "argv": [
+          "godot",
+          "--headless",
+          "--main-pack",
+          "C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\export-check\\Windows-Desktop.pck",
+          "--quit-after",
+          "300"
+        ],
+        "note": "只加载包内文件跑 300 帧；抓 SCRIPT ERROR / 资源缺失。",
+        "ran": false,
+        "exit_code": null,
+        "log_path": null,
+        "tail": [],
+        "display": "godot --headless --main-pack C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\export-check\\Windows-Desktop.pck --quit-after 300"
+      },
+      {
+        "name": "export-release",
+        "argv": [
+          "godot",
+          "--headless",
+          "--path",
+          "C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop",
+          "--export-release",
+          "Windows Desktop",
+          "C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\windows\\KingdomDesktop.exe"
+        ],
+        "note": "正式模板导出；预设名大小写和空格敏感，输出目录必须已存在。",
+        "ran": false,
+        "exit_code": null,
+        "log_path": null,
+        "tail": [],
+        "display": "godot --headless --path C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop --export-release \"Windows Desktop\" C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\windows\\KingdomDesktop.exe"
+      },
+      {
+        "name": "verify-artifact",
+        "argv": [],
+        "note": "核对输出文件存在且非空：C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\windows\\KingdomDesktop.exe",
+        "ran": false,
+        "exit_code": null,
+        "log_path": null,
+        "tail": [],
+        "display": "核对输出文件存在且非空：C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\windows\\KingdomDesktop.exe"
+      }
+    ],
+    "out_path": "C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\windows\\KingdomDesktop.exe",
+    "pack_path": "C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\export-check\\Windows-Desktop.pck"
+  },
+  "warnings": [
+    "输出目录 C:\\Users\\86135\\Documents\\deepseek-harness\\default-workspace\\game-task\\apps\\desktop\\builds\\windows 不存在：Godot 不会自动创建；--run 会先创建目录，手动导出前需 mkdir。",
+    "没有发现 Windows 导出模板（%APPDATA%/Godot/export_templates）；--export-pack 仍可冒烟，但 --export-release 会报 No export template found。",
+    "工程内没有 .godot/ 导入缓存；干净检出在模板导出前通常需要先 `godot --headless --import`。"
+  ],
+  "next": [
+    "安装 Godot 4.6.3 标准版（不是 .NET 版），确认 `godot` 在 PATH，或用 --godot <exe> 指定。",
+    "安装与编辑器完全一致的 4.6.3 导出模板（编辑器 → 管理导出模板）。",
+    "没有引擎时只能做静态检查：build_manifest.py 可用；不得声称已导出或已实机运行。"
+  ]
+}

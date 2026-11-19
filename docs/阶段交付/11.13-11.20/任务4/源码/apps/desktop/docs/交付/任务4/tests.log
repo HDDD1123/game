@@ -1,0 +1,60 @@
+﻿任务4 验证日志（返工版；本机真实执行，日期 2026-11-18 UTC+8）
+环境：Windows 10.0.26200.0；Godot 4.6.3.stable.official.7d41c59c4（.tools/godot-4.6.3/）；无 git；DSH 会话完整性=Low
+说明：只记真实跑过的命令与退出码；未执行的项单独列在最后，不写成通过。
+
+== 引擎侧：三个任务4 测试 + 8 组原有回归 ==
+命令: python apps/desktop/tests/task4/run_task4_checks.py --godot .tools/godot-4.6.3/Godot_v4.6.3-stable_win64.exe
+  （内部逐条执行 godot --headless --path apps/desktop --script <脚本>；日志 evidence/godot-<name>.log）
+退出码: 0
+  PASS platform-services  checks=48 failures=0 exit=0
+  PASS narrative-render   checks=66 failures=0 exit=0
+  PASS onboarding-model   checks=12 failures=0 exit=0
+  PASS test_core            checks=42 failures=0 exit=0
+  PASS test_ui              checks=8  failures=0 exit=0
+  PASS test_building_modules checks=59 failures=0 exit=0
+  PASS test_v04_regressions checks=63 failures=0 exit=0
+  PASS verify_004b          checks=17 failures=0 exit=0
+  PASS verify_005           checks=27 failures=0 exit=0
+  PASS test_decision_preview checks=23 failures=0 exit=0
+  PASS test_street_workflow checks=24 failures=0 exit=0
+  合计 362 checks（任务4 126 + 回归 263），0 failures；SCRIPT ERROR 计数=0
+  注：日志中的 'ERROR: Parse JSON failed' 是负向测试故意喂坏 JSON 的预期输出。
+
+== 导入缓存 ==
+命令: godot --headless --path apps/desktop --import
+退出码: 0（日志 evidence/godot-import.log）
+
+== C# 助手 ==
+命令: powershell -ExecutionPolicy Bypass -File tools/windows-typing/build.ps1
+退出码: 0（TypingCounter.exe 12,288 字节；SHA-256 见 evidence/typing-build.log）
+命令: tools/windows-typing/bin/TypingCounter.exe --self-test
+退出码: 0；输出: selftest PASS（plain-5 / repeat-1 / modifier-0 / two-keys-2 / injected-filter）
+
+== Python ==
+命令: python tests/task4/test_typing_helper.py
+退出码: 0；Ran 8 tests -> OK (skipped=6)；跳过的 6 项因低完整性会话无法注入按键
+命令: python apps/desktop/tests/task4/validate_narrative.py --root .
+退出码: 0；SUMMARY: OK=32 FAIL=0
+命令: python apps/desktop/tests/task4/lint_gdscript.py --root .
+退出码: 0；LINT: 23 个文件, 0 个问题
+命令: python -m unittest discover -s tools/desktop-delivery/tests
+退出码: 0；Ran 13 tests -> OK
+命令: python tools/desktop-delivery/build_manifest.py --root . --text
+退出码: 0；PASS 10 / WARN 1 / FAIL 0（WARN 是负向测试用的假 res:// 路径）
+命令: python tools/desktop-delivery/export_check.py --root . --json
+退出码: 2；status=blocked（未装导出模板，未执行导出）
+
+== 本轮修掉的失败（中控实测 6 项 + 自查 2 项）==
+1) startup_service.gd：JSON 数字是 float，却按 TYPE_INT 判定版本 -> 真实存档被判损坏。已改为接受整数值的 float。
+2) history_renderer.gd：空事实时 fact_absent 模板命中，没走中性兜底。已加 has_evidence 判定。
+3) test_narrative_render.gd：断言所有 fixture 的预览都带出 preview_only，与证据条件矛盾。已按条件断言。
+4) settings_store.gd set_value：'var current := load_preferences().preferences' 类型推断失败，导致整个设置分节编译失败（平台测试静默少跑 14 项）。已显式标注 Dictionary。
+5) settings_store.gd RANGES：用 Vector2 存边界导致 1.6 存成 32 位浮点，读回不相等。已改成数组 + float()。
+
+== 未执行（不写成通过）==
+  godot --headless --export-release 'Windows Desktop' ...   -> 未执行：未安装 4.6.3 导出模板
+  启动到首个可操作界面的计时（冷/热各 10 次）               -> 未执行：需要实机采样（T4-01）
+  CPU/GPU/内存采样                                         -> 未执行：需要实机采样（T4-07）
+  10 次热启动 + 2 小时在线观察                             -> 未执行（T4-11）
+  tools/windows-typing/verify-live.ps1 的 B/C 段            -> 未执行：低完整性会话 SendInput 被 UIPI 拒绝
+  git switch/commit/bundle/push                            -> 未执行：本机没有 git

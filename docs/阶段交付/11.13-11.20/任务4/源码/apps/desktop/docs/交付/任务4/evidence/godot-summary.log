@@ -1,0 +1,15 @@
+Godot 可执行文件: C:\Users\86135\Documents\deepseek-harness\default-workspace\.tools\godot-4.6.3\Godot_v4.6.3-stable_win64.exe
+--version: 4.6.3.stable.official.7d41c59c4
+
+[import] exit=0
+[platform-services] PASS checks=48 failures=0 exit=0 log=evidence/godot-platform-services.log
+[narrative-render] PASS checks=66 failures=0 exit=0 log=evidence/godot-narrative-render.log
+[onboarding-model] PASS checks=12 failures=0 exit=0 log=evidence/godot-onboarding-model.log
+[test_core] PASS checks=42 failures=0 exit=0 log=evidence/godot-test_core.log
+[test_ui] PASS checks=8 failures=0 exit=0 log=evidence/godot-test_ui.log
+[test_building_modules] PASS checks=59 failures=0 exit=0 log=evidence/godot-test_building_modules.log
+[test_v04_regressions] PASS checks=63 failures=0 exit=0 log=evidence/godot-test_v04_regressions.log
+[verify_004b] PASS checks=17 failures=0 exit=0 log=evidence/godot-verify_004b.log
+[verify_005] PASS checks=27 failures=0 exit=0 log=evidence/godot-verify_005.log
+[test_decision_preview] PASS checks=23 failures=0 exit=0 log=evidence/godot-test_decision_preview.log
+[test_street_workflow] PASS checks=24 failures=0 exit=0 log=evidence/godot-test_street_workflow.log

@@ -1,0 +1,25 @@
+# 任务3 阶段24 测试记录（返工版）
+# 生成时间: 2026-11-17 18:49:05
+# 引擎: 4.6.3.stable.official.7d41c59c4
+# 工作区: D:/game-task  HEAD: 0fe8505  baseline: 43409a0
+# 行尾说明: 模拟器指纹与 manifest 均在 LF 归一后计算；工作区因 autocrlf=CRLF，文件在磁盘上是 CRLF
+# 数据批次: 本次提交的曲线为 curves-20261117T184751.*，候选为 20261117T184806/T184808（同一次工作批次）
+
+## 1) T3-02 内容目录与校验器
+$ godot --headless --path apps/desktop --script res://tests/task3/test_content_catalog.gd
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+T3-02 content catalog: 38 checks, 0 failures
+exit_code=0
+
+## 2) T3-03 模拟器可重放性
+$ godot --headless --path apps/desktop --script res://tests/task3/test_simulator_replay.gd
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+T3-03 simulator replay: 12 checks, 0 failures
+exit_code=0
+
+## 3) 本次提交的数据批次校验（读取已提交 summary，不重新生成）
+$ node -e 读取 experiments/task3/summary-20261117T184751.json
+fingerprint=dc4c347e0b66deba6ca3076c7b71d3e45950df4d6c64ade3cd7a3a71567d871f
+runs=6 (期望 6)
+总月数=720
+exit_code=0

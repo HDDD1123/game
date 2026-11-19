@@ -1,0 +1,21 @@
+﻿任务4 T4-04 输入助手验收  20261117-200456
+助手: C:\Users\86135\Documents\deepseek-harness\default-workspace\game-task\tools\windows-typing\bin\TypingCounter.exe
+用户: 孙振轩\86135
+完整性: Mandatory Label\Low Mandatory Level Label            S-1-16-4096
+警告: 当前为低完整性会话，阶段 B 的 SendInput 会被系统拒绝；请用普通 PowerShell 重跑。
+
+--- A. 判定逻辑自检 ---
+  selftest plain-5 ok
+  selftest repeat-1 ok
+  selftest modifier-0 ok
+  selftest two-keys-2 ok
+  selftest injected-filter ok
+  selftest PASS
+  exit=0
+A: PASS
+
+--- B/C 跳过：低完整性会话无法注入按键，也无法代表真人输入 ---
+B: SKIP
+C: SKIP
+
+结论: A 通过；B/C 未测（需普通权限会话重跑本脚本才能给出后台输入结论）
