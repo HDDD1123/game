@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "content_version": "v0.5-preview-1",
+  "stage": "stage24",
+  "resources": ["food", "wood", "ore", "population"],
+  "effect_types": [
+    "resource_delta",
+    "building_built",
+    "garrison_delta",
+    "talent_assign",
+    "skill_unlock",
+    "event_flag",
+    "trade_limit",
+    "monthly_yield",
+    "attack_modifier",
+    "risk_modifier",
+    "growth_modifier",
+    "housing_capacity"
+  ],
+  "buildings": [
+    {
+      "id": "trading_post",
+      "name": "商栈",
+      "slot": "reserved_1",
+      "implemented": true,
+      "preview_only": true,
+      "wired_to_kingdom": false,
+      "unlock": { "require_months": 3, "require_buildings": [] },
+      "cost": { "wood": 30, "ore": 6 },
+      "effects": [
+        {
+          "type": "trade_limit",
+          "args": {
+            "monthly_units": 6,
+            "fee_percent": 20,
+            "buy": { "food": { "wood": 3 } },
+            "sell": { "wood": { "food": 1 } }
+          }
+        }
+      ],
+      "tags": ["trade", "emergency", "route"]
+    },
+    {
+      "id": "outpost_camp",
+      "name": "前哨营地",
+      "slot": "reserved_2",
+      "implemented": true,
+      "preview_only": true,
+      "wired_to_kingdom": false,
+      "unlock": { "require_progress": { "ruins": 3 } },
+      "cost": { "wood": 24, "ore": 10 },
+      "effects": [
+        {
+          "type": "monthly_yield",
+          "args": { "ore": 3, "requires_garrison": 2 }
+        },
+        {
+          "type": "risk_modifier",
+          "args": { "loss_threshold_garrison": 2, "warning_months": 1 }
+        }
+      ],
+      "tags": ["expedition", "route", "risk"]
+    },
+    {
+      "id": "granary",
+      "name": "谷仓",
+      "slot": "candidate_a",
+      "implemented": false,
+      "preview_only": false,
+      "wired_to_kingdom": false,
+      "unlock": { "require_buildings": ["farm"] },
+      "cost": { "wood": 34 },
+      "effects": [
+        { "type": "growth_modifier", "args": { "drought_resist_points": 15 } }
+      ],
+      "tags": ["candidate", "harvest"]
+    },
+    {
+      "id": "market",
+      "name": "集市",
+      "slot": "candidate_b",
+      "implemented": false,
+      "preview_only": false,
+      "wired_to_kingdom": false,
+      "unlock": { "require_buildings": ["trading_post"] },
+      "cost": { "wood": 40, "ore": 8 },
+      "effects": [
+        { "type": "trade_limit", "args": { "monthly_units": 10, "fee_percent": 12 } }
+      ],
+      "tags": ["candidate", "trade"]
+    },
+    {
+      "id": "watchtower",
+      "name": "瞭望塔",
+      "slot": "candidate_c",
+      "implemented": false,
+      "preview_only": false,
+      "wired_to_kingdom": false,
+      "unlock": { "require_progress": { "ruins": 1 } },
+      "cost": { "wood": 22, "ore": 4 },
+      "effects": [
+        { "type": "attack_modifier", "args": { "defense_flat": 1 } }
+      ],
+      "tags": ["candidate", "expedition"]
+    },
+    {
+      "id": "watermill",
+      "name": "水车",
+      "slot": "candidate_d",
+      "implemented": false,
+      "preview_only": false,
+      "wired_to_kingdom": false,
+      "unlock": { "require_buildings": ["farm"] },
+      "cost": { "wood": 28 },
+      "effects": [
+        { "type": "growth_modifier", "args": { "natural_growth_percent": 8 } }
+      ],
+      "tags": ["candidate", "harvest"]
+    }
+  ],
+  "talents": [
+    {
+      "id": "steward",
+      "name": "农务官",
+      "profession": "steward",
+      "implemented": true,
+      "cost": { "food": 6 },
+      "lifetime_months": 60,
+      "assignments": ["farm_steward"],
+      "effect": {
+        "type": "growth_modifier",
+        "args": { "auto_harvest_batches": 1, "requires_assignment": true }
+      },
+      "personalities": {
+        "prudent": { "auto_harvest_batches": 1, "waste_reduction_percent": 5 },
+        "diligent": { "auto_harvest_batches": 2 },
+        "greedy": { "auto_harvest_batches": 1, "sells_at_market_fee_percent": 25 },
+        "brave": { "auto_harvest_batches": 1 }
+      },
+      "recruit_sources": ["refugee_event", "expedition_reward"]
+    },
+    {
+      "id": "general",
+      "name": "将军",
+      "profession": "general",
+      "implemented": true,
+      "cost": { "food": 8, "wood": 4 },
+      "lifetime_months": 60,
+      "assignments": ["expedition_general"],
+      "effect": {
+        "type": "attack_modifier",
+        "args": { "repeat_cleared_rooms": true, "requires_assignment": true, "first_clear_bonus": 0 }
+      },
+      "personalities": {
+        "prudent": { "attack_flat": 0, "casualty_reduction_percent": 15 },
+        "brave": { "attack_flat": 2, "casualty_increase_percent": 10 },
+        "greedy": { "attack_flat": 1, "loot_percent": 20 },
+        "diligent": { "attack_flat": 1 }
+      },
+      "recruit_sources": ["refugee_event", "expedition_reward"]
+    },
+    {
+      "id": "cook",
+      "name": "厨师",
+      "profession": "cook",
+      "implemented": false,
+      "cost": { "food": 5 },
+      "lifetime_months": 48,
+      "assignments": ["kitchen"],
+      "effect": { "type": "resource_delta", "args": { "food_per_month": 1 } },
+      "personalities": {
+        "diligent": { "food_per_month": 2 },
+        "greedy": { "food_per_month": 1, "wood_cost_per_month": 1 }
+      },
+      "recruit_sources": ["refugee_event"]
+    },
+    {
+      "id": "smith",
+      "name": "铁匠",
+      "profession": "smith",
+      "implemented": false,
+      "cost": { "wood": 6, "ore": 2 },
+      "lifetime_months": 54,
+      "assignments": ["forge"],
+      "effect": { "type": "attack_modifier", "args": { "equipment_discount_percent": 10 } },
+      "personalities": {
+        "diligent": { "equipment_discount_percent": 15 },
+        "greedy": { "equipment_discount_percent": 20, "wood_cost_per_month": 1 }
+      },
+      "recruit_sources": ["refugee_event", "trade_event"]
+    },
+    {
+      "id": "scholar",
+      "name": "学者",
+      "profession": "scholar",
+      "implemented": false,
+      "cost": { "food": 6, "wood": 3 },
+      "lifetime_months": 66,
+      "assignments": ["library"],
+      "effect": { "type": "skill_unlock", "args": { "free_skill_points_per_10_months": 1 } },
+      "personalities": {
+        "prudent": { "free_skill_points_per_10_months": 1 },
+        "diligent": { "free_skill_points_per_10_months": 1, "event_choice_hint": true }
+      },
+      "recruit_sources": ["refugee_event", "trade_event"]
+    },
+    {
+      "id": "scout",
+      "name": "斥候",
+      "profession": "scout",
+      "implemented": false,
+      "cost": { "food": 4, "wood": 2 },
+      "lifetime_months": 42,
+      "assignments": ["patrol"],
+      "effect": { "type": "risk_modifier", "args": { "warning_months": 2, "ambush_reduction_percent": 20 } },
+      "personalities": {
+        "brave": { "ambush_reduction_percent": 25 },
+        "prudent": { "warning_months": 3 }
+      },
+      "recruit_sources": ["expedition_reward", "refugee_event"]
+    }
+  ],
+  "policies": {
+    "attitudes": [
+      { "id": "open", "name": "开放", "trade_fee_delta": -5, "recruit_chance_delta": 10 },
+      { "id": "standard", "name": "标准", "trade_fee_delta": 0, "recruit_chance_delta": 0 },
+      { "id": "conservative", "name": "保守", "trade_fee_delta": 5, "recruit_chance_delta": -10 }
+    ],
+    "defaults": { "trade": "standard", "recruitment": "standard" }
+  },
+  "skills": {
+    "version": 2,
+    "trees": {
+      "farm": {
+        "name": "农田",
+        "nodes": [
+          { "id": "farm_tools", "name": "精细采收", "legacy": true, "requires": [], "cost": { "points": 1 }, "effect": { "type": "farm_yield_flat", "amount": 2 } },
+          { "id": "farm_irrigation", "name": "灌溉水渠", "legacy": true, "requires": ["farm_tools"], "cost": { "points": 1 }, "effect": { "type": "drought_percentage_points", "amount": 20 } },
+          { "id": "farm_rotation", "name": "轮作耕种", "legacy": true, "requires": ["farm_tools"], "cost": { "points": 1 }, "effect": { "type": "natural_growth_percent", "amount": 10 } },
+          { "id": "farm_granary_plan", "name": "谷仓规划", "legacy": false, "requires": ["farm_rotation"], "cost": { "points": 2, "ore": 3 }, "effect": { "type": "housing_capacity", "amount": 0, "conditional": { "if_drought": "reduce_loss_percent", "amount": 15 } } },
+          { "id": "farm_water_reserve", "name": "蓄水池", "legacy": false, "requires": ["farm_irrigation"], "cost": { "points": 2, "wood": 12 }, "effect": { "type": "drought_percentage_points", "amount": 10, "tradeoff": { "wood_percent": -5 } } },
+          { "id": "farm_harvest_helper", "name": "收割助手", "legacy": false, "requires": ["farm_granary_plan"], "cost": { "points": 3, "ore": 5 }, "effect": { "type": "growth_modifier", "amount": 0, "conditional": { "if_steward_assigned": "auto_harvest_batches", "amount": 1 } } }
+        ]
+      },
+      "housing": {
+        "name": "民居",
+        "nodes": [
+          { "id": "housing_beams", "name": "加固屋梁", "legacy": true, "requires": [], "cost": { "points": 1 }, "effect": { "type": "housing_flat", "amount": 2 } },
+          { "id": "housing_lofts", "name": "加建阁楼", "legacy": true, "requires": ["housing_beams"], "cost": { "points": 1 }, "effect": { "type": "housing_flat", "amount": 4 } },
+          { "id": "housing_cooperation", "name": "邻里互助", "legacy": true, "requires": ["housing_beams"], "cost": { "points": 1 }, "effect": { "type": "wood_percent", "amount": 10 } },
+          { "id": "housing_insulation", "name": "保温层", "legacy": false, "requires": ["housing_lofts"], "cost": { "points": 2, "wood": 10 }, "effect": { "type": "housing_capacity", "amount": 3, "tradeoff": { "wood_percent": -4 } } },
+          { "id": "housing_workshop", "name": "家庭作坊", "legacy": false, "requires": ["housing_cooperation"], "cost": { "points": 2, "ore": 4 }, "effect": { "type": "wood_percent", "amount": 8, "conditional": { "if_population_at_least": 20 } } },
+          { "id": "housing_quarters", "name": "驻军营房", "legacy": false, "requires": ["housing_insulation"], "cost": { "points": 3, "wood": 16, "ore": 6 }, "effect": { "type": "attack_modifier", "amount": 1, "conditional": { "if_garrison_at_least": 2 } } }
+        ]
+      },
+      "forge": {
+        "name": "铁匠铺",
+        "nodes": [
+          { "id": "forge_basics", "name": "基础锻造", "legacy": true, "requires": [], "cost": { "points": 1 }, "effect": { "type": "attack_flat", "amount": 1 } },
+          { "id": "forge_blades", "name": "淬火兵刃", "legacy": true, "requires": ["forge_basics"], "cost": { "points": 1 }, "effect": { "type": "attack_flat", "amount": 1 } },
+          { "id": "forge_tooling", "name": "制式装备", "legacy": true, "requires": ["forge_basics"], "cost": { "points": 1 }, "effect": { "type": "equipment_discount_percent", "amount": 25 } },
+          { "id": "forge_ore_probe", "name": "探矿钻头", "legacy": false, "requires": ["forge_tooling"], "cost": { "points": 2, "ore": 8 }, "effect": { "type": "monthly_yield", "amount": 1, "args": { "ore": 1 } } },
+          { "id": "forge_ration_pack", "name": "行军口粮", "legacy": false, "requires": ["forge_blades"], "cost": { "points": 2, "food": 10 }, "effect": { "type": "equipment_discount_percent", "amount": 15, "tradeoff": { "food_per_expedition": 2 } } },
+          { "id": "forge_armorsmith", "name": "甲胄工坊", "legacy": false, "requires": ["forge_ore_probe"], "cost": { "points": 3, "wood": 10, "ore": 10 }, "effect": { "type": "risk_modifier", "amount": 0, "args": { "casualty_reduction_percent": 20 } } }
+        ]
+      },
+      "trading_post": {
+        "name": "商栈",
+        "nodes": [
+          { "id": "trade_haggle", "name": "讨价还价", "legacy": false, "requires": [], "cost": { "points": 1, "ore": 2 }, "effect": { "type": "trade_limit", "args": { "fee_delta_percent": -5 } } },
+          { "id": "trade_ledger", "name": "账房", "legacy": false, "requires": ["trade_haggle"], "cost": { "points": 2, "wood": 8 }, "effect": { "type": "trade_limit", "args": { "monthly_units_delta": 3 } } },
+          { "id": "trade_convoy", "name": "商队护送", "legacy": false, "requires": ["trade_ledger"], "cost": { "points": 3, "wood": 12, "ore": 6 }, "effect": { "type": "monthly_yield", "args": { "wood": 1 }, "tradeoff": { "garrison_required": 1 } } }
+        ]
+      },
+      "outpost_camp": {
+        "name": "前哨营地",
+        "nodes": [
+          { "id": "outpost_signal", "name": "烽火信号", "legacy": false, "requires": [], "cost": { "points": 1, "wood": 6 }, "effect": { "type": "risk_modifier", "args": { "warning_months": 1 } } },
+          { "id": "outpost_shaft", "name": "加固矿道", "legacy": false, "requires": ["outpost_signal"], "cost": { "points": 2, "ore": 8 }, "effect": { "type": "monthly_yield", "args": { "ore": 1 }, "tradeoff": { "garrison_required": 1 } } },
+          { "id": "outpost_relay", "name": "中继补给", "legacy": false, "requires": ["outpost_shaft"], "cost": { "points": 3, "food": 12, "wood": 10 }, "effect": { "type": "attack_modifier", "args": { "deep_room_bonus": 2 }, "conditional": { "if_garrison_at_least": 2 } } }
+        ]
+      }
+    }
+  },
+  "events": [
+    { "id": "ev_refugees_small", "category": "refugees", "weight": 10, "repeat_limit": 3, "deadline_months": 1, "trigger": { "min_month": 3 }, "choices": ["accept", "reject"], "default_choice": "reject", "facts": ["refugees_accepted", "refugees_rejected"] },
+    { "id": "ev_refugees_orchard", "category": "refugees", "weight": 6, "repeat_limit": 1, "deadline_months": 2, "trigger": { "min_month": 8 }, "choices": ["accept", "reject"], "default_choice": "reject", "facts": ["refugees_accepted"] },
+    { "id": "ev_talent_cook", "category": "talents", "weight": 8, "repeat_limit": 1, "deadline_months": 2, "trigger": { "min_month": 4 }, "choices": ["recruit", "decline"], "default_choice": "decline", "facts": ["talent_recruited_cook"] },
+    { "id": "ev_talent_general", "category": "talents", "weight": 5, "repeat_limit": 1, "deadline_months": 2, "trigger": { "min_month": 10 }, "choices": ["recruit", "decline"], "default_choice": "decline", "facts": ["talent_recruited_general"] },
+    { "id": "ev_trade_fair", "category": "trade", "weight": 7, "repeat_limit": 2, "deadline_months": 1, "trigger": { "require_building": "trading_post" }, "choices": ["trade", "skip"], "default_choice": "skip", "facts": ["trade_fair_used"] },
+    { "id": "ev_trade_caravan", "category": "trade", "weight": 5, "repeat_limit": 1, "deadline_months": 1, "trigger": { "require_building": "trading_post", "min_month": 6 }, "choices": ["escort", "decline"], "default_choice": "decline", "facts": ["caravan_escorted"] },
+    { "id": "ev_harvest_good", "category": "harvest", "weight": 9, "repeat_limit": 4, "deadline_months": 1, "trigger": { "season": "harvest" }, "choices": ["store", "sell"], "default_choice": "store", "facts": ["harvest_stored", "harvest_sold"] },
+    { "id": "ev_harvest_blight", "category": "harvest", "weight": 4, "repeat_limit": 2, "deadline_months": 1, "trigger": { "min_month": 5 }, "choices": ["burn", "salvage"], "default_choice": "salvage", "facts": ["blight_burned", "blight_salvaged"] },
+    { "id": "ev_expedition_map", "category": "expedition", "weight": 6, "repeat_limit": 2, "deadline_months": 2, "trigger": { "min_month": 6 }, "choices": ["buy_map", "ignore"], "default_choice": "ignore", "facts": ["map_bought"] },
+    { "id": "ev_expedition_wounded", "category": "expedition", "weight": 5, "repeat_limit": 3, "deadline_months": 1, "trigger": { "require_expedition": true }, "choices": ["heal", "send_home"], "default_choice": "send_home", "facts": ["wounded_healed", "wounded_returned"] },
+    { "id": "ev_outpost_raid", "category": "outpost", "weight": 5, "repeat_limit": 2, "deadline_months": 1, "trigger": { "require_building": "outpost_camp" }, "choices": ["reinforce", "abandon"], "default_choice": "reinforce", "facts": ["outpost_reinforced", "outpost_abandoned"] },
+    { "id": "ev_outpost_vein", "category": "outpost", "weight": 4, "repeat_limit": 1, "deadline_months": 2, "trigger": { "require_building": "outpost_camp", "min_month": 12 }, "choices": ["mine", "seal"], "default_choice": "seal", "facts": ["vein_mined"] }
+  ]
+}

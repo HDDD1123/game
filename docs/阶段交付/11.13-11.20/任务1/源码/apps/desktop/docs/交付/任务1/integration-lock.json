@@ -1,0 +1,17 @@
+﻿{
+  "integration_branch": "integration/v05-four-dsh",
+  "base_commit": "631df2c",
+  "task1_source_commit": "634f7a1",
+  "locked_modules": {
+    "task1": {"commit": "634f7a1", "status": "已有72点UI增量（部分包依赖任务2/3/4模块）"},
+    "task2": {"commit": null, "status": "未到达"},
+    "task3": {"commit": null, "status": "未到达"},
+    "task4": {"commit": null, "status": "未到达"}
+  },
+  "stages": {
+    "24": "partial (任务1自身可运行；缺任务2时间/任务3内容)",
+    "48": "blocked (等待任务2/3/4固定提交)",
+    "72": "blocked (等待任务2/3/4固定提交)"
+  },
+  "notes": "整合只按各机 delivery.json 的固定提交合入；不使用移动分支头。任务1的 UI 增量可独立运行与验收。"
+}

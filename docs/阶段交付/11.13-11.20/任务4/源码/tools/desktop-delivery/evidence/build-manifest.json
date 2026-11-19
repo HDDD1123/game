@@ -1,0 +1,1257 @@
+﻿{
+  "schema": "desktop-delivery/build-manifest/1",
+  "tool_version": "1.0.0",
+  "generated_at_utc": null,
+  "task": {
+    "id": "T4-08/T4-12",
+    "title": "可重复导出与资源诊断 + 阶段包与交付工具"
+  },
+  "project_dir": "apps/desktop",
+  "project": {
+    "name": "Kingdom Desktop Prototype",
+    "main_scene": "res://ui/main.tscn",
+    "features": [
+      "4.6",
+      "GL Compatibility"
+    ],
+    "config_version": 5,
+    "rendering_method": "gl_compatibility",
+    "viewport": {
+      "width": 960,
+      "height": 620
+    }
+  },
+  "engine": {
+    "expected_series": "4.6",
+    "expected_engine": "4.6.3",
+    "project_features": [
+      "4.6",
+      "GL Compatibility"
+    ],
+    "project_series": "4.6",
+    "preset_version_strings": [],
+    "preset_series": null,
+    "consistent": true,
+    "note": "静态核对只能确认 4.6 系；4.6.3 精确补丁版本与导出模板必须用引擎实机确认。"
+  },
+  "presets": [
+    {
+      "index": 0,
+      "name": "Windows Desktop",
+      "platform": "Windows Desktop",
+      "runnable": true,
+      "export_filter": "all_resources",
+      "include_filter": "*.json",
+      "exclude_filter": "",
+      "export_path": "builds/windows/KingdomDesktop.exe",
+      "custom_features": "",
+      "custom_template_debug": "",
+      "custom_template_release": "",
+      "binary_format_architecture": "x86_64",
+      "embed_pck": "false"
+    }
+  ],
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 28,
+      "sha256": "4eba3923a4bd3c0a7b213b84658662930db0d317f48e14ae07350a90a0497a19",
+      "kind": "other"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3867,
+      "sha256": "26879b0121b2826da898a242e1b28cc37d27cb92d7c3fb34278cdf2cec3ae890",
+      "kind": "doc"
+    },
+    {
+      "path": "VERIFICATION.md",
+      "bytes": 5415,
+      "sha256": "c5c7534c383ba5e9e477979284ab4f3d3a4343d79b5330f7863e315ab8cfb95c",
+      "kind": "doc"
+    },
+    {
+      "path": "core/balance.gd",
+      "bytes": 1867,
+      "sha256": "df99279afa50c00a0daf8f9dad61aeec36fea53fb3e0c84a63eea252b9a0eaae",
+      "kind": "script"
+    },
+    {
+      "path": "core/balance.gd.uid",
+      "bytes": 20,
+      "sha256": "b58b1e7c0671ed83647a4708ed103db9b293aca95d2a2162fedf88a7b4ae958b",
+      "kind": "meta"
+    },
+    {
+      "path": "core/building_skills.gd",
+      "bytes": 6029,
+      "sha256": "e055dd646997990ee16c850f58bef55fb19e22eb3d62c8dd00a9ad976e7a9971",
+      "kind": "script"
+    },
+    {
+      "path": "core/building_skills.gd.uid",
+      "bytes": 19,
+      "sha256": "0c5c08b7d57bc51c487a7af4eb70af76d474e128afa39ff5fc8440a483f3f283",
+      "kind": "meta"
+    },
+    {
+      "path": "core/farm_buffer.gd",
+      "bytes": 3728,
+      "sha256": "5a24098c2bb4fe84e1f467e675237b21b39b85bd31cd34df886b8f787a67dd5f",
+      "kind": "script"
+    },
+    {
+      "path": "core/farm_buffer.gd.uid",
+      "bytes": 20,
+      "sha256": "138733a04098093ed31b5039242ac866a157692fdceb6346e6060409e4a9b150",
+      "kind": "meta"
+    },
+    {
+      "path": "core/kingdom.gd",
+      "bytes": 21105,
+      "sha256": "c5064fce72501208c02b1f07806a8e684a62feb0d2d9b7b04cfe2e2811f4761d",
+      "kind": "script"
+    },
+    {
+      "path": "core/kingdom.gd.uid",
+      "bytes": 20,
+      "sha256": "92860070e86ea81b38d29e53a8cf70f3c6ab67dd7ed967e9619001a2917837af",
+      "kind": "meta"
+    },
+    {
+      "path": "core/save_store.gd",
+      "bytes": 3610,
+      "sha256": "03cceb537ff6a80b5ab4e3d4752ef89b4e71d429a20afe88d8d263421430cfa2",
+      "kind": "script"
+    },
+    {
+      "path": "core/save_store.gd.uid",
+      "bytes": 20,
+      "sha256": "07539725b5891eaf1c52bcac97694bed4fbb3d718447b95b90f1fb816f06f855",
+      "kind": "meta"
+    },
+    {
+      "path": "data/building_slots.json",
+      "bytes": 585,
+      "sha256": "d2725bf98bc8a4f0a0c37009cfa129d68eda424b34b9d91ab1e3ddc8dfdca0a1",
+      "kind": "data"
+    },
+    {
+      "path": "data/narrative/README.md",
+      "bytes": 5311,
+      "sha256": "25a96cc30abe6c71c2fd2c6a20f546100dea19024d05b11636e86387672d510e",
+      "kind": "doc"
+    },
+    {
+      "path": "data/narrative/endings.json",
+      "bytes": 12487,
+      "sha256": "30a42ef3da11d859083c28abfa5b5062a45d377322e24c3e89a3a0ae148ee2ed",
+      "kind": "data"
+    },
+    {
+      "path": "data/narrative/facts_schema.json",
+      "bytes": 16838,
+      "sha256": "0f307dfd970dfb387d7e637ce7b2754c3664ca498c29018f2127d8a01fef1444",
+      "kind": "data"
+    },
+    {
+      "path": "data/narrative/fixtures/fixture_insufficient_evidence.json",
+      "bytes": 1168,
+      "sha256": "c85434a6b1670a84772061f1f98038c00d78fd6b26fed9537e951c5b9270b441",
+      "kind": "data"
+    },
+    {
+      "path": "data/narrative/fixtures/fixture_multiple_failures_hunger.json",
+      "bytes": 2543,
+      "sha256": "0ac8851b6c8285b29418913db72543b47047973f09ac37e3f3807e24a311b299",
+      "kind": "data"
+    },
+    {
+      "path": "data/narrative/fixtures/fixture_new_game_no_expedition.json",
+      "bytes": 1636,
+      "sha256": "0187e02ecb900fe913e94db8231ecf4f040e73703b6dcfa5fda6f2e1a0d83758",
+      "kind": "data"
+    },
+    {
+      "path": "data/narrative/fixtures/fixture_player_ended.json",
+      "bytes": 2218,
+      "sha256": "a467264afbd82ae0a22f5bda780fd04db8bc7cc9452e765778c5e145e3a575c5",
+      "kind": "data"
+    },
+    {
+      "path": "data/narrative/handbook.json",
+      "bytes": 2071,
+      "sha256": "fe9960dd07d4b9a12c58ef584a44359570da02f24c9cdef29876e9efda41aac9",
+      "kind": "data"
+    },
+    {
+      "path": "data/narrative/onboarding.json",
+      "bytes": 3705,
+      "sha256": "e2a54e393b08c423e44051a2497cb9d734d3a677b7fc4aa0f19f23e9283b7dbd",
+      "kind": "data"
+    },
+    {
+      "path": "docs/task004-desktop.pdf",
+      "bytes": 239426,
+      "sha256": "1813ec78504f53121fd6232836a083498164f411c25154bdaade78359e3a1c23",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/交付/任务4/README.md",
+      "bytes": 8205,
+      "sha256": "9ce65fcbd28bc0df80ffc6846827b558961492e305398e002f6808f422f9dcff",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/交付/任务4/claims.json",
+      "bytes": 7947,
+      "sha256": "3bfd3357e9d6b379e9850102d8ac3a55191ede47118f4dec31d40a4192e45557",
+      "kind": "data"
+    },
+    {
+      "path": "docs/交付/任务4/content-manifest.json",
+      "bytes": 14586,
+      "sha256": "f3b0b5321119e0011690de2e1be6985ef6973e3ef3450e02af70be54e5b45a7e",
+      "kind": "data"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/delivery-tools-tests.log",
+      "bytes": 878,
+      "sha256": "9a74b6f0cf08c73a2fa71d1c2b9e88f9ef175068a39263321ab6a198e6f2e0be",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/export-check-blocked.log",
+      "bytes": 6661,
+      "sha256": "61bae12ffd70fd4439cf94931240ebc14d2aeec59147d605d75af9edb426b8fd",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/gdscript-lint.log",
+      "bytes": 36,
+      "sha256": "0021d03e4a208426c055254751914ddadcfd4b60d2a6574803942b3995afb471",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-import.log",
+      "bytes": 1399,
+      "sha256": "865586f23dc7ef7e9a7958c9d3abd36d77c648c48407177c3c7af8a78fa87e8a",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-narrative-render.log",
+      "bytes": 566,
+      "sha256": "96ebd851d458f40a815736b044296c88dc939909570004bcb135ff20e83e119b",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-onboarding-model.log",
+      "bytes": 567,
+      "sha256": "054c052047d3533c5316c5553c26513bea9cf9ecb2dd1fc27775e093ef9025c5",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-platform-services.log",
+      "bytes": 1724,
+      "sha256": "4d01c9165242ee694dc7a020d23d62cb4fb90ec4a776e82f96860393f5121e2a",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-summary.log",
+      "bytes": 1187,
+      "sha256": "58fb498509903e8fd1a88c76c50d84c754dc038111253ac73a689f0774005023",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-test_building_modules.log",
+      "bytes": 560,
+      "sha256": "31e078c73955ede7ba49d33dae53b83c737395ac004838b2736d8a6cdb4b55ed",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-test_core.log",
+      "bytes": 537,
+      "sha256": "d8f7ff50cc2fb252d89738d64b7f8e46e25439a6af076fa7ba4f9f8a998a5a32",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-test_decision_preview.log",
+      "bytes": 561,
+      "sha256": "643d23d2d799ed2ab8e71e38785c0b2d3eeca739af89ad78a23a4ddc10b0aeb7",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-test_street_workflow.log",
+      "bytes": 559,
+      "sha256": "8621a20eff6a2c158cb88050e6d961ba7abf8414ef285b239bbe2e67f0223aaa",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-test_ui.log",
+      "bytes": 537,
+      "sha256": "6b367d02d475d0933f85bf0a0377ae34509e541de588599fc1fd37c277215013",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-test_v04_regressions.log",
+      "bytes": 553,
+      "sha256": "1fad5f7a8b4045e65ce6e12ac16390c2494e010746d679bfc815cd157b3c828f",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-verify_004b.log",
+      "bytes": 592,
+      "sha256": "10e72c48be790776ff248ea433104d9176e33d1d8d90d8bdf56118ada300b7af",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/godot-verify_005.log",
+      "bytes": 541,
+      "sha256": "5cc721d58bad49f04baada6ed202fa3a8accc1f689d7dee697cb32957e609b20",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/narrative-validation.log",
+      "bytes": 4356,
+      "sha256": "d481d8f5d8c934fb02ec35af9a9b4a183a075b6010dfeb45a8124b42b83baeb8",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/typing-build.log",
+      "bytes": 650,
+      "sha256": "1ec20b21611d038c3ac352a69fcf7545c8b936c457236cda9e562c4a1e2bb359",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/typing-helper-tests.log",
+      "bytes": 4130,
+      "sha256": "a3dedb37e01bd72135ff0ffe0c33bf3137970bb93a0aa19faf6979e159e3ff1a",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/typing-live-20261117-200456.log",
+      "bytes": 808,
+      "sha256": "ee7b7843fb7df8fa9596330089b994ed8d04ef3ecc6d64d3b5d3b79fa37805b3",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/evidence/typing-selftest.log",
+      "bytes": 272,
+      "sha256": "5e1fc88480e97d9fa0bff3ef8e85397ca1c9b6623f093650ee8a7c547542650d",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/tests.log",
+      "bytes": 4236,
+      "sha256": "688d0ce637c3670c9a524f2ddcd5520c532af5bd4f64f9c3a28201a05e1ff815",
+      "kind": "other"
+    },
+    {
+      "path": "docs/交付/任务4/创意候选.md",
+      "bytes": 31943,
+      "sha256": "add72e96994f62038ea85b7a9db8953179bf3df9eb982de070da9e2e3a43e972",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/交付/任务4/启动说明.md",
+      "bytes": 7027,
+      "sha256": "8445787a8302ea8822445d593b13118ddd1c12415d81abf5862ccb02c1a435d7",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/交付/任务4/未测项.md",
+      "bytes": 3476,
+      "sha256": "8c0957bb5a77d4ccdcbb9af1a493467579f278cb8f62e954c92f3c6d0ac82a8d",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/交付/任务4/说明.txt",
+      "bytes": 6244,
+      "sha256": "c2b78071c117af14c052f906929c347e2665b9f91587d637f064771abbc43803",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务004C_实机验收与交付.md",
+      "bytes": 5502,
+      "sha256": "442acc48775a460fa3d8b75e0e2777c122c3019f294488730b207056ba60eb03",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务004_Windows桌面底座.md",
+      "bytes": 5356,
+      "sha256": "3ce51379343ecdede68fdb96dbaa235afabfe744ccbfbb3f9aec35fcfdd3a72c",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务005E_修复接入与实机验收.md",
+      "bytes": 5620,
+      "sha256": "72d7bf158694d0f27866079c0c31861a0553af030b2c6aae66694ba025409d2d",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务005_交付边界与验证.md",
+      "bytes": 971,
+      "sha256": "044f94e16e2319b4e1d0fa9089919acdc1aa2c01ae6c0904eac9e6bc1497bd74",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务005_底部街景与建筑技能树.md",
+      "bytes": 8411,
+      "sha256": "fb51639b8c7c74f0d07f15bac451486b968c5955c22cb1afaef1d410d8814a2d",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务006_优化接入与美术准备.md",
+      "bytes": 6505,
+      "sha256": "8e5adf7589debf4ce43308e20942198b0d3ceeffa98ac44c8578585fb93a0970",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务006后续_验收补齐与农田图片接入.md",
+      "bytes": 7163,
+      "sha256": "7f12937a3a81278902c01acdf15e8bc6ba33f3cb30e544cc227dd2f096b8054f",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务1.md",
+      "bytes": 6292,
+      "sha256": "8d20c06af01c9e08a8f18dc11dc8be0f2f914b7a5cf26bd57397621956bd5c6f",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务2.md",
+      "bytes": 6538,
+      "sha256": "99b2563ab020f48ab75f31c32d3cb6f67db0fa09a0fe13952582906e85e012a3",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务3.md",
+      "bytes": 6638,
+      "sha256": "b3f1ecba39ab7001b74a94c1dc68d1c33c43863f9a6a120bf918e5e4b541ee7f",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/任务4.md",
+      "bytes": 7157,
+      "sha256": "e86b23d6703201e40bf0d9c8abdb675c610ed4fb5a24f94440952d1881e85a68",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/同类游戏调研与特色设计规范.md",
+      "bytes": 6509,
+      "sha256": "b87369c80793b085c9fd491d271ce498375b79078c71c52ff073a8a86d4c6901",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/四机并行总览.md",
+      "bytes": 9528,
+      "sha256": "2d61aa8b4966cffd62da3f57477a4af38e6924df9dce93b328a9a02dff775a3e",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/四机接口约定.md",
+      "bytes": 19122,
+      "sha256": "1e788134b14ac478236d94c32061ae717c3fb0fb072c9abbad1b30eb5687662a",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/建筑模块接线与验收.md",
+      "bytes": 6756,
+      "sha256": "2d69f35b14fcd1eb55e0d46066e2df0c6e1326f20e1c96dd0a406c8add1b817c",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/核心接口.md",
+      "bytes": 4651,
+      "sha256": "70d360ef8109c18047a79e2ed31e57f1a358c79250ac69c77bd4498aab8c1a62",
+      "kind": "doc"
+    },
+    {
+      "path": "docs/试玩反馈与技术决定.md",
+      "bytes": 4365,
+      "sha256": "3592a7f8235438af3b42c3d1ca7687747ec5e451b6a51050680782c624288ecc",
+      "kind": "doc"
+    },
+    {
+      "path": "export_presets.cfg",
+      "bytes": 1555,
+      "sha256": "954ef4c5e18052e3554d36a665a7bf95abce274e1d88478d9f54354103dbad78",
+      "kind": "config"
+    },
+    {
+      "path": "platform/bootstrap/startup_service.gd",
+      "bytes": 6266,
+      "sha256": "5a07508a2f67828e32ed7436838d82af85423f4584440c67885a0a1b76ac7de7",
+      "kind": "script"
+    },
+    {
+      "path": "platform/bootstrap/startup_service.gd.uid",
+      "bytes": 20,
+      "sha256": "3b8eecc5bfd0a326707f96ebaf21ef2730cf6395b0e727fef653b936d2e5f38d",
+      "kind": "meta"
+    },
+    {
+      "path": "platform/desktop/window_metrics.gd",
+      "bytes": 3576,
+      "sha256": "e042b516f2dee8609776c2cf70c037ad2e4c6bc8a2bed86bfed3818ca78a4a90",
+      "kind": "script"
+    },
+    {
+      "path": "platform/desktop/window_metrics.gd.uid",
+      "bytes": 20,
+      "sha256": "90d13bf74e0e2fa54140b85ef9cc1a22531a993fa20434fab56c464894f1cf1c",
+      "kind": "meta"
+    },
+    {
+      "path": "platform/narrative/history_renderer.gd",
+      "bytes": 12655,
+      "sha256": "055b62650f211fd67a7eed3ae1960ab4e85df31db6e03fbeaec1e315d9df6aac",
+      "kind": "script"
+    },
+    {
+      "path": "platform/narrative/history_renderer.gd.uid",
+      "bytes": 20,
+      "sha256": "7b05f6d8ed40386c7f9e8b0065031604a11cd7d06fce502f474418b97e5c17e2",
+      "kind": "meta"
+    },
+    {
+      "path": "platform/settings/settings_store.gd",
+      "bytes": 7303,
+      "sha256": "759a52194d3fb392c8fcb6825da95be43322609c501d7735e7aacceddd066e04",
+      "kind": "script"
+    },
+    {
+      "path": "platform/settings/settings_store.gd.uid",
+      "bytes": 20,
+      "sha256": "fa17619ede63672ba9acb252d755d8784a2687f2540e3848613fab165893bf66",
+      "kind": "meta"
+    },
+    {
+      "path": "platform/typing/typing_bridge.gd",
+      "bytes": 7225,
+      "sha256": "384e23b6d1340a8f7e1a0ca079ab1e3d823b04122b0071240dddc482d5364e93",
+      "kind": "script"
+    },
+    {
+      "path": "platform/typing/typing_bridge.gd.uid",
+      "bytes": 20,
+      "sha256": "cf251de6647b274904e838a5c76d605f5d4543d890b90e580aeff019f0777340",
+      "kind": "meta"
+    },
+    {
+      "path": "project.godot",
+      "bytes": 513,
+      "sha256": "b4c0e2056722c0fbdaeaf3d9f007e86559f56ac066f154eef7319dc096d909a1",
+      "kind": "config"
+    },
+    {
+      "path": "tests/task4/lint_gdscript.py",
+      "bytes": 6183,
+      "sha256": "fffdeafd129edb63602500910d08d9205b51a967d117f516e8a41fe7228ea341",
+      "kind": "other"
+    },
+    {
+      "path": "tests/task4/run_task4_checks.py",
+      "bytes": 7096,
+      "sha256": "50c3bd35cd6d7a9c0deb68e0fd2ff763890fd2355f641b164a467beecc47dbf5",
+      "kind": "other"
+    },
+    {
+      "path": "tests/task4/test_narrative_render.gd",
+      "bytes": 5331,
+      "sha256": "0683abd81163d00c8ea76aed3e6069649763d2f8ab2cf5c0235cf6f0b3506416",
+      "kind": "script"
+    },
+    {
+      "path": "tests/task4/test_narrative_render.gd.uid",
+      "bytes": 20,
+      "sha256": "b39b627abc51d80ea0853c5ee5b9ab221567daec70285e67ac53c8d8a01b2725",
+      "kind": "meta"
+    },
+    {
+      "path": "tests/task4/test_onboarding_model.gd",
+      "bytes": 2508,
+      "sha256": "c3836308a41da9a94819e5ccba62859ead95299a9a19bb5b53130798489abe56",
+      "kind": "script"
+    },
+    {
+      "path": "tests/task4/test_onboarding_model.gd.uid",
+      "bytes": 20,
+      "sha256": "13b625a869b0b65e14cd910d62d0c4ab93bd4aeaa51bcd3fc51cb8cfac3b3209",
+      "kind": "meta"
+    },
+    {
+      "path": "tests/task4/test_platform_services.gd",
+      "bytes": 8980,
+      "sha256": "51c6c18143684e0affc767990bd857539e5832ad946b0792836f2aac7a0f6e4f",
+      "kind": "script"
+    },
+    {
+      "path": "tests/task4/test_platform_services.gd.uid",
+      "bytes": 20,
+      "sha256": "b5b9e6af9f76322aa675ee788ebacb88a0782f48cd256f0d71eb8bebe79daa90",
+      "kind": "meta"
+    },
+    {
+      "path": "tests/task4/validate_narrative.py",
+      "bytes": 41316,
+      "sha256": "48dbee8b741ae6565672c1a7a812407829ff5f8f0fa92c9665e4880a47c79333",
+      "kind": "other"
+    },
+    {
+      "path": "tests/test_building_modules.gd",
+      "bytes": 6715,
+      "sha256": "b0b8499e5a46104165feebe5dbadfbf7cc89970ab371dd40fbccf5abe4035573",
+      "kind": "script"
+    },
+    {
+      "path": "tests/test_building_modules.gd.uid",
+      "bytes": 20,
+      "sha256": "58c3ff943bc82397ab46fa7c7baa674c904d1382d90216b34d1181fdcf294dc2",
+      "kind": "meta"
+    },
+    {
+      "path": "tests/test_core.gd",
+      "bytes": 6643,
+      "sha256": "72348670771f18bf8dff2212071ec242425874108281e7f468640a33832cd050",
+      "kind": "script"
+    },
+    {
+      "path": "tests/test_core.gd.uid",
+      "bytes": 19,
+      "sha256": "4605e508e28032d513c03bbad2ec40fe407fdacefee8664644dc45403ec43a98",
+      "kind": "meta"
+    },
+    {
+      "path": "tests/test_decision_preview.gd",
+      "bytes": 4330,
+      "sha256": "919b04dac9ce2bcc01c6a722a757b3f11905a93d241809798c46f0321f7fcabf",
+      "kind": "script"
+    },
+    {
+      "path": "tests/test_decision_preview.gd.uid",
+      "bytes": 20,
+      "sha256": "2c9b5630c065aa1757fe083b3de2e0e01d3b1804a26996e6ba9615e6f5ea0a5d",
+      "kind": "meta"
+    },
+    {
+      "path": "tests/test_street_workflow.gd",
+      "bytes": 4621,
+      "sha256": "4ab2a418c6ca82d30c06e5c7f69a211ade4f31bb000b4948f5ae4a9bd54384ba",
+      "kind": "script"
+    },
+    {
+      "path": "tests/test_street_workflow.gd.uid",
+      "bytes": 19,
+      "sha256": "58788293f796aab49febf4b378f9aca301e863ca3862a312ed10cc7717418066",
+      "kind": "meta"
+    },
+    {
+      "path": "tests/test_ui.gd",
+      "bytes": 1503,
+      "sha256": "0a0aae7cf5f45ee79b526456d2fa2866d13f5e9bc0f57cfbb679ab283cd336a4",
+      "kind": "script"
+    },
+    {
+      "path": "tests/test_ui.gd.uid",
+      "bytes": 20,
+      "sha256": "b2e8f3f3d8672628530dcdccec2bcb857c4fa840b701addba8b1886bebbefa4c",
+      "kind": "meta"
+    },
+    {
+      "path": "tests/test_v04_regressions.gd",
+      "bytes": 7706,
+      "sha256": "aab10dcf161e261d69485487aef1fb18bde1c89f7ca0adbabc9dada9d77cc837",
+      "kind": "script"
+    },
+    {
+      "path": "tests/test_v04_regressions.gd.uid",
+      "bytes": 20,
+      "sha256": "f44f274a7633d4020718c67738af7d07042e94eaff96f182bc7e64d442edb68c",
+      "kind": "meta"
+    },
+    {
+      "path": "tests/verify_004b.gd",
+      "bytes": 3852,
+      "sha256": "5db85c31a8ac49291a74baf76ed678b6d4f6f737dde20569178d5d8a07635f44",
+      "kind": "script"
+    },
+    {
+      "path": "tests/verify_004b.gd.uid",
+      "bytes": 19,
+      "sha256": "23fa223ea0c6d1884f00c0ac61d12af167f718f507136528dfa30d9a94aba7fe",
+      "kind": "meta"
+    },
+    {
+      "path": "tests/verify_005.gd",
+      "bytes": 5773,
+      "sha256": "7411c6324614ab5b9b7518ad4d5d3fd838c7331c0870a54faa7b27d90b7bcc57",
+      "kind": "script"
+    },
+    {
+      "path": "tests/verify_005.gd.uid",
+      "bytes": 20,
+      "sha256": "5a71efb5c34db109b50024630ca0c993b62552ab172a7a3a4414951e0bfc986f",
+      "kind": "meta"
+    },
+    {
+      "path": "ui/main.gd",
+      "bytes": 28165,
+      "sha256": "a057b650ec805ba12dbec0dcfe2c5b83140a479366d5ea3d97cf6054b3e55f40",
+      "kind": "script"
+    },
+    {
+      "path": "ui/main.gd.uid",
+      "bytes": 20,
+      "sha256": "ae269883922ab4845674f45e6ff307fc5d1ea1395103d604f025f820b11e12dd",
+      "kind": "meta"
+    },
+    {
+      "path": "ui/main.tscn",
+      "bytes": 281,
+      "sha256": "e8c40a114f69adfafda51a2262c7188e7ce2913c90534b5ca46d0780da8b097a",
+      "kind": "scene"
+    },
+    {
+      "path": "ui/onboarding/onboarding_model.gd",
+      "bytes": 3951,
+      "sha256": "bf9b1301f534e18bafeadb913d2eb9dd6026dd1cf1ab191745d0c71a932de1d7",
+      "kind": "script"
+    },
+    {
+      "path": "ui/onboarding/onboarding_model.gd.uid",
+      "bytes": 20,
+      "sha256": "5dd52dc62f4bc810e2401dde39da5669c4ccb0bb2df705bf90f97417d1d9ee07",
+      "kind": "meta"
+    },
+    {
+      "path": "先读我.txt",
+      "bytes": 645,
+      "sha256": "902cf3de61e04943145bc8c478a38f3cb695baa03c70465fb76c443ba0378fe2",
+      "kind": "doc"
+    },
+    {
+      "path": "启动说明.txt",
+      "bytes": 1628,
+      "sha256": "6d3c0d585c67c4e2a8e708bbba520c12d75d402ac8d2f2ad306b778cd03e4f80",
+      "kind": "doc"
+    }
+  ],
+  "file_count": 114,
+  "total_bytes": 748835,
+  "extension_counts": {
+    "(none)": 1,
+    "cfg": 1,
+    "gd": 23,
+    "godot": 1,
+    "json": 11,
+    "log": 22,
+    "md": 24,
+    "pdf": 1,
+    "py": 3,
+    "tscn": 1,
+    "txt": 3,
+    "uid": 23
+  },
+  "kind_counts": {
+    "config": 2,
+    "data": 11,
+    "doc": 28,
+    "meta": 23,
+    "other": 26,
+    "scene": 1,
+    "script": 23
+  },
+  "groups": {
+    "(root)": {
+      "files": 7,
+      "bytes": 13651
+    },
+    "core": {
+      "files": 10,
+      "bytes": 36438
+    },
+    "data": {
+      "files": 10,
+      "bytes": 48562
+    },
+    "docs": {
+      "files": 47,
+      "bytes": 467848
+    },
+    "platform": {
+      "files": 10,
+      "bytes": 37125
+    },
+    "tests": {
+      "files": 25,
+      "bytes": 112774
+    },
+    "ui": {
+      "files": 5,
+      "bytes": 32437
+    }
+  },
+  "categories": {
+    "data_json": {
+      "label": "data/*.json 运行数据",
+      "required": true,
+      "count": 9,
+      "files": [
+        "data/building_slots.json",
+        "data/narrative/endings.json",
+        "data/narrative/facts_schema.json",
+        "data/narrative/fixtures/fixture_insufficient_evidence.json",
+        "data/narrative/fixtures/fixture_multiple_failures_hunger.json",
+        "data/narrative/fixtures/fixture_new_game_no_expedition.json",
+        "data/narrative/fixtures/fixture_player_ended.json",
+        "data/narrative/handbook.json",
+        "data/narrative/onboarding.json"
+      ]
+    },
+    "ui_scene": {
+      "label": "ui/*.tscn 界面场景",
+      "required": true,
+      "count": 1,
+      "files": [
+        "ui/main.tscn"
+      ]
+    },
+    "fonts": {
+      "label": "字体资源（可选）",
+      "required": false,
+      "count": 0,
+      "files": []
+    },
+    "assets": {
+      "label": "assets/ 美术/音频（可选）",
+      "required": false,
+      "count": 0,
+      "files": []
+    }
+  },
+  "export_filters": {
+    "runtime_non_resource_files": [
+      "data/building_slots.json",
+      "data/narrative/endings.json",
+      "data/narrative/facts_schema.json",
+      "data/narrative/fixtures/fixture_insufficient_evidence.json",
+      "data/narrative/fixtures/fixture_multiple_failures_hunger.json",
+      "data/narrative/fixtures/fixture_new_game_no_expedition.json",
+      "data/narrative/fixtures/fixture_player_ended.json",
+      "data/narrative/handbook.json",
+      "data/narrative/onboarding.json",
+      "先读我.txt",
+      "启动说明.txt"
+    ],
+    "json_files": [
+      "data/building_slots.json",
+      "data/narrative/endings.json",
+      "data/narrative/facts_schema.json",
+      "data/narrative/fixtures/fixture_insufficient_evidence.json",
+      "data/narrative/fixtures/fixture_multiple_failures_hunger.json",
+      "data/narrative/fixtures/fixture_new_game_no_expedition.json",
+      "data/narrative/fixtures/fixture_player_ended.json",
+      "data/narrative/handbook.json",
+      "data/narrative/onboarding.json"
+    ],
+    "presets": [
+      {
+        "index": 0,
+        "name": "Windows Desktop",
+        "export_filter": "all_resources",
+        "include_filter": "*.json",
+        "exclude_filter": "",
+        "include_patterns": [
+          "*.json"
+        ],
+        "exclude_patterns": [],
+        "json_files": [
+          "data/building_slots.json",
+          "data/narrative/endings.json",
+          "data/narrative/facts_schema.json",
+          "data/narrative/fixtures/fixture_insufficient_evidence.json",
+          "data/narrative/fixtures/fixture_multiple_failures_hunger.json",
+          "data/narrative/fixtures/fixture_new_game_no_expedition.json",
+          "data/narrative/fixtures/fixture_player_ended.json",
+          "data/narrative/handbook.json",
+          "data/narrative/onboarding.json"
+        ],
+        "json_uncovered": [],
+        "excluded_non_resource_files": []
+      }
+    ]
+  },
+  "absolute_path_scan": {
+    "scanned_files": 36,
+    "leaks": []
+  },
+  "resource_references": {
+    "checked": 42,
+    "references": [
+      {
+        "file": "core/kingdom.gd",
+        "line": 4,
+        "ref": "res://core/balance.gd"
+      },
+      {
+        "file": "core/kingdom.gd",
+        "line": 5,
+        "ref": "res://core/farm_buffer.gd"
+      },
+      {
+        "file": "core/kingdom.gd",
+        "line": 6,
+        "ref": "res://core/building_skills.gd"
+      },
+      {
+        "file": "docs/交付/任务4/claims.json",
+        "line": 32,
+        "ref": "res://tests/task4/test_platform_services.gd"
+      },
+      {
+        "file": "docs/交付/任务4/claims.json",
+        "line": 41,
+        "ref": "res://tests/task4/test_narrative_render.gd"
+      },
+      {
+        "file": "docs/交付/任务4/claims.json",
+        "line": 50,
+        "ref": "res://tests/task4/test_onboarding_model.gd"
+      },
+      {
+        "file": "platform/bootstrap/startup_service.gd",
+        "line": 22,
+        "ref": "res://project.godot"
+      },
+      {
+        "file": "platform/bootstrap/startup_service.gd",
+        "line": 23,
+        "ref": "res://ui/main.tscn"
+      },
+      {
+        "file": "platform/bootstrap/startup_service.gd",
+        "line": 24,
+        "ref": "res://data/building_slots.json"
+      },
+      {
+        "file": "platform/narrative/history_renderer.gd",
+        "line": 18,
+        "ref": "res://data/narrative/endings.json"
+      },
+      {
+        "file": "platform/narrative/history_renderer.gd",
+        "line": 19,
+        "ref": "res://data/narrative/handbook.json"
+      },
+      {
+        "file": "tests/task4/test_narrative_render.gd",
+        "line": 4,
+        "ref": "res://tests/task4/test_narrative_render.gd"
+      },
+      {
+        "file": "tests/task4/test_narrative_render.gd",
+        "line": 7,
+        "ref": "res://platform/narrative/history_renderer.gd"
+      },
+      {
+        "file": "tests/task4/test_narrative_render.gd",
+        "line": 9,
+        "ref": "res://data/narrative/fixtures/fixture_new_game_no_expedition.json"
+      },
+      {
+        "file": "tests/task4/test_narrative_render.gd",
+        "line": 10,
+        "ref": "res://data/narrative/fixtures/fixture_multiple_failures_hunger.json"
+      },
+      {
+        "file": "tests/task4/test_narrative_render.gd",
+        "line": 11,
+        "ref": "res://data/narrative/fixtures/fixture_player_ended.json"
+      },
+      {
+        "file": "tests/task4/test_narrative_render.gd",
+        "line": 12,
+        "ref": "res://data/narrative/fixtures/fixture_insufficient_evidence.json"
+      },
+      {
+        "file": "tests/task4/test_onboarding_model.gd",
+        "line": 4,
+        "ref": "res://tests/task4/test_onboarding_model.gd"
+      },
+      {
+        "file": "tests/task4/test_onboarding_model.gd",
+        "line": 6,
+        "ref": "res://ui/onboarding/onboarding_model.gd"
+      },
+      {
+        "file": "tests/task4/test_platform_services.gd",
+        "line": 5,
+        "ref": "res://tests/task4/test_platform_services.gd"
+      },
+      {
+        "file": "tests/task4/test_platform_services.gd",
+        "line": 8,
+        "ref": "res://platform/settings/settings_store.gd"
+      },
+      {
+        "file": "tests/task4/test_platform_services.gd",
+        "line": 9,
+        "ref": "res://platform/bootstrap/startup_service.gd"
+      },
+      {
+        "file": "tests/task4/test_platform_services.gd",
+        "line": 10,
+        "ref": "res://platform/typing/typing_bridge.gd"
+      },
+      {
+        "file": "tests/task4/test_platform_services.gd",
+        "line": 11,
+        "ref": "res://platform/desktop/window_metrics.gd"
+      },
+      {
+        "file": "tests/task4/test_platform_services.gd",
+        "line": 155,
+        "ref": "res://__no_such_helper__.exe"
+      },
+      {
+        "file": "tests/test_building_modules.gd",
+        "line": 2,
+        "ref": "res://core/building_skills.gd"
+      },
+      {
+        "file": "tests/test_building_modules.gd",
+        "line": 3,
+        "ref": "res://core/farm_buffer.gd"
+      },
+      {
+        "file": "tests/test_core.gd",
+        "line": 4,
+        "ref": "res://core/kingdom.gd"
+      },
+      {
+        "file": "tests/test_core.gd",
+        "line": 5,
+        "ref": "res://core/save_store.gd"
+      },
+      {
+        "file": "tests/test_decision_preview.gd",
+        "line": 3,
+        "ref": "res://core/kingdom.gd"
+      },
+      {
+        "file": "tests/test_street_workflow.gd",
+        "line": 15,
+        "ref": "res://ui/main.tscn"
+      },
+      {
+        "file": "tests/test_ui.gd",
+        "line": 16,
+        "ref": "res://ui/main.tscn"
+      },
+      {
+        "file": "tests/test_v04_regressions.gd",
+        "line": 3,
+        "ref": "res://core/kingdom.gd"
+      },
+      {
+        "file": "tests/test_v04_regressions.gd",
+        "line": 4,
+        "ref": "res://core/save_store.gd"
+      },
+      {
+        "file": "tests/verify_004b.gd",
+        "line": 22,
+        "ref": "res://ui/main.tscn"
+      },
+      {
+        "file": "tests/verify_005.gd",
+        "line": 27,
+        "ref": "res://ui/main.tscn"
+      },
+      {
+        "file": "ui/main.gd",
+        "line": 4,
+        "ref": "res://core/kingdom.gd"
+      },
+      {
+        "file": "ui/main.gd",
+        "line": 5,
+        "ref": "res://core/save_store.gd"
+      },
+      {
+        "file": "ui/main.gd",
+        "line": 170,
+        "ref": "res://data/building_slots.json"
+      },
+      {
+        "file": "ui/main.tscn",
+        "line": 3,
+        "ref": "res://ui/main.gd"
+      },
+      {
+        "file": "ui/onboarding/onboarding_model.gd",
+        "line": 9,
+        "ref": "res://data/narrative/onboarding.json"
+      },
+      {
+        "file": "ui/onboarding/onboarding_model.gd",
+        "line": 11,
+        "ref": "res://data/narrative/onboarding.json"
+      }
+    ],
+    "missing": [
+      {
+        "file": "tests/task4/test_platform_services.gd",
+        "line": 155,
+        "ref": "res://__no_such_helper__.exe"
+      }
+    ]
+  },
+  "import_cache": {
+    "godot_dir_exists": true,
+    "note": "导入缓存格式与引擎版本相关；干净目录导出前需要重新 import。"
+  },
+  "helper": {
+    "path": "tools/windows-typing",
+    "exists": true,
+    "files": [
+      {
+        "path": "tools/windows-typing/.gitignore",
+        "bytes": 81,
+        "sha256": "b9090305902246299d499c8d21f240f7e177832da71ad56fd88abb7542b2512c"
+      },
+      {
+        "path": "tools/windows-typing/bin/build-manifest.json",
+        "bytes": 429,
+        "sha256": "8e4371bc6ad7d1bc6f7ebc5747934f3b5f0c9e6a083330815111cd60191c9cd7"
+      },
+      {
+        "path": "tools/windows-typing/bin/TypingCounter.exe",
+        "bytes": 12288,
+        "sha256": "91e678606337b75c5b56badf7972f395a20859691e1d64b73d18289e3322818d"
+      },
+      {
+        "path": "tools/windows-typing/build.ps1",
+        "bytes": 2145,
+        "sha256": "b0ee586572e0740be411f20fbace3c72a07c55682b259fa582605fe3c0ee7a2b"
+      },
+      {
+        "path": "tools/windows-typing/README.md",
+        "bytes": 4460,
+        "sha256": "24adafe12c08819afef40488caf63e1af7c9bbd07ceb4e73052872bc197d1524"
+      },
+      {
+        "path": "tools/windows-typing/TypingCounter.cs",
+        "bytes": 20347,
+        "sha256": "00c407d87993d7f5ea9ac63c638de0802cd657cfe810f5dbfae95013d1c1896f"
+      },
+      {
+        "path": "tools/windows-typing/verify-live.ps1",
+        "bytes": 6494,
+        "sha256": "b6f8a3d5b8187b808ad13f5168ec95f147138ad8d8831fb9ae83ecaacfea63a5"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "id": "project-file",
+      "level": "PASS",
+      "message": "找到 apps/desktop/project.godot。"
+    },
+    {
+      "id": "export-presets-file",
+      "level": "PASS",
+      "message": "找到导出预设：'Windows Desktop'。"
+    },
+    {
+      "id": "windows-preset",
+      "level": "PASS",
+      "message": "存在 Windows 导出预设：'Windows Desktop'（platform='Windows Desktop'）。命令行预设名大小写和空格敏感。"
+    },
+    {
+      "id": "main-scene",
+      "level": "PASS",
+      "message": "主场景 res://ui/main.tscn 存在。"
+    },
+    {
+      "id": "required-data-json",
+      "level": "PASS",
+      "message": "data/ 下有 9 个 JSON：data/building_slots.json, data/narrative/endings.json, data/narrative/facts_schema.json, data/narrative/fixtures/fixture_insufficient_evidence.json, data/narrative/fixtures/fixture_multiple_failures_hunger.json, data/narrative/fixtures/fixture_new_game_no_expedition.json, data/narrative/fixtures/fixture_player_ended.json, data/narrative/handbook.json, data/narrative/onboarding.json"
+    },
+    {
+      "id": "required-ui-scene",
+      "level": "PASS",
+      "message": "ui/ 下有 1 个场景：ui/main.tscn"
+    },
+    {
+      "id": "optional-fonts",
+      "level": "INFO",
+      "message": "未发现fonts/ 或 .ttf/.otf（该项可选；当前工程没有也不影响静态清单，但正式包缺字体/美术时需说明）。"
+    },
+    {
+      "id": "optional-assets",
+      "level": "INFO",
+      "message": "未发现assets/（该项可选；当前工程没有也不影响静态清单，但正式包缺字体/美术时需说明）。"
+    },
+    {
+      "id": "import-cache",
+      "level": "INFO",
+      "message": "存在 .godot/ 导入缓存（未校验是否与当前源码一致；干净目录导出前应先 `--import` 生成）。"
+    },
+    {
+      "id": "clean-room",
+      "level": "PASS",
+      "message": "工程内没有 builds/ 或 dist/ 输出目录（干净目录基线）。"
+    },
+    {
+      "id": "preset-output-0",
+      "level": "INFO",
+      "message": "预设 'Windows Desktop' 的输出目录 builds/windows/ 尚不存在（干净检出正常）；Godot 不会自动创建目录，导出前需 mkdir，export_check.py --run 会自动创建。"
+    },
+    {
+      "id": "absolute-path-leak",
+      "level": "PASS",
+      "message": "扫描 36 个 .json/.tscn/.cfg/.gd 文件，未发现本机绝对路径（盘符、UNC、POSIX 绝对路径、文件 URL 四类规则均未命中）。"
+    },
+    {
+      "id": "resource-references",
+      "level": "WARN",
+      "message": "静态提取到 42 处 res:// 引用，其中 1 处对应文件不存在；可能是运行时拼接路径，也可能是真的缺文件，需人工确认：",
+      "evidence": [
+        "tests/task4/test_platform_services.gd:155: res://__no_such_helper__.exe"
+      ]
+    },
+    {
+      "id": "export-filter-preset-0",
+      "level": "PASS",
+      "message": "预设 'Windows Desktop' 的 include_filter 覆盖了全部 9 个 JSON 文件。"
+    },
+    {
+      "id": "helper-location",
+      "level": "INFO",
+      "message": "发现 tools/windows-typing/（7 个文件，含 tools/windows-typing/bin/TypingCounter.exe）。该目录在 Godot 工程之外，不会进入 PCK；发布时必须把助手可执行文件随 exe 一起分发，并保持可选（助手缺失时主游戏仍应能启动，需实机验证）。"
+    },
+    {
+      "id": "engine-project-feature",
+      "level": "PASS",
+      "message": "project.godot 声明 '4.6'（4.6 系），与任务要求的 4.6 系（4.6.3）一致；精确补丁版本仍需 godot --version 核对。"
+    },
+    {
+      "id": "engine-preset-crosscheck",
+      "level": "INFO",
+      "message": "export_presets.cfg 没有引擎版本字段或自定义模板路径，无法交叉核对；当前以 project.godot 的 4.6 系为准，4.6.3 的精确版本需实机 `godot --version` 确认。"
+    }
+  ],
+  "summary": {
+    "pass": 10,
+    "warn": 1,
+    "fail": 0,
+    "info": 6,
+    "status": "warn"
+  },
+  "inputs": {
+    "project_godot_sha256": "b4c0e2056722c0fbdaeaf3d9f007e86559f56ac066f154eef7319dc096d909a1",
+    "export_presets_sha256": "954ef4c5e18052e3554d36a665a7bf95abce274e1d88478d9f54354103dbad78"
+  }
+}

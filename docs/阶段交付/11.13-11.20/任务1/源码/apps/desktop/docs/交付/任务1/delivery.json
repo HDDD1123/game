@@ -1,0 +1,36 @@
+{
+  "task_id": "task1",
+  "stage_points": 72,
+  "task_revision": "R2",
+  "base_commit": "631df2c",
+  "source_commit": "634f7a1",
+  "completed_packages": ["T1-01", "T1-02", "T1-03", "T1-04"],
+  "partial_packages": ["T1-05", "T1-06", "T1-07", "T1-08", "T1-09", "T1-10", "T1-11", "T1-12"],
+  "ready_for_integration": false,
+  "tests": {
+    "test_core": "42 checks, 0 failures",
+    "test_ui": "8 checks, 0 failures",
+    "test_building_modules": "59 checks, 0 failures",
+    "test_v04_regressions": "63 checks, 0 failures",
+    "verify_004b": "17 checks, 0 failures",
+    "verify_005": "27 checks, 0 failures",
+    "test_decision_preview": "23 checks, 0 failures",
+    "test_street_workflow": "24 checks, 0 failures",
+    "task1_layout": "15 checks, 0 failures (720/960/2536 宽)",
+    "task1_panels": "8 checks, 0 failures (人才/手记/设置/字号)"
+  },
+  "known_gaps": [
+    "T1-05：两棵新建筑树（商栈/前哨）与 24 节点依赖任务3内容目录；当前只显示原三树并在面板注明",
+    "T1-06：人才面板是 UI 外壳，职业/性格/寿命依赖任务3人才数据与任务2生命状态",
+    "T1-07：事件期限/队列/多暂停原因依赖任务2事件模块；当前只有单事件暂停",
+    "T1-08：据点/采矿状态依赖任务3模块；当前无",
+    "T1-09：向导/史书是本地最小版，未接任务4组件；成就可以浏览，教程为静态提示",
+    "T1-10：音量/减少动画未接音频与动画系统；键盘焦点顺序与对比度未逐项验收",
+    "T1-11：真实鼠标操作与视频未做；125% 缩放/副屏未测（本机 150%、单屏）",
+    "T1-12：整合分支已建并锁定任务1提交，等待任务2/3/4固定提交；24/48/72 整合包未构建",
+    "建筑图片为程序生成的临时占位（6 张），非正式美术；素材来源与许可另行记录"
+  ],
+  "screenshots": ["layout_720.png", "layout_960.png", "layout_full.png"],
+  "integration_branch": "integration/v05-four-dsh",
+  "integration_lock_commit": "296981e"
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "fixture_notice": "虚构样例，仅用于校验/预览；不是真实存档，也不代表任何真实玩家数据。",
+  "scenario_id": "fixture_insufficient_evidence",
+  "scenario": "事实集为空且计数全为0，仅足以说明'无法判定'；用于验证中性叙述与证据不足分支。",
+  "evidence_gaps": [
+    "没有结局事实，无法确认本局是否已结束",
+    "没有远征、饥饿或战斗事实，无法叙述具体经历",
+    "计数为0只表示当前快照尚未累计，不能当作真实玩家的最终结果"
+  ],
+  "facts": [],
+  "counters": {
+    "expedition_count": 0,
+    "expedition_failure_count": 0,
+    "expedition_success_count": 0,
+    "battle_loss_count": 0,
+    "starvation_month_count": 0,
+    "total_casualties": 0,
+    "buildings_completed": 0,
+    "talents_recruited": 0,
+    "talents_lost": 0,
+    "strongholds_gained": 0,
+    "strongholds_lost": 0,
+    "milestone_count": 0,
+    "months_played": 0,
+    "fact_count": 0
+  },
+  "expected": {
+    "eligible_ending_ids": ["ending_exited_midway"],
+    "selected_ending_id": "ending_exited_midway",
+    "evidence_sufficient": false
+  }
+}

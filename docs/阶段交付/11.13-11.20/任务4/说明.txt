@@ -1,0 +1,59 @@
+﻿任务4 阶段24 交付说明（返工版 + 中控修正）
+==========================================
+
+原交付：新DSH-C，ZIP 无 git 提交（20261118 返工版）
+整合：文件覆盖到 integration/v05-four-dsh，整合提交 f931de3
+
+返工版修掉的 8 项
+----------------
+1) startup_service.gd：Godot 的 JSON 数字是 float（4 -> 4.0），原代码只认 TYPE_INT，
+   真实 v4/v5 存档会被误判成"缺整数版本 -> 损坏"。已改为接受整数值的 float。
+2) history_renderer.gd：空事实时 ending_exited_midway（只要求 fact_absent ending）也命中，
+   "没有记录"被当成"中途退出"。已加 has_evidence，空输入直接走中性兜底。
+3) test_narrative_render.gd：断言"所有 fixture 的预览都带出 preview_only"，
+   但两个 fixture 本身有 ending 事实，永远不可能满足。已按证据条件断言。
+4) settings_store.gd set_value：`var current := load_preferences().preferences` 类型推断失败，
+   设置分节编译不过，平台测试静默少跑 14 项。已显式标注 Dictionary。
+5) settings_store.gd RANGES：用 Vector2 存边界导致 1.6 存成 32 位浮点，读回不相等。
+   已改成 [min, max] 数组 + float()。
+6) 补齐 .uid 文件。
+
+中控修正的 3 处
+--------------
+1) content-manifest.json：原 build-manifest.json 的哈希对不上（生成顺序问题）。
+   已按原始字节重算 74 个文件，统一 content_hash 聚合口径
+   （按路径排序的 path\0sha256\n 拼接后再 SHA-256），74/74 匹配。
+2) delivery.json：补 integration_mode="file_overlay" + 说明
+   （本机无 git，source_commit=null；按仓库相对路径覆盖整合）。
+3) content_hash / content_file_count / content_total_bytes 同步更新。
+
+验证（Godot 4.6.3.stable.official.7d41c59c4）
+--------------------------------------------
+- 任务4：test_platform_services 48 / test_narrative_render 66 / test_onboarding_model 12，0 失败
+- 任务3：test_content_catalog 38 / test_simulator_replay 12，0 失败
+- 原 8 组：263，0 失败
+- 合计 439 项，0 失败，无 SCRIPT ERROR
+- C# 助手 build + --self-test PASS
+- Python：delivery tools 13 OK、narrative 校验 OK=32 FAIL=0、lint 0 问题、build-manifest PASS 10/WARN 1/FAIL 0
+
+文件组织
+--------
+源码/ 下按仓库路径组织，可直接复制覆盖：
+- apps/desktop/platform/（bootstrap/desktop/narrative/settings/typing）
+- apps/desktop/ui/onboarding/
+- apps/desktop/data/narrative/（endings/facts_schema/handbook/onboarding + 4 fixtures）
+- apps/desktop/tests/task4/（3 个 GDScript 测试 + 2 个 Python）
+- apps/desktop/docs/交付/任务4/（delivery.json、content-manifest.json、claims.json、tests.log、
+  evidence/*.log、说明、未测项、启动说明、创意候选）
+- apps/desktop/export_presets.cfg（include_filter="*.json"）
+- tools/windows-typing/（C# 助手 + build.ps1 + verify-live.ps1）
+- tools/desktop-delivery/（清单/导出检查/交付合成/启动说明/单测）
+
+未测（不写成通过）
+----------------
+- 启动到首个可操作界面的耗时（冷/热各 10 次）
+- CPU/GPU/内存采样与渲染优化
+- 10 次热启动 + 2 小时在线观察
+- 真实后台打字（低完整性会话 SendInput 被 UIPI 拒绝，需普通权限跑 verify-live.ps1）
+- 输入桥真实子进程 spawn/kill
+- 导出与 24/48/72 阶段包（未装导出模板）

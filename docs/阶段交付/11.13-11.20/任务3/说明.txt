@@ -1,0 +1,49 @@
+﻿任务3 阶段24 交付说明（返工版 + 中控修正）
+==========================================
+
+原交付：新DSH-B，提交 0fe8505（本地孤儿历史，无上游 .git）
+整合：patch 已应用到 integration/v05-four-dsh，整合提交 8897d7a
+
+交付内容
+--------
+- T3-01 创意候选（3 款作品 6 条观察、6 建筑/4 单位/12 技能候选）
+- T3-02 内容目录与校验器（catalog.json + content_catalog.gd + content_rules.gd，38 项测试）
+- T3-03 经营模拟与重放（simulator.gd，只用 act/snapshot/view；12 项测试）
+- T3-04 资源曲线与候选（6 组曲线 720 行 + 2 个单变量候选）
+
+中控修正的 3 处
+--------------
+1) run_candidates.ps1：
+   - 补 UTF-8 BOM（Windows PowerShell 5.1 否则按 GBK 解析，报「字符串缺少结束引号」）
+   - $root 从 ../../.. 改为 ../../../..（原路径只到 apps，复制不到项目）
+2) catalog.json：
+   - 6 个建筑补 wired_to_kingdom=false（README 已说明该字段，但数据里缺失）
+3) docs/交付/任务3/delivery.json：
+   - 同步 ZIP 根目录的修正版（原 in-repo 仍是旧版 ready_for_integration=true）
+   - 补 base_commit=631df2c、source_commit=0fe8505 及说明
+
+验证
+----
+T3-02 38 项、T3-03 12 项、原 8 组 263 项，全部 0 失败，无 SCRIPT ERROR。
+
+文件组织
+--------
+源码/ 下按仓库路径组织（apps/desktop/...），可直接复制覆盖：
+- core/content/（content_catalog.gd、content_rules.gd）
+- data/content/catalog.json
+- tests/task3/
+- tools/balance_lab/（simulator、run_curves、run_candidates.sh/.ps1、README）
+- experiments/task3/（曲线 CSV/JSONL、summary、候选）
+- docs/交付/任务3/（README、delivery.json、创意候选、数据报告）
+
+另附：
+- 任务3-阶段24.patch（原返工 patch，35 文件，修正前）
+- 任务3-阶段24-修正版.patch（相对 631df2c，含中控 3 处修正，可直接 git apply）
+- content-manifest.json（LF 归一后 35 文件 SHA-256，修正前）
+- tests.log（原交付实测记录）
+
+注意
+----
+- 历史与上游不相干，不能 merge；按 patch 应用或直接复制 源码/。
+- 商栈/前哨营地尚未接入 Kingdom 核心（wired_to_kingdom=false），等任务2 接线。
+- content-manifest.json 是修正前的 35 文件哈希；本次修正改了 catalog.json、run_candidates.ps1、delivery.json 三个文件，核对时以仓库当前内容为准。

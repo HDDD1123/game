@@ -1,0 +1,396 @@
+{
+  "schema": 1,
+  "task_id": "T4",
+  "base_commit": "631df2c",
+  "note": "sha256 基于文件原始字节（不做行尾归一）；content_hash 为按路径排序的 path\\0sha256\\n 拼接后再 SHA-256；本清单在全部文件定稿后生成。",
+  "scope": [
+    "tools/windows-typing",
+    "tools/desktop-delivery",
+    "apps/desktop/platform",
+    "apps/desktop/ui/onboarding",
+    "apps/desktop/data/narrative",
+    "apps/desktop/tests/task4",
+    "apps/desktop/docs/交付/任务4",
+    "apps/desktop/export_presets.cfg"
+  ],
+  "excluded": [
+    "apps/desktop/docs/交付/任务4/content-manifest.json",
+    "apps/desktop/docs/交付/任务4/delivery.json",
+    "apps/desktop/docs/交付/任务4/delivery_detail.json"
+  ],
+  "file_count": 74,
+  "total_bytes": 470034,
+  "content_hash": "9b7075bf4177c524814b8692b8b5236da48ecf95c177927f109394dc851a6b09",
+  "files": [
+    {
+      "path": "apps/desktop/data/narrative/README.md",
+      "bytes": 5311,
+      "sha256": "25a96cc30abe6c71c2fd2c6a20f546100dea19024d05b11636e86387672d510e"
+    },
+    {
+      "path": "apps/desktop/data/narrative/endings.json",
+      "bytes": 12487,
+      "sha256": "30a42ef3da11d859083c28abfa5b5062a45d377322e24c3e89a3a0ae148ee2ed"
+    },
+    {
+      "path": "apps/desktop/data/narrative/facts_schema.json",
+      "bytes": 16838,
+      "sha256": "0f307dfd970dfb387d7e637ce7b2754c3664ca498c29018f2127d8a01fef1444"
+    },
+    {
+      "path": "apps/desktop/data/narrative/fixtures/fixture_insufficient_evidence.json",
+      "bytes": 1168,
+      "sha256": "c85434a6b1670a84772061f1f98038c00d78fd6b26fed9537e951c5b9270b441"
+    },
+    {
+      "path": "apps/desktop/data/narrative/fixtures/fixture_multiple_failures_hunger.json",
+      "bytes": 2543,
+      "sha256": "0ac8851b6c8285b29418913db72543b47047973f09ac37e3f3807e24a311b299"
+    },
+    {
+      "path": "apps/desktop/data/narrative/fixtures/fixture_new_game_no_expedition.json",
+      "bytes": 1636,
+      "sha256": "0187e02ecb900fe913e94db8231ecf4f040e73703b6dcfa5fda6f2e1a0d83758"
+    },
+    {
+      "path": "apps/desktop/data/narrative/fixtures/fixture_player_ended.json",
+      "bytes": 2218,
+      "sha256": "a467264afbd82ae0a22f5bda780fd04db8bc7cc9452e765778c5e145e3a575c5"
+    },
+    {
+      "path": "apps/desktop/data/narrative/handbook.json",
+      "bytes": 2071,
+      "sha256": "fe9960dd07d4b9a12c58ef584a44359570da02f24c9cdef29876e9efda41aac9"
+    },
+    {
+      "path": "apps/desktop/data/narrative/onboarding.json",
+      "bytes": 3705,
+      "sha256": "e2a54e393b08c423e44051a2497cb9d734d3a677b7fc4aa0f19f23e9283b7dbd"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/README.md",
+      "bytes": 8205,
+      "sha256": "9ce65fcbd28bc0df80ffc6846827b558961492e305398e002f6808f422f9dcff"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/claims.json",
+      "bytes": 7947,
+      "sha256": "3bfd3357e9d6b379e9850102d8ac3a55191ede47118f4dec31d40a4192e45557"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/delivery-tools-tests.log",
+      "bytes": 878,
+      "sha256": "9a74b6f0cf08c73a2fa71d1c2b9e88f9ef175068a39263321ab6a198e6f2e0be"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/export-check-blocked.log",
+      "bytes": 6661,
+      "sha256": "61bae12ffd70fd4439cf94931240ebc14d2aeec59147d605d75af9edb426b8fd"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/gdscript-lint.log",
+      "bytes": 36,
+      "sha256": "0021d03e4a208426c055254751914ddadcfd4b60d2a6574803942b3995afb471"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-import.log",
+      "bytes": 1399,
+      "sha256": "865586f23dc7ef7e9a7958c9d3abd36d77c648c48407177c3c7af8a78fa87e8a"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-narrative-render.log",
+      "bytes": 566,
+      "sha256": "96ebd851d458f40a815736b044296c88dc939909570004bcb135ff20e83e119b"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-onboarding-model.log",
+      "bytes": 567,
+      "sha256": "054c052047d3533c5316c5553c26513bea9cf9ecb2dd1fc27775e093ef9025c5"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-platform-services.log",
+      "bytes": 1724,
+      "sha256": "4d01c9165242ee694dc7a020d23d62cb4fb90ec4a776e82f96860393f5121e2a"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-summary.log",
+      "bytes": 1187,
+      "sha256": "58fb498509903e8fd1a88c76c50d84c754dc038111253ac73a689f0774005023"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-test_building_modules.log",
+      "bytes": 560,
+      "sha256": "31e078c73955ede7ba49d33dae53b83c737395ac004838b2736d8a6cdb4b55ed"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-test_core.log",
+      "bytes": 537,
+      "sha256": "d8f7ff50cc2fb252d89738d64b7f8e46e25439a6af076fa7ba4f9f8a998a5a32"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-test_decision_preview.log",
+      "bytes": 561,
+      "sha256": "643d23d2d799ed2ab8e71e38785c0b2d3eeca739af89ad78a23a4ddc10b0aeb7"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-test_street_workflow.log",
+      "bytes": 559,
+      "sha256": "8621a20eff6a2c158cb88050e6d961ba7abf8414ef285b239bbe2e67f0223aaa"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-test_ui.log",
+      "bytes": 537,
+      "sha256": "6b367d02d475d0933f85bf0a0377ae34509e541de588599fc1fd37c277215013"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-test_v04_regressions.log",
+      "bytes": 553,
+      "sha256": "1fad5f7a8b4045e65ce6e12ac16390c2494e010746d679bfc815cd157b3c828f"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-verify_004b.log",
+      "bytes": 592,
+      "sha256": "10e72c48be790776ff248ea433104d9176e33d1d8d90d8bdf56118ada300b7af"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/godot-verify_005.log",
+      "bytes": 541,
+      "sha256": "5cc721d58bad49f04baada6ed202fa3a8accc1f689d7dee697cb32957e609b20"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/narrative-validation.log",
+      "bytes": 4356,
+      "sha256": "d481d8f5d8c934fb02ec35af9a9b4a183a075b6010dfeb45a8124b42b83baeb8"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/typing-build.log",
+      "bytes": 650,
+      "sha256": "1ec20b21611d038c3ac352a69fcf7545c8b936c457236cda9e562c4a1e2bb359"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/typing-helper-tests.log",
+      "bytes": 4130,
+      "sha256": "a3dedb37e01bd72135ff0ffe0c33bf3137970bb93a0aa19faf6979e159e3ff1a"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/typing-live-20261117-200456.log",
+      "bytes": 808,
+      "sha256": "ee7b7843fb7df8fa9596330089b994ed8d04ef3ecc6d64d3b5d3b79fa37805b3"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/evidence/typing-selftest.log",
+      "bytes": 272,
+      "sha256": "5e1fc88480e97d9fa0bff3ef8e85397ca1c9b6623f093650ee8a7c547542650d"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/tests.log",
+      "bytes": 4236,
+      "sha256": "688d0ce637c3670c9a524f2ddcd5520c532af5bd4f64f9c3a28201a05e1ff815"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/创意候选.md",
+      "bytes": 31943,
+      "sha256": "add72e96994f62038ea85b7a9db8953179bf3df9eb982de070da9e2e3a43e972"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/启动说明.md",
+      "bytes": 7027,
+      "sha256": "8445787a8302ea8822445d593b13118ddd1c12415d81abf5862ccb02c1a435d7"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/未测项.md",
+      "bytes": 3476,
+      "sha256": "8c0957bb5a77d4ccdcbb9af1a493467579f278cb8f62e954c92f3c6d0ac82a8d"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/说明.txt",
+      "bytes": 6244,
+      "sha256": "c2b78071c117af14c052f906929c347e2665b9f91587d637f064771abbc43803"
+    },
+    {
+      "path": "apps/desktop/export_presets.cfg",
+      "bytes": 1555,
+      "sha256": "954ef4c5e18052e3554d36a665a7bf95abce274e1d88478d9f54354103dbad78"
+    },
+    {
+      "path": "apps/desktop/platform/bootstrap/startup_service.gd",
+      "bytes": 6266,
+      "sha256": "5a07508a2f67828e32ed7436838d82af85423f4584440c67885a0a1b76ac7de7"
+    },
+    {
+      "path": "apps/desktop/platform/bootstrap/startup_service.gd.uid",
+      "bytes": 20,
+      "sha256": "3b8eecc5bfd0a326707f96ebaf21ef2730cf6395b0e727fef653b936d2e5f38d"
+    },
+    {
+      "path": "apps/desktop/platform/desktop/window_metrics.gd",
+      "bytes": 3576,
+      "sha256": "e042b516f2dee8609776c2cf70c037ad2e4c6bc8a2bed86bfed3818ca78a4a90"
+    },
+    {
+      "path": "apps/desktop/platform/desktop/window_metrics.gd.uid",
+      "bytes": 20,
+      "sha256": "90d13bf74e0e2fa54140b85ef9cc1a22531a993fa20434fab56c464894f1cf1c"
+    },
+    {
+      "path": "apps/desktop/platform/narrative/history_renderer.gd",
+      "bytes": 12655,
+      "sha256": "055b62650f211fd67a7eed3ae1960ab4e85df31db6e03fbeaec1e315d9df6aac"
+    },
+    {
+      "path": "apps/desktop/platform/narrative/history_renderer.gd.uid",
+      "bytes": 20,
+      "sha256": "7b05f6d8ed40386c7f9e8b0065031604a11cd7d06fce502f474418b97e5c17e2"
+    },
+    {
+      "path": "apps/desktop/platform/settings/settings_store.gd",
+      "bytes": 7303,
+      "sha256": "759a52194d3fb392c8fcb6825da95be43322609c501d7735e7aacceddd066e04"
+    },
+    {
+      "path": "apps/desktop/platform/settings/settings_store.gd.uid",
+      "bytes": 20,
+      "sha256": "fa17619ede63672ba9acb252d755d8784a2687f2540e3848613fab165893bf66"
+    },
+    {
+      "path": "apps/desktop/platform/typing/typing_bridge.gd",
+      "bytes": 7225,
+      "sha256": "384e23b6d1340a8f7e1a0ca079ab1e3d823b04122b0071240dddc482d5364e93"
+    },
+    {
+      "path": "apps/desktop/platform/typing/typing_bridge.gd.uid",
+      "bytes": 20,
+      "sha256": "cf251de6647b274904e838a5c76d605f5d4543d890b90e580aeff019f0777340"
+    },
+    {
+      "path": "apps/desktop/tests/task4/lint_gdscript.py",
+      "bytes": 6183,
+      "sha256": "fffdeafd129edb63602500910d08d9205b51a967d117f516e8a41fe7228ea341"
+    },
+    {
+      "path": "apps/desktop/tests/task4/run_task4_checks.py",
+      "bytes": 7096,
+      "sha256": "50c3bd35cd6d7a9c0deb68e0fd2ff763890fd2355f641b164a467beecc47dbf5"
+    },
+    {
+      "path": "apps/desktop/tests/task4/test_narrative_render.gd",
+      "bytes": 5331,
+      "sha256": "0683abd81163d00c8ea76aed3e6069649763d2f8ab2cf5c0235cf6f0b3506416"
+    },
+    {
+      "path": "apps/desktop/tests/task4/test_narrative_render.gd.uid",
+      "bytes": 20,
+      "sha256": "b39b627abc51d80ea0853c5ee5b9ab221567daec70285e67ac53c8d8a01b2725"
+    },
+    {
+      "path": "apps/desktop/tests/task4/test_onboarding_model.gd",
+      "bytes": 2508,
+      "sha256": "c3836308a41da9a94819e5ccba62859ead95299a9a19bb5b53130798489abe56"
+    },
+    {
+      "path": "apps/desktop/tests/task4/test_onboarding_model.gd.uid",
+      "bytes": 20,
+      "sha256": "13b625a869b0b65e14cd910d62d0c4ab93bd4aeaa51bcd3fc51cb8cfac3b3209"
+    },
+    {
+      "path": "apps/desktop/tests/task4/test_platform_services.gd",
+      "bytes": 8980,
+      "sha256": "51c6c18143684e0affc767990bd857539e5832ad946b0792836f2aac7a0f6e4f"
+    },
+    {
+      "path": "apps/desktop/tests/task4/test_platform_services.gd.uid",
+      "bytes": 20,
+      "sha256": "b5b9e6af9f76322aa675ee788ebacb88a0782f48cd256f0d71eb8bebe79daa90"
+    },
+    {
+      "path": "apps/desktop/tests/task4/validate_narrative.py",
+      "bytes": 41316,
+      "sha256": "48dbee8b741ae6565672c1a7a812407829ff5f8f0fa92c9665e4880a47c79333"
+    },
+    {
+      "path": "apps/desktop/ui/onboarding/onboarding_model.gd",
+      "bytes": 3951,
+      "sha256": "bf9b1301f534e18bafeadb913d2eb9dd6026dd1cf1ab191745d0c71a932de1d7"
+    },
+    {
+      "path": "apps/desktop/ui/onboarding/onboarding_model.gd.uid",
+      "bytes": 20,
+      "sha256": "5dd52dc62f4bc810e2401dde39da5669c4ccb0bb2df705bf90f97417d1d9ee07"
+    },
+    {
+      "path": "tools/desktop-delivery/README.md",
+      "bytes": 8276,
+      "sha256": "bc60c7d9404b9493dd44b3ab9edc199f9ab3c45672d94f90b60315647e02b1df"
+    },
+    {
+      "path": "tools/desktop-delivery/build_manifest.py",
+      "bytes": 17152,
+      "sha256": "a55cfbceaea04f1b13b716b598eac2e2a03d29187846f61ca31b134821c8b1ea"
+    },
+    {
+      "path": "tools/desktop-delivery/content_manifest.py",
+      "bytes": 4302,
+      "sha256": "6c655ea4c14acdabf390da2d175af60ba0a01941bf1abd9c659ab2ac66b12a76"
+    },
+    {
+      "path": "tools/desktop-delivery/delivery.py",
+      "bytes": 21709,
+      "sha256": "11a4f4a40250989008f4acf984c63b79a7ab22e100b741bbd6804fc97ffe18a4"
+    },
+    {
+      "path": "tools/desktop-delivery/delivery_common.py",
+      "bytes": 24769,
+      "sha256": "6138e83b4d828a821e1430004c569c01f541deacd1c7402e3369a809223a34a0"
+    },
+    {
+      "path": "tools/desktop-delivery/evidence/build-manifest.json",
+      "bytes": 40112,
+      "sha256": "e798265aa3281e230071a56e94a8bb949b250cf1965e6a4677d7e6c6edeae62c"
+    },
+    {
+      "path": "tools/desktop-delivery/export_check.py",
+      "bytes": 22164,
+      "sha256": "22d9ff12f94cb2f6cc0595057871e0cb6a9afa710b381c83f53093943d2728a0"
+    },
+    {
+      "path": "tools/desktop-delivery/finalize_delivery.py",
+      "bytes": 7273,
+      "sha256": "d18182352e643a7ef3eb9ed332405bae822489f25482aef31fe957be8e747880"
+    },
+    {
+      "path": "tools/desktop-delivery/startup_notes.py",
+      "bytes": 16176,
+      "sha256": "719b3f7ad7ca3cc1debd4ab55112811035e09ab93100f08c10016944c3b65f4f"
+    },
+    {
+      "path": "tools/desktop-delivery/tests/test_delivery_tools.py",
+      "bytes": 15720,
+      "sha256": "61d65146864c1bbb33b7fceb77814e9c9ccd22744c1b51c67f8f605b11775b87"
+    },
+    {
+      "path": "tools/windows-typing/.gitignore",
+      "bytes": 81,
+      "sha256": "b9090305902246299d499c8d21f240f7e177832da71ad56fd88abb7542b2512c"
+    },
+    {
+      "path": "tools/windows-typing/README.md",
+      "bytes": 4460,
+      "sha256": "24adafe12c08819afef40488caf63e1af7c9bbd07ceb4e73052872bc197d1524"
+    },
+    {
+      "path": "tools/windows-typing/TypingCounter.cs",
+      "bytes": 20347,
+      "sha256": "00c407d87993d7f5ea9ac63c638de0802cd657cfe810f5dbfae95013d1c1896f"
+    },
+    {
+      "path": "tools/windows-typing/build.ps1",
+      "bytes": 2145,
+      "sha256": "b0ee586572e0740be411f20fbace3c72a07c55682b259fa582605fe3c0ee7a2b"
+    },
+    {
+      "path": "tools/windows-typing/verify-live.ps1",
+      "bytes": 6494,
+      "sha256": "b6f8a3d5b8187b808ad13f5168ec95f147138ad8d8831fb9ae83ecaacfea63a5"
+    }
+  ]
+}

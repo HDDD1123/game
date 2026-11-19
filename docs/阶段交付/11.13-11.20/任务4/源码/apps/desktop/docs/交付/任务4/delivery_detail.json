@@ -1,0 +1,468 @@
+{
+  "schema": "desktop-delivery/delivery/1",
+  "tool_version": "1.0.0",
+  "generated_at_utc": "2026-11-18T14:38:42Z",
+  "task": {
+    "id": "T4",
+    "title": "启动、桌面运行、后台输入与叙事交付（72点，R2）· 返工版",
+    "stage": "24"
+  },
+  "git_commit": null,
+  "git_commit_unavailable_reason": "本机没有 git 可执行文件，仓库根目录也没有 .git，无法得到真实提交号；delivery.json 按约定写 null，不伪造。",
+  "engine_version": {
+    "expected_series": "4.6",
+    "expected_engine": "4.6.3",
+    "reported_by_project": "4.6",
+    "consistent": true,
+    "preset_version_strings": [],
+    "note": "静态核对只能确认 4.6 系；4.6.3 精确补丁版本与导出模板必须用引擎实机确认。"
+  },
+  "modules": [
+    {
+      "name": "platform-settings",
+      "version": "1",
+      "path": "apps/desktop/platform/settings/settings_store.gd",
+      "exists": true,
+      "sha256": "759a52194d3fb392c8fcb6825da95be43322609c501d7735e7aacceddd066e04",
+      "sha256_source": "filesystem",
+      "bytes": 7303
+    },
+    {
+      "name": "platform-bootstrap",
+      "version": "1",
+      "path": "apps/desktop/platform/bootstrap/startup_service.gd",
+      "exists": true,
+      "sha256": "5a07508a2f67828e32ed7436838d82af85423f4584440c67885a0a1b76ac7de7",
+      "sha256_source": "filesystem",
+      "bytes": 6266
+    },
+    {
+      "name": "platform-typing-bridge",
+      "version": "1",
+      "path": "apps/desktop/platform/typing/typing_bridge.gd",
+      "exists": true,
+      "sha256": "384e23b6d1340a8f7e1a0ca079ab1e3d823b04122b0071240dddc482d5364e93",
+      "sha256_source": "filesystem",
+      "bytes": 7225
+    },
+    {
+      "name": "platform-desktop-window",
+      "version": "1",
+      "path": "apps/desktop/platform/desktop/window_metrics.gd",
+      "exists": true,
+      "sha256": "e042b516f2dee8609776c2cf70c037ad2e4c6bc8a2bed86bfed3818ca78a4a90",
+      "sha256_source": "filesystem",
+      "bytes": 3576
+    },
+    {
+      "name": "platform-narrative",
+      "version": "1",
+      "path": "apps/desktop/platform/narrative/history_renderer.gd",
+      "exists": true,
+      "sha256": "055b62650f211fd67a7eed3ae1960ab4e85df31db6e03fbeaec1e315d9df6aac",
+      "sha256_source": "filesystem",
+      "bytes": 12655
+    },
+    {
+      "name": "ui-onboarding-model",
+      "version": "1",
+      "path": "apps/desktop/ui/onboarding/onboarding_model.gd",
+      "exists": true,
+      "sha256": "bf9b1301f534e18bafeadb913d2eb9dd6026dd1cf1ab191745d0c71a932de1d7",
+      "sha256_source": "filesystem",
+      "bytes": 3951
+    },
+    {
+      "name": "windows-typing-helper",
+      "version": "1",
+      "path": "tools/windows-typing/TypingCounter.cs",
+      "exists": true,
+      "sha256": "00c407d87993d7f5ea9ac63c638de0802cd657cfe810f5dbfae95013d1c1896f",
+      "sha256_source": "filesystem",
+      "bytes": 20347
+    },
+    {
+      "name": "narrative-data",
+      "version": "1",
+      "path": "apps/desktop/data/narrative/endings.json",
+      "exists": true,
+      "sha256": "30a42ef3da11d859083c28abfa5b5062a45d377322e24c3e89a3a0ae148ee2ed",
+      "sha256_source": "filesystem",
+      "bytes": 12487
+    },
+    {
+      "name": "desktop-delivery-tools",
+      "version": "1",
+      "path": "tools/desktop-delivery/build_manifest.py",
+      "exists": true,
+      "sha256": "a55cfbceaea04f1b13b716b598eac2e2a03d29187846f61ca31b134821c8b1ea",
+      "sha256_source": "filesystem",
+      "bytes": 17152
+    }
+  ],
+  "tests": [
+    {
+      "id": "godot-platform-services",
+      "name": "引擎测试：平台层（设置/启动诊断/输入桥校验/窗口几何）",
+      "command": "godot --headless --path apps/desktop --script res://tests/task4/test_platform_services.gd",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/godot-platform-services.log",
+      "evidence_exists": true,
+      "evidence_bytes": 1724,
+      "notes": []
+    },
+    {
+      "id": "godot-narrative-render",
+      "name": "引擎测试：史书/结局渲染",
+      "command": "godot --headless --path apps/desktop --script res://tests/task4/test_narrative_render.gd",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/godot-narrative-render.log",
+      "evidence_exists": true,
+      "evidence_bytes": 566,
+      "notes": []
+    },
+    {
+      "id": "godot-onboarding-model",
+      "name": "引擎测试：向导模型",
+      "command": "godot --headless --path apps/desktop --script res://tests/task4/test_onboarding_model.gd",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/godot-onboarding-model.log",
+      "evidence_exists": true,
+      "evidence_bytes": 567,
+      "notes": []
+    },
+    {
+      "id": "godot-regression-263",
+      "name": "引擎回归：原有 8 组 263 项",
+      "command": "python apps/desktop/tests/task4/run_task4_checks.py（逐条调用 godot --headless --script）",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/godot-summary.log",
+      "evidence_exists": true,
+      "evidence_bytes": 1187,
+      "notes": []
+    },
+    {
+      "id": "typing-helper-build",
+      "name": "C# 助手构建（Windows 自带 csc.exe）",
+      "command": "powershell -ExecutionPolicy Bypass -File tools/windows-typing/build.ps1",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/typing-build.log",
+      "evidence_exists": true,
+      "evidence_bytes": 650,
+      "notes": []
+    },
+    {
+      "id": "typing-selftest",
+      "name": "输入助手判定逻辑自检（合成事件）",
+      "command": "tools/windows-typing/bin/TypingCounter.exe --self-test",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/typing-selftest.log",
+      "evidence_exists": true,
+      "evidence_bytes": 272,
+      "notes": []
+    },
+    {
+      "id": "typing-protocol-tests",
+      "name": "助手协议行、shutdown、stdin EOF、畸形输入",
+      "command": "python tests/task4/test_typing_helper.py",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/typing-helper-tests.log",
+      "evidence_exists": true,
+      "evidence_bytes": 4130,
+      "notes": []
+    },
+    {
+      "id": "narrative-data-validation",
+      "name": "叙事数据静态校验（schema/fixtures/文本扫描）",
+      "command": "python apps/desktop/tests/task4/validate_narrative.py --root .",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/narrative-validation.log",
+      "evidence_exists": true,
+      "evidence_bytes": 4356,
+      "notes": []
+    },
+    {
+      "id": "gdscript-static-lint",
+      "name": "无引擎 GDScript 静态体检（已被引擎测试取代，保留作快速筛查）",
+      "command": "python apps/desktop/tests/task4/lint_gdscript.py --root .",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/gdscript-lint.log",
+      "evidence_exists": true,
+      "evidence_bytes": 36,
+      "notes": []
+    },
+    {
+      "id": "delivery-tools-tests",
+      "name": "交付工具单元测试（假仓库/版本不符/路径泄漏/证据规则）",
+      "command": "python -m unittest discover -s tools/desktop-delivery/tests",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/delivery-tools-tests.log",
+      "evidence_exists": true,
+      "evidence_bytes": 878,
+      "notes": []
+    },
+    {
+      "id": "build-manifest-static",
+      "name": "真实工程静态清单与资源/过滤诊断",
+      "command": "python tools/desktop-delivery/build_manifest.py --root . --json",
+      "ran": true,
+      "result": "passed",
+      "status": "passed",
+      "verified": true,
+      "evidence": "tools/desktop-delivery/evidence/build-manifest.json",
+      "evidence_exists": true,
+      "evidence_bytes": 40112,
+      "notes": []
+    },
+    {
+      "id": "export-check",
+      "name": "导出链路检查",
+      "command": "python tools/desktop-delivery/export_check.py --root . --json",
+      "ran": true,
+      "result": "unverified",
+      "status": "unverified",
+      "verified": false,
+      "evidence": "apps/desktop/docs/交付/任务4/evidence/export-check-blocked.log",
+      "evidence_exists": true,
+      "evidence_bytes": 6661,
+      "notes": [
+        "claim 自述未验证。"
+      ]
+    }
+  ],
+  "untested": [
+    {
+      "item": "启动到首个可操作界面的耗时（冷/热启动，T4-01）",
+      "source": "claims"
+    },
+    {
+      "item": "CPU/GPU/内存采样与渲染优化（T4-07）",
+      "source": "claims"
+    },
+    {
+      "item": "导出包内资源与 PCK 冒烟（T4-08）",
+      "source": "claims"
+    },
+    {
+      "item": "24/48/72 阶段包与干净目录发布验证（T4-12）",
+      "source": "claims"
+    },
+    {
+      "item": "助手统计真实后台打字与注入按键（低完整性会话无法验证）",
+      "source": "claims"
+    },
+    {
+      "item": "游戏失焦时的输入联调与额度只消耗一次（T4-06）",
+      "source": "claims"
+    },
+    {
+      "item": "存档检查逻辑对真实 v4/v5 存档与坏档的表现（只用临时文件测过，未触碰真实存档）",
+      "source": "claims"
+    },
+    {
+      "item": "窗口几何在真实多显示器/DPI 下的表现（只做了纯函数测试）",
+      "source": "claims"
+    },
+    {
+      "item": "git 提交号（本机没有 git/.git，无法记录）",
+      "source": "auto"
+    },
+    {
+      "item": "导出预设与引擎版本的交叉核对（export_presets.cfg 无版本字段，只能实机核对）",
+      "source": "auto"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "tools/windows-typing/bin/TypingCounter.exe",
+      "kind": null,
+      "exists": true,
+      "bytes": 12288,
+      "sha256": "91e678606337b75c5b56badf7972f395a20859691e1d64b73d18289e3322818d"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/README.md",
+      "kind": null,
+      "exists": true,
+      "bytes": 8205,
+      "sha256": "9ce65fcbd28bc0df80ffc6846827b558961492e305398e002f6808f422f9dcff"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/未测项.md",
+      "kind": null,
+      "exists": true,
+      "bytes": 3476,
+      "sha256": "8c0957bb5a77d4ccdcbb9af1a493467579f278cb8f62e954c92f3c6d0ac82a8d"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/启动说明.md",
+      "kind": null,
+      "exists": true,
+      "bytes": 7027,
+      "sha256": "8445787a8302ea8822445d593b13118ddd1c12415d81abf5862ccb02c1a435d7"
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务4/content-manifest.json",
+      "kind": null,
+      "exists": true,
+      "bytes": 14586,
+      "sha256": "f3b0b5321119e0011690de2e1be6985ef6973e3ef3450e02af70be54e5b45a7e"
+    }
+  ],
+  "manifest": {
+    "summary": {
+      "pass": 10,
+      "warn": 1,
+      "fail": 0,
+      "info": 6,
+      "status": "warn"
+    },
+    "source": "generated-in-memory",
+    "sha256": "0f3eaf73a686408c6acfe640385b6d20a4803b4de916c986aa6266021ee9abc7"
+  },
+  "diagnostics": {
+    "manifest_summary": {
+      "pass": 10,
+      "warn": 1,
+      "fail": 0,
+      "info": 6,
+      "status": "warn"
+    },
+    "checks": [
+      {
+        "id": "project-file",
+        "level": "PASS",
+        "message": "找到 apps/desktop/project.godot。"
+      },
+      {
+        "id": "export-presets-file",
+        "level": "PASS",
+        "message": "找到导出预设：'Windows Desktop'。"
+      },
+      {
+        "id": "windows-preset",
+        "level": "PASS",
+        "message": "存在 Windows 导出预设：'Windows Desktop'（platform='Windows Desktop'）。命令行预设名大小写和空格敏感。"
+      },
+      {
+        "id": "main-scene",
+        "level": "PASS",
+        "message": "主场景 res://ui/main.tscn 存在。"
+      },
+      {
+        "id": "required-data-json",
+        "level": "PASS",
+        "message": "data/ 下有 9 个 JSON：data/building_slots.json, data/narrative/endings.json, data/narrative/facts_schema.json, data/narrative/fixtures/fixture_insufficient_evidence.json, data/narrative/fixtures/fixture_multiple_failures_hunger.json, data/narrative/fixtures/fixture_new_game_no_expedition.json, data/narrative/fixtures/fixture_player_ended.json, data/narrative/handbook.json, data/narrative/onboarding.json"
+      },
+      {
+        "id": "required-ui-scene",
+        "level": "PASS",
+        "message": "ui/ 下有 1 个场景：ui/main.tscn"
+      },
+      {
+        "id": "optional-fonts",
+        "level": "INFO",
+        "message": "未发现fonts/ 或 .ttf/.otf（该项可选；当前工程没有也不影响静态清单，但正式包缺字体/美术时需说明）。"
+      },
+      {
+        "id": "optional-assets",
+        "level": "INFO",
+        "message": "未发现assets/（该项可选；当前工程没有也不影响静态清单，但正式包缺字体/美术时需说明）。"
+      },
+      {
+        "id": "import-cache",
+        "level": "INFO",
+        "message": "存在 .godot/ 导入缓存（未校验是否与当前源码一致；干净目录导出前应先 `--import` 生成）。"
+      },
+      {
+        "id": "clean-room",
+        "level": "PASS",
+        "message": "工程内没有 builds/ 或 dist/ 输出目录（干净目录基线）。"
+      },
+      {
+        "id": "preset-output-0",
+        "level": "INFO",
+        "message": "预设 'Windows Desktop' 的输出目录 builds/windows/ 尚不存在（干净检出正常）；Godot 不会自动创建目录，导出前需 mkdir，export_check.py --run 会自动创建。"
+      },
+      {
+        "id": "absolute-path-leak",
+        "level": "PASS",
+        "message": "扫描 36 个 .json/.tscn/.cfg/.gd 文件，未发现本机绝对路径（盘符、UNC、POSIX 绝对路径、文件 URL 四类规则均未命中）。"
+      },
+      {
+        "id": "resource-references",
+        "level": "WARN",
+        "message": "静态提取到 42 处 res:// 引用，其中 1 处对应文件不存在；可能是运行时拼接路径，也可能是真的缺文件，需人工确认："
+      },
+      {
+        "id": "export-filter-preset-0",
+        "level": "PASS",
+        "message": "预设 'Windows Desktop' 的 include_filter 覆盖了全部 9 个 JSON 文件。"
+      },
+      {
+        "id": "helper-location",
+        "level": "INFO",
+        "message": "发现 tools/windows-typing/（7 个文件，含 tools/windows-typing/bin/TypingCounter.exe）。该目录在 Godot 工程之外，不会进入 PCK；发布时必须把助手可执行文件随 exe 一起分发，并保持可选（助手缺失时主游戏仍应能启动，需实机验证）。"
+      },
+      {
+        "id": "engine-project-feature",
+        "level": "PASS",
+        "message": "project.godot 声明 '4.6'（4.6 系），与任务要求的 4.6 系（4.6.3）一致；精确补丁版本仍需 godot --version 核对。"
+      },
+      {
+        "id": "engine-preset-crosscheck",
+        "level": "INFO",
+        "message": "export_presets.cfg 没有引擎版本字段或自定义模板路径，无法交叉核对；当前以 project.godot 的 4.6 系为准，4.6.3 的精确版本需实机 `godot --version` 确认。"
+      }
+    ],
+    "warnings": []
+  },
+  "claims_file": {
+    "path": "apps/desktop/docs/交付/任务4/claims.json",
+    "sha256": "3bfd3357e9d6b379e9850102d8ac3a55191ede47118f4dec31d40a4192e45557"
+  },
+  "summary": {
+    "tests_total": 12,
+    "tests_passed_verified": 11,
+    "tests_failed": 0,
+    "tests_skipped": 0,
+    "tests_unverified": 1,
+    "modules": 9,
+    "artifacts": 5,
+    "artifacts_missing": 0,
+    "untested": 10,
+    "hard_failures": [],
+    "status": "unverified"
+  },
+  "status": "unverified"
+}

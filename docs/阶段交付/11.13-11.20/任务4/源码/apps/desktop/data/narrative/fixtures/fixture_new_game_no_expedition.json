@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "fixture_notice": "虚构样例，仅用于校验/预览；不是真实存档，也不代表任何真实玩家数据。",
+  "scenario_id": "fixture_new_game_no_expedition",
+  "scenario": "全新开局，经营了3个游戏月，从未出兵，也没有结局事实。",
+  "facts": [
+    {
+      "type": "construction_completed",
+      "fact_id": "fx1-f-0001",
+      "game_month": 0,
+      "building_id": "granary",
+      "cost_wood": 40,
+      "slot_index": 0
+    },
+    {
+      "type": "construction_completed",
+      "fact_id": "fx1-f-0002",
+      "game_month": 1,
+      "building_id": "farm_plot",
+      "cost_wood": 20
+    },
+    {
+      "type": "talent_recruited",
+      "fact_id": "fx1-f-0003",
+      "game_month": 1,
+      "talent_id": "fx-talent-steward-01",
+      "role": "civil",
+      "profession_id": "steward"
+    },
+    {
+      "type": "harvest_summary",
+      "fact_id": "fx1-f-0004",
+      "game_month": 2,
+      "food_harvested": 120,
+      "food_consumed": 100,
+      "food_stored": 60
+    }
+  ],
+  "counters": {
+    "expedition_count": 0,
+    "expedition_failure_count": 0,
+    "expedition_success_count": 0,
+    "battle_loss_count": 0,
+    "starvation_month_count": 0,
+    "total_casualties": 0,
+    "buildings_completed": 2,
+    "talents_recruited": 1,
+    "talents_lost": 0,
+    "strongholds_gained": 0,
+    "strongholds_lost": 0,
+    "milestone_count": 0,
+    "months_played": 3,
+    "fact_count": 4
+  },
+  "expected": {
+    "eligible_ending_ids": ["ending_no_expedition", "ending_exited_midway"],
+    "selected_ending_id": "ending_no_expedition",
+    "evidence_sufficient": true
+  }
+}

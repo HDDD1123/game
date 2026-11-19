@@ -1,0 +1,92 @@
+任务4 交付包说明（返工版，B 方案：ZIP 回传）
+============================================
+
+0. 这一版修了什么
+-----------------
+中控在 Godot 4.6.3 上实测出 6 项失败，已全部修掉；另外自查时又发现并修了 2 项：
+
+1) startup_service.gd：Godot 的 JSON.parse_string 把数字解析成 float（4 -> 4.0），
+   原代码只认 TYPE_INT，于是真实 v4/v5 存档会被误判成"缺整数版本 -> 损坏"。
+   已改为接受"整数值的 float"，非整值才判损坏。        -> 3 项失败转绿
+2) history_renderer.gd：空事实时 ending_exited_midway（只要求 fact_absent ending）也命中，
+   "没有记录"被当成"中途退出"。已加 has_evidence：facts 与 counters 都空时直接走中性兜底。
+   -> 1 项转绿
+3) test_narrative_render.gd：断言"所有 fixture 的预览模式都带出 preview_only"，
+   但两个 fixture 本身有 ending 事实，永远不可能满足。已改成按证据条件断言：
+   无 ending 事实且 months_played >= 1。没有放宽数据去迎合测试。   -> 2 项转绿
+4) settings_store.gd set_value：`var current := load_preferences().preferences` 无法推断类型，
+   整个 settings 分节编译失败，平台测试因此静默少跑 14 项（中控看到的 34 项就是残缺计数）。
+   已显式标注 Dictionary。                                   -> 48 项补齐，0 失败
+5) settings_store.gd RANGES：边界用 Vector2 存，分量是 32 位浮点（1.6 -> 1.60000002），
+   写进去读回来不相等。已改成 [min, max] 数组 + float()。      -> 精度断言转绿
+
+1. 三个测试的真实结果（Godot 4.6.3.stable.official.7d41c59c4）
+--------------------------------------------------------------
+  godot --headless --path apps/desktop --import
+    -> 退出码 0，生成 .godot/ 缓存（evidence/godot-import.log）
+
+  godot --headless --path apps/desktop --script res://tests/task4/test_platform_services.gd
+    -> 48 checks, 0 failures, exit 0（evidence/godot-platform-services.log）
+  godot --headless --path apps/desktop --script res://tests/task4/test_narrative_render.gd
+    -> 66 checks, 0 failures, exit 0（evidence/godot-narrative-render.log）
+  godot --headless --path apps/desktop --script res://tests/task4/test_onboarding_model.gd
+    -> 12 checks, 0 failures, exit 0（evidence/godot-onboarding-model.log）
+
+  原有 8 组回归（同一台机、同一条命令序列，见 evidence/godot-summary.log）
+    -> 263 checks, 0 failures, exit 0
+       test_core 42 / test_ui 8 / test_building_modules 59 / test_v04_regressions 63 /
+       verify_004b 17 / verify_005 27 / test_decision_preview 23 / test_street_workflow 24
+
+  SCRIPT ERROR 计数 = 0。日志里仍会有 "ERROR: Parse JSON failed"，那是负向测试
+  故意喂坏 JSON 的预期输出（startup 的 corrupt 分支、bridge 的 bad-json 分支）。
+
+2. 来源与提交
+-------------
+- 任务文档提交：631df2c（= 631df2c1b7efcd95dda8ccd629bbf66775f6ae04）。
+- 工作分支：dsh/task4-typing-v05 —— 意图名，**本机没有 git，未真实创建**。
+- 因此 source_commit 为 null；改用 content-manifest.json 的 content_hash（路径+SHA-256 聚合）
+  供中控核对
+- 注意：重跑 run_task4_checks.py 会重写 evidence/godot-*.log（含耗时行），content_hash 会随之变化；
+  核对时请以包内 content-manifest.json 与包内文件为准，不要拿两次不同运行的哈希比较。"覆盖上去的到底是什么"。
+- 不能生成 task4.bundle（git bundle 依赖 .git），本包以"仓库相对路径的源码树"代替。
+
+3. 如何应用
+-----------
+    git clone --branch codex/dsh-four-tasks-20261113 --single-branch https://github.com/HDDD1123/game.git game-task4
+    cd game-task4 && git rev-parse HEAD          # 应为 631df2c
+    # 把本包里 apps/desktop/... 与 tools/... 原样覆盖进去（主UI/core/project.godot 未被本任务修改）
+    # 装 Godot 4.6.3 后：
+    godot --headless --path apps/desktop --import
+    python apps/desktop/tests/task4/run_task4_checks.py --godot <godot.exe 路径>
+    # 期望：11 条全 PASS（48/66/12 + 263）
+
+4. 包内文件
+-----------
+- delivery.json                中控字段：task_id/stage_points/base_commit/source_commit/
+                              content_hash/completed_packages/known_gaps/ready_for_integration/branch
+- content-manifest.json        "路径 + SHA-256"清单与 content_hash（无 git 时的核对依据）
+- delivery_detail.json         delivery.py 原始输出（清单、测试、产物哈希）
+- claims.json                  测试声明与证据路径（passed 必须有真实证据）
+- tests.log                    真实命令 + 退出码 + 摘要 + 未执行项
+- 创意候选.md                 2 深入 + 1 补充参考作（9 条带来源观察）、6 建筑/4 单位/12 技能候选
+- README.md / 未测项.md / 启动说明.md
+- evidence/*.log               每个测试的完整输出（含 Godot 版本行）
+- apps/desktop/...             平台层、向导模型、叙事数据与 fixture、tests/task4、export_presets.cfg
+- tools/windows-typing/        助手源码、build.ps1、verify-live.ps1、README（不含 bin/ 的 EXE）
+- tools/desktop-delivery/      清单/导出检查/内容清单/交付合成/启动说明/单元测试
+
+不含：EXE、大视频、.godot 缓存、用户存档、第三方技能库原文（third_party 随仓库分发）。
+
+5. 仍未测（不写成通过）
+-----------------------
+- 启动到首个可操作界面的耗时（冷/热各 10 次）——T4-01 计时部分未做。
+- CPU/GPU/内存采样与渲染优化——T4-07 未做。
+- 10 次热启动 + 2 小时在线观察——T4-11 未做。
+- 真实后台打字：低完整性会话 SendInput 被 UIPI 拒绝；需普通权限跑 verify-live.ps1。
+- 输入桥真实子进程 spawn/kill：只测了协议校验与会话状态。
+- 导出与阶段包：未装 4.6.3 导出模板，未执行 --export-release，没有 24/48/72 包。
+
+6. 计分
+-------
+按"实现 + 引擎测试都通过"计：T4-02、T4-03、T4-09、T4-10 为 completed（24 点）；
+T4-04、T4-05、T4-08、T4-12 有代码未验证；T4-01、T4-06、T4-07、T4-11 未开始。

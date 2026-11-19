@@ -1,0 +1,2 @@
+# 构建产物不进版本库；源码（TypingCounter.cs）必须提交。
+bin/

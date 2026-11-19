@@ -1,0 +1,48 @@
+﻿任务2 交付说明（中控 DSH 代做，内核部分）
+==========================================
+
+背景：任务2 原负责人未交付，中控 DSH 直接实现运行内核的核心。
+
+已完成（T2-02 / T2-03 / T2-04，18 点）
+-------------------------------------
+1) T2-02 在线统一时钟
+   - act("set_auto_running", {enabled}) 开关；tick(elapsed_ms) 单次 0—1000ms
+   - set_time_blocked(reason, blocked) 会话级阻塞，原因独立增删
+   - view().clock: running / blocked / pause_reasons / month_elapsed_ms /
+     month_duration_ms(=150000) / remaining_ms / month_progress / can_step
+   - 新局、重开、读档后自动时间默认关闭
+2) T2-03 连续生产与月结算
+   - 月末不再额外整批生长；生长只由 tick 的经过时间产生（整数余数累计）
+   - 满田/无人劳动时丢弃该段生长，不攒隐藏奖励
+   - 到月界先完成最后一段生长，再按「口粮→饥饿→月份切换→战斗→来访」结算
+   - 手动 advance_month（自动关闭时）补齐剩余时间，结果与旧行为一致
+3) T2-04 格式5与迁移
+   - user://kingdom-save-v5.json；snapshot 增加 clock{version, month_elapsed_ms, growth_remainder}
+   - 读取优先级 5→4→3；较新文件存在但损坏必须报错，不静默回退
+   - 格式4迁移补 clock 置0；格式3沿用原规则
+4) SessionController（runtime/session_controller.gd）
+   - attach_game / command / set_block / refresh_after_load / state_changed
+   - 唯一 tick 调用方；连续进度最多每秒 4 次通知，命令结果立即通知
+
+验证
+----
+14 个套件，472 项，0 失败：
+- test_clock 33
+- 原 8 组 263
+- 任务3 38 + 12
+- 任务4 48 + 66 + 12
+
+未完成（如实）
+--------------
+T2-05 事件队列/期限、T2-06 人才生命状态、T2-07 委任与将军性格、
+T2-08 内容模块权威接线、T2-09 性能采样、T2-10 确定性回放、
+T2-11 槽位诊断/备份恢复、T2-01 参考调研与 6/4/12 候选。
+
+文件组织
+--------
+源码/ 下按仓库路径组织：
+- apps/desktop/core/kingdom.gd（时钟、连续生产、格式5 snapshot）
+- apps/desktop/core/save_store.gd（格式5 + 4/3 迁移）
+- apps/desktop/runtime/session_controller.gd
+- apps/desktop/tests/task2/test_clock.gd
+- apps/desktop/docs/交付/任务2/（delivery.json、说明.md）

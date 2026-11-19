@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "fixture_notice": "虚构样例，仅用于校验/预览；不是真实存档，也不代表任何真实玩家数据。",
+  "scenario_id": "fixture_player_ended",
+  "scenario": "经营25个游戏月并达成里程碑后，玩家记录主动结束；按优先级选'主动收笔'，'长治之年'同时满足但优先级更低。",
+  "facts": [
+    {
+      "type": "expedition_departed",
+      "fact_id": "fx3-f-0001",
+      "game_month": 5,
+      "destination_id": "north_road",
+      "troops": 25
+    },
+    {
+      "type": "expedition_returned",
+      "fact_id": "fx3-f-0002",
+      "game_month": 7,
+      "destination_id": "north_road",
+      "survivors": 18,
+      "loot_wood": 30
+    },
+    {
+      "type": "expedition_departed",
+      "fact_id": "fx3-f-0003",
+      "game_month": 9,
+      "destination_id": "west_ford",
+      "troops": 20
+    },
+    {
+      "type": "expedition_failed",
+      "fact_id": "fx3-f-0004",
+      "game_month": 10,
+      "destination_id": "west_ford",
+      "cause": "defeat",
+      "losses": 7
+    },
+    {
+      "type": "casualty",
+      "fact_id": "fx3-f-0005",
+      "game_month": 10,
+      "amount": 4,
+      "cause": "expedition",
+      "subject": "troops",
+      "related_fact_id": "fx3-f-0004"
+    },
+    {
+      "type": "milestone_achieved",
+      "fact_id": "fx3-f-0006",
+      "game_month": 20,
+      "milestone_id": "fx-milestone-market",
+      "tier": "silver",
+      "value": 3
+    },
+    {
+      "type": "ending",
+      "fact_id": "fx3-f-0007",
+      "game_month": 24,
+      "ending_id": "ending_player_ended",
+      "reason": "player_ended"
+    }
+  ],
+  "counters": {
+    "expedition_count": 2,
+    "expedition_failure_count": 1,
+    "expedition_success_count": 0,
+    "battle_loss_count": 1,
+    "starvation_month_count": 0,
+    "total_casualties": 4,
+    "buildings_completed": 0,
+    "talents_recruited": 0,
+    "talents_lost": 0,
+    "strongholds_gained": 0,
+    "strongholds_lost": 0,
+    "milestone_count": 1,
+    "months_played": 25,
+    "fact_count": 7
+  },
+  "expected": {
+    "eligible_ending_ids": ["ending_player_ended", "ending_long_reign"],
+    "selected_ending_id": "ending_player_ended",
+    "evidence_sufficient": true
+  }
+}

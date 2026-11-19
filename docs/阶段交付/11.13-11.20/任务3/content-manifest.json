@@ -1,0 +1,183 @@
+{
+  "head_commit": "0fe8505",
+  "baseline_commit": "43409a0",
+  "paths": 35,
+  "hash_note": "sha256 基于行尾归一(LF)后的文件内容",
+  "files": [
+    {
+      "path": "apps/desktop/core/content/content_catalog.gd",
+      "sha256": "fdc1516bca60d4c32c645ce05084d683f9d6c4dcded3208a47475a03e7ec8463",
+      "bytes": 18699
+    },
+    {
+      "path": "apps/desktop/core/content/content_catalog.gd.uid",
+      "sha256": "9f463f8d3b040fa20a16db8e764454757faa480c58eaf873b5ba57e141c73bbc",
+      "bytes": 19
+    },
+    {
+      "path": "apps/desktop/core/content/content_rules.gd",
+      "sha256": "efc5d8fbe787ed88ae79f8d00589f472b1cc0474b28dc4e7554957a6d683767d",
+      "bytes": 12876
+    },
+    {
+      "path": "apps/desktop/core/content/content_rules.gd.uid",
+      "sha256": "c41d265f40c1d65f54a9ebfadb354494979cac91f43f1b6ce1226305361b1dbc",
+      "bytes": 20
+    },
+    {
+      "path": "apps/desktop/data/content/catalog.json",
+      "sha256": "5bdc12b9f919133a4516a243774c577aa5ab8f5552cc3dd7dd1764e286b1d208",
+      "bytes": 15961
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务3/README.md",
+      "sha256": "16d6116946ed2969dc60051f5c6d3f8907aaf55a17b3aa9016d9fb67730bfa2e",
+      "bytes": 1245
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务3/delivery.json",
+      "sha256": "395e26556b30bba7608ad876d2096d039f15db93a0f438753026c1a9fd1a4efd",
+      "bytes": 3370
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务3/创意候选.md",
+      "sha256": "8a522167c47acb9b458733c2c2b51aeca39c9393eec0f2e340845d0a61576fe8",
+      "bytes": 12698
+    },
+    {
+      "path": "apps/desktop/docs/交付/任务3/数据报告.md",
+      "sha256": "0039a57e74d6c58fc8664700e7b8ee77f87ab336d525252b80520e9a4be2445b",
+      "bytes": 4698
+    },
+    {
+      "path": "apps/desktop/experiments/task3/.gdignore",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "apps/desktop/experiments/task3/candidates/balance-cand_a_food_per_level.gd",
+      "sha256": "4e67a8b5f989d78481c0c9d9287a348fcae9705bc26c334b60f7e5e5cec01b92",
+      "bytes": 1867
+    },
+    {
+      "path": "apps/desktop/experiments/task3/candidates/balance-cand_b_drought_factor.gd",
+      "sha256": "dccdd60f56e956bd093c5813786b503455aa975a82b49cc163de23540061a752",
+      "bytes": 1867
+    },
+    {
+      "path": "apps/desktop/experiments/task3/candidates/cand_a_food_per_level/curves-20261117T184806.csv",
+      "sha256": "114da2bc3cae87735cd754f25e0f1a9adf264d7d092f1f49ae91d5320be1bde0",
+      "bytes": 65931
+    },
+    {
+      "path": "apps/desktop/experiments/task3/candidates/cand_a_food_per_level/curves-20261117T184806.jsonl",
+      "sha256": "03c8094aa38bd4d166d341bb747d6955f22d700982d84a332d7449d97feaef9b",
+      "bytes": 237105
+    },
+    {
+      "path": "apps/desktop/experiments/task3/candidates/cand_a_food_per_level/summary-20261117T184806.json",
+      "sha256": "9a19ffc8e473e1940659a0145a02535d703d771bf1ed933206acbd35dc3ad5a9",
+      "bytes": 6662
+    },
+    {
+      "path": "apps/desktop/experiments/task3/candidates/cand_b_drought_factor/curves-20261117T184808.csv",
+      "sha256": "9961e22e4a943f23a065ea03b133b5f7e9a54383247c21659125944eb6fe5815",
+      "bytes": 65751
+    },
+    {
+      "path": "apps/desktop/experiments/task3/candidates/cand_b_drought_factor/curves-20261117T184808.jsonl",
+      "sha256": "9229fcc29853f99c0cbbca8b0d8ae47e20d021d37feecda573135b28d70b3a8c",
+      "bytes": 236925
+    },
+    {
+      "path": "apps/desktop/experiments/task3/candidates/cand_b_drought_factor/summary-20261117T184808.json",
+      "sha256": "2f6ef5293a48745728824e2c452167a5c5dba65007c180d954af4d7513edd55b",
+      "bytes": 6662
+    },
+    {
+      "path": "apps/desktop/experiments/task3/curves-20261117T184751.csv",
+      "sha256": "f97ae43b73134fa8f7259c32a9d8592484917f3943cf87c5b2abc18558ea1cf9",
+      "bytes": 65722
+    },
+    {
+      "path": "apps/desktop/experiments/task3/curves-20261117T184751.jsonl",
+      "sha256": "3483f0c0c47344054f4962b7cf196fa8d4556c6edf632d28801c746292ae0566",
+      "bytes": 236896
+    },
+    {
+      "path": "apps/desktop/experiments/task3/summary-20261117T184751.json",
+      "sha256": "a145a2ba83d473cad89f001616cfe0513599eb9ad857304f45c928f4aaffe832",
+      "bytes": 6652
+    },
+    {
+      "path": "apps/desktop/tests/task3/test_content_catalog.gd",
+      "sha256": "4041ab5e51afb8bd2a2a370ea034b81a8bcb1f236606e3300a7f26a6d6de5962",
+      "bytes": 9625
+    },
+    {
+      "path": "apps/desktop/tests/task3/test_content_catalog.gd.uid",
+      "sha256": "81c0dc412ef8087caed5dece6f255285b8f934458e05393c99e73460fa87de76",
+      "bytes": 20
+    },
+    {
+      "path": "apps/desktop/tests/task3/test_simulator_replay.gd",
+      "sha256": "2d7fbdbd5ea1411a4ea37542bf3cee322f6648738e581f6094bd5f793c6999cd",
+      "bytes": 2470
+    },
+    {
+      "path": "apps/desktop/tests/task3/test_simulator_replay.gd.uid",
+      "sha256": "cb08647ca3d251af16c12339ca3fbc014eeca3ff8491aa152864aa999ff28ae7",
+      "bytes": 20
+    },
+    {
+      "path": "apps/desktop/tools/balance_lab/README.md",
+      "sha256": "970433e86c16a49f1a75412cd77ad92d893ce2d2b086c215cab9fa6c0751493d",
+      "bytes": 1311
+    },
+    {
+      "path": "apps/desktop/tools/balance_lab/run_candidates.ps1",
+      "sha256": "410410a7a3c0bc8bdc39f0d7ba61347f1297b3d730e2bd09a8a13f5436d41333",
+      "bytes": 1897
+    },
+    {
+      "path": "apps/desktop/tools/balance_lab/run_candidates.sh",
+      "sha256": "1871f675d1d34dbbb5013d3555892719aacfbcbb391826adc33465ab85ed2b5b",
+      "bytes": 1690
+    },
+    {
+      "path": "apps/desktop/tools/balance_lab/run_curves.gd",
+      "sha256": "2d531cd18565512a80819361eaa19293d8e7b5d470fc4dcd2d852851dd40dc5c",
+      "bytes": 2548
+    },
+    {
+      "path": "apps/desktop/tools/balance_lab/run_curves.gd.uid",
+      "sha256": "55ebceba6bbbdf4a98a4ad2ceaf7b419ae8fbaf8b5cc204bfa28bdddc86c262a",
+      "bytes": 20
+    },
+    {
+      "path": "apps/desktop/tools/balance_lab/scripts/download-godot.sh",
+      "sha256": "0e76afee327f83fe3350ef51141da49045b864b4ce482a8fab9b0310aa0c32c3",
+      "bytes": 1220
+    },
+    {
+      "path": "apps/desktop/tools/balance_lab/scripts/fetch-godot.sh",
+      "sha256": "292146b202d7d2c4e3d07c0d4e0efff644e94d09f840b9d44b3cc20b6bc0ea53",
+      "bytes": 880
+    },
+    {
+      "path": "apps/desktop/tools/balance_lab/scripts/finish-godot.sh",
+      "sha256": "9a7bb995df870794ff8f6b012c99c71bbeb5e6db6d35bcb2f578f295b936ffba",
+      "bytes": 1183
+    },
+    {
+      "path": "apps/desktop/tools/balance_lab/simulator.gd",
+      "sha256": "0b20837bb56e69ece933a258407f78baa48eeecd723135a2da9beb38d1935f9f",
+      "bytes": 8976
+    },
+    {
+      "path": "apps/desktop/tools/balance_lab/simulator.gd.uid",
+      "sha256": "bd77e338b44bba8682ea976cc4c63b1f3fab92c6afc5d23bb60a540a82a34492",
+      "bytes": 20
+    }
+  ]
+}
