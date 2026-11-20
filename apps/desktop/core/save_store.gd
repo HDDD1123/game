@@ -70,7 +70,9 @@ func _load_any(game: RefCounted, path: String) -> Dictionary:
 	var parsed: Dictionary = _read_json(path)
 	if parsed.is_empty():
 		return {"ok": false, "message": "存档无法解析或过大，当前进度未改变。"}
-	var version: int = int(parsed.get("version", -1))
+	var version: Variant = parsed.get("version")
+	if typeof(version) != TYPE_INT and typeof(version) != TYPE_FLOAT:
+		return {"ok": false, "message": "存档版本必须为数字。"}
 	if version == VERSION:
 		if not game.import_snapshot(parsed.get("state")):
 			return {"ok": false, "message": "存档数据校验失败，当前进度未改变。"}

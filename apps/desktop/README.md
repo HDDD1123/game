@@ -1,3 +1,9 @@
+# 桌面王国 · 试玩版 2.0
+
+[下载 Windows x64 试玩包](../../releases/playtest-2.0/KingdomDesktop-2.0-Windows-x64.zip) · [本版说明与四机计划](../../releases/playtest-2.0/交付与下周计划.md)
+
+源码使用 Godot 4.6.3 标准版。以下保留早期版本的开发记录。
+
 # 桌面王国 v0.4.2：底部街景与经营决策原型
 
 这是一份给 DSH 接手的源码工程，不是已经打包的 Windows 游戏。

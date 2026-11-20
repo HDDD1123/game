@@ -1,13 +1,4 @@
-﻿桌面王国 v0.4.2 · 源码工程
+桌面王国 · 可玩测试版 2.0
 
-本目录是 Godot 工程，不是已打包的 Windows 游戏。
-使用 Godot 4.6.3 标准版导入 project.godot，按 F5 运行。
-如果拿到的是 Windows 试玩ZIP，解压后双击 KingdomDesktop.exe，并保留同目录的PCK。
-
-玩法和存档位置：见 启动说明.txt。
-开发与检查：见 README.md、VERIFICATION.md。
-DSH当前任务：docs/任务006_优化接入与美术准备.md。
-源码分支：codex/kingdom-playability-v042。
-
-当前是手动按月推进的原型；成熟粮食需要点击收取。
-启动后可点击“读取”恢复手动存档，不补算离线时间。
+Windows 试玩请解压整个压缩包，双击 KingdomDesktop.exe。操作与旧档说明见「启动说明.txt」。
+源码可用 Godot 4.6.3 标准版打开 project.godot，按 F5 运行。

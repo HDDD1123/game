@@ -44,8 +44,6 @@ func _process(_delta: float) -> void:
 	_last_sample_ms = now
 	if elapsed > 1000:
 		return  # 挂起/长卡顿：丢弃该段，不补跑
-	if not bool(_game.view().clock.get("running", false)):
-		return
 	var result: Dictionary = _game.tick(elapsed)
 	if bool(result.get("changed", false)):
 		_emit_throttled(now)

@@ -254,6 +254,8 @@ func act(command: String, args: Dictionary = {}) -> Dictionary:
 			_state.battle_log = []
 			_battle_record("%d人出征%s，出征不推进月份。" % [troops, B.SITES[args.site].name])
 		"advance_month":
+			if not _blocked.is_empty():
+				return _reply(false, "当前时间已暂停。")
 			if not _state.pending.is_empty():
 				return _reply(false, "先处理来访事件，时间暂不推进。")
 			if _auto_running:

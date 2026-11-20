@@ -36,6 +36,8 @@ func run() -> void:
 		else:
 			check(scene.info_secondary.visible, "secondary info visible at %d" % width)
 		await process_frame
+		if DisplayServer.get_name() == "headless":
+			continue
 		var img = root.get_texture().get_image()
 		if img and not img.is_empty():
 			img.save_png("user://verification/layout_%d.png" % width)

@@ -19,7 +19,10 @@ const STATUS_TOO_LARGE := "too_large"
 const MAX_SAVE_BYTES := 2097152
 ## 启动时必须可读的资源。缺哪个就报哪个，不用"应该没问题"糊过去。
 const REQUIRED_RESOURCES := [
-	"res://project.godot",
+	"res://data/content/catalog.json",
+	"res://data/narrative/onboarding.json",
+	"res://data/narrative/handbook.json",
+	"res://data/narrative/endings.json",
 	"res://ui/main.tscn",
 	"res://data/building_slots.json",
 ]
@@ -115,7 +118,7 @@ func inspect_file(path: String, expected_version: int) -> Dictionary:
 func check_resources() -> Dictionary:
 	var missing: Array[String] = []
 	for path: String in REQUIRED_RESOURCES:
-		if not FileAccess.file_exists(path):
+		if not FileAccess.file_exists(path) and not ResourceLoader.exists(path):
 			missing.append(path)
 	var message := "启动依赖齐全。" if missing.is_empty() else "缺少 %d 个必需资源：%s" % [missing.size(), ", ".join(missing)]
 	return {"ok": missing.is_empty(), "missing": missing, "message": message}

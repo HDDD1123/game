@@ -9,6 +9,12 @@ const NORMAL_MIN := Vector2i(640, 420)
 const NORMAL_DEFAULT := Vector2i(1000, 640)
 const STREET_HEIGHT := 280
 
+var session = preload("res://runtime/session_controller.gd").new()
+var preferences = preload("res://platform/settings/settings_store.gd").new()
+var catalog = preload("res://core/content/content_catalog.gd").new()
+var history = preload("res://platform/narrative/history_renderer.gd").new()
+var guide = preload("res://ui/onboarding/onboarding_model.gd").new()
+var auto_button: Button
 var game = Kingdom.new()
 var saves = SaveStore.new()
 # 验证脚本可注入临时配置路径，不覆盖玩家的窗口偏好。
@@ -78,9 +84,10 @@ func _ready() -> void:
 	palette.set_color("font_color", "CheckButton", Color("263b31"))
 	palette.set_color("font_hover_color", "CheckButton", Color("263b31"))
 	theme = palette
+	_apply_font_scale(preferences.load_preferences().preferences.font_scale)
 
 	var win := get_window()
-	win.title = "桌面王国 v0.4.2 · 底部街景"
+	win.title = "桌面王国 · 可玩测试版 2.0"
 	win.min_size = NORMAL_MIN
 	get_tree().auto_accept_quit = false
 	win.close_requested.connect(_request_close)
@@ -98,7 +105,7 @@ func _ready() -> void:
 	margin.add_child(normal_root)
 
 	street_root = VBoxContainer.new()
-	street_root.add_theme_constant_override("separation", 6)
+	street_root.add_theme_constant_override("separation", 2)
 	margin.add_child(street_root)
 
 	_load_slots()
@@ -109,16 +116,25 @@ func _ready() -> void:
 	_build_close_dialog()
 	_build_overlay()
 	resized.connect(_layout_panels)
+	resized.connect(func(): _refresh.call_deferred())
+	add_child(session)
+	session.attach_game(game)
+	session.state_changed.connect(_refresh)
 	_apply_window_config()
+	var startup = preload("res://platform/bootstrap/startup_service.gd").new()
+	var resources: Dictionary = startup.check_resources()
+	if not resources.ok:
+		message.text = resources.message
 	_refresh()
 
 # ---------- 普通管理视图 ----------
 func _build_normal() -> void:
-	var toolbar := HBoxContainer.new()
+	var toolbar := HFlowContainer.new()
 	normal_root.add_child(toolbar)
 	_button(toolbar, "保存", func(): _show_save_result(saves.save_game(game)))
 	_button(toolbar, "读取", func(): _show_save_result(saves.load_game(game)))
 	_button(toolbar, "重新开始", func(): _act("restart"))
+	auto_button = _button(toolbar, "自动走时", func(): _act("set_auto_running", {"enabled": not game.view().clock.running}))
 	pin_check = CheckButton.new()
 	pin_check.text = "窗口置顶"
 	pin_check.toggled.connect(_on_pin_toggled)
@@ -193,7 +209,7 @@ func _build_street() -> void:
 	street_next_button = _button(actions, "推进一个月", func(): _act("advance_month"))
 	_button(actions, "农田详情", func(): _open_detail("farm"))
 	_button(actions, "研究", func(): _open_skills())
-	_button(actions, "人才", func(): _open_overlay("人才与委任（未接入任务3）", _fill_talents))
+	_button(actions, "人才", func(): _open_overlay("人才图鉴", _fill_talents))
 	_button(actions, "手记", func(): _open_overlay("宰相手记 · 向导", _fill_history))
 	_button(actions, "设置", func(): _open_overlay("设置", _fill_settings))
 	_button(actions, "保存", func(): _show_save_result(saves.save_game(game)))
@@ -400,7 +416,9 @@ func _refresh(s: Dictionary = {}, v: Dictionary = {}) -> void:
 		event_label.text = "王国已无居民，请读档或重新开始。"
 	accept_button.disabled = s.ended or s.pending.is_empty() or s.population + s.pending.get("visitors", 0) > v.housing_capacity
 	reject_button.disabled = s.ended or s.pending.is_empty()
-	next_button.disabled = s.ended or not s.pending.is_empty()
+	auto_button.text = "暂停走时" if v.clock.running else "自动走时"
+	auto_button.disabled = s.ended
+	next_button.disabled = not v.clock.can_step
 	street_next_button.disabled = next_button.disabled
 	next_button.tooltip_text = forecast_label.text
 	street_next_button.tooltip_text = forecast_label.text
@@ -473,6 +491,8 @@ func _refresh_street(s: Dictionary, v: Dictionary) -> void:
 		street_notice.text = "口粮警报：粮仓还差%d粮，田里待收%d粮。%s" % [v.food_shortfall, v.farm.ready_food, street_notice.text]
 	street_notice.add_theme_color_override("font_color", Color("9e3228") if s.ended or v.food_shortfall > 0 else Color("263b31"))
 	var time_word: String = "已暂停" if (not s.pending.is_empty() or s.ended) else "手动推进"
+	if v.clock.running and v.clock.pause_reasons.is_empty():
+		time_word = "自动走时 · %d%%" % int(v.clock.month_progress * 100)
 	info_label.text = "%s ｜ 人口 %d/%d ｜ 粮仓 %d ｜ 待收 %d ｜ %s" % [v.date, s.population, v.housing_capacity, s.food, v.farm.ready_food, time_word]
 	if not s.expedition.is_empty():
 		info_label.text += " ｜ ⚔ 远征在外"
@@ -557,11 +577,13 @@ func _show_panel(panel: PanelContainer) -> void:
 		_set_window_rect(fit_window_rect(desired, _usable_rect()))
 	detail_panel.visible = panel == detail_panel
 	skill_panel.visible = panel == skill_panel
+	overlay_panel.visible = panel == overlay_panel
 	_layout_panels()
 
 func _close_panels() -> void:
 	detail_panel.hide()
 	skill_panel.hide()
+	overlay_panel.hide()
 	if panel_restore_rect.has_area():
 		var restore := panel_restore_rect
 		panel_restore_rect = Rect2i()
@@ -569,10 +591,10 @@ func _close_panels() -> void:
 		_set_window_rect(fit_window_rect(restore, _usable_rect()))
 
 func _layout_panels() -> void:
-	if detail_panel == null or skill_panel == null:
+	if detail_panel == null or skill_panel == null or overlay_panel == null:
 		return
 	var available_height := maxf(100.0, size.y - (STREET_HEIGHT if street_mode else 0) - 20)
-	for panel in [detail_panel, skill_panel]:
+	for panel in [detail_panel, skill_panel, overlay_panel]:
 		if not panel.visible:
 			continue
 		var height := minf(460.0 if panel == skill_panel else 240.0, available_height)
@@ -581,6 +603,7 @@ func _layout_panels() -> void:
 
 func _request_close() -> void:
 	if close_dialog:
+		session.set_block("exit", true)
 		close_dialog.popup_centered()
 
 func _on_close_save() -> void:
@@ -695,21 +718,22 @@ func _dock_street(win: Window) -> void:
 func _build_overlay() -> void:
 	overlay_panel = PanelContainer.new()
 	overlay_panel.visible = false
-	overlay_panel.set_anchors_preset(Control.PRESET_CENTER)
-	overlay_panel.custom_minimum_size = Vector2(700, 430)
+	overlay_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	add_child(overlay_panel)
 	var col := VBoxContainer.new()
 	overlay_panel.add_child(col)
 	var bar := HBoxContainer.new()
 	col.add_child(bar)
-	_button(bar, "关闭", func(): overlay_panel.visible = false)
+	_button(bar, "关闭", _close_panels)
 	overlay_title = Label.new()
 	overlay_title.add_theme_font_size_override("font_size", 16)
 	bar.add_child(overlay_title)
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(660, 370)
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	col.add_child(scroll)
 	overlay_content = VBoxContainer.new()
+	overlay_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(overlay_content)
 
 func _open_overlay(title: String, build: Callable) -> void:
@@ -717,60 +741,62 @@ func _open_overlay(title: String, build: Callable) -> void:
 	for child in overlay_content.get_children():
 		child.queue_free()
 	build.call(overlay_content)
-	overlay_panel.visible = true
+	_show_panel(overlay_panel)
 
 func _hint(text: String) -> Label:
 	var label := Label.new()
 	label.text = text
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.custom_minimum_size = Vector2(600, 0)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.add_theme_font_size_override("font_size", 13)
 	return label
 
 func _fill_talents(parent: VBoxContainer) -> void:
-	parent.add_child(_hint("人才面板是任务1的 UI 外壳。职业/性格/寿命由任务3人才模块提供，生命状态由任务2维护；当前显示占位，不虚构属性。"))
-	for entry in [["农务官", "农务 · 勤劳 / 谨慎 / 保守", "委任后每游戏月自动收粮；死亡或离任立即停止。"],
-			["将军", "军事 · 谨慎 / 勇猛 / 贪利 / 尽责", "只重复已通关区域；首次挑战由玩家决定。"],
-			["精灵宰相", "向导 · 固定随行", "长寿豁免，不进入普通人才死亡流程，提供叙事与提示。"]]:
-		var card := PanelContainer.new()
-		var vb := VBoxContainer.new()
-		card.add_child(vb)
-		var name_label := Label.new()
-		name_label.text = entry[0] + "（未接入任务3）"
-		name_label.add_theme_font_size_override("font_size", 15)
-		vb.add_child(name_label)
-		vb.add_child(_hint(entry[1]))
-		vb.add_child(_hint(entry[2]))
-		parent.add_child(card)
+	parent.add_child(_hint("本期可浏览候选人才。招募与委任尚未开放。"))
+	for talent in catalog.catalog().get("talents", []):
+		parent.add_child(_hint(talent.name))
 
 func _fill_history(parent: VBoxContainer) -> void:
-	parent.add_child(_hint("本地最小版手记/向导；任务4接入后替换为数据驱动向导与史书组件。"))
 	var s: Dictionary = game.snapshot()
-	var v: Dictionary = game.view()
-	parent.add_child(_hint("当前：%s，人口 %d，粮仓 %d，待收 %d。" % [v.date, s.population, s.food, v.farm.ready_food]))
+	var counters := {"population": s.population, "months_played": s.months}
+	var facts := []
+	var descriptions := {}
 	for entry in s.journal:
-		parent.add_child(_hint("成就 · " + str(entry.text)))
-	parent.add_child(_hint("新手指引（本地版）："))
-	for tip in ["点击农田：有成熟先收，否则助耕（每月上限 20%）。", "推进一个月会结算口粮与战斗；事件暂停时先处理事件。", "研究入口独立，不消耗农田点击。", "保存/读取使用格式5；关闭前可选择保存。"]:
-		parent.add_child(_hint("· " + tip))
+		facts.append({"type": "milestone_achieved", "fact_id": entry.id, "game_month": entry.month})
+		descriptions[entry.id] = entry.text
+	var step: Dictionary = guide.next_step(facts, counters).step
+	if not step.is_empty():
+		parent.add_child(_hint(str(step.title) + " · " + str(step.text)))
+		_button(parent, "读过此条", func():
+			guide.mark_seen(step.id)
+			_open_overlay("宰相手记 · 向导", _fill_history))
+	else:
+		parent.add_child(_hint("当前指引已读完。"))
+	_button(parent, "重看指引", func():
+		guide.reset()
+		_open_overlay("宰相手记 · 向导", _fill_history))
+	var book: Dictionary = history.render_history(facts, {"counters": counters})
+	for entry in book.entries:
+		parent.add_child(_hint("%s · %s" % [game.date_label(entry.month), descriptions[entry.fact_id]]))
+	if s.ended:
+		parent.add_child(_hint(book.ending.title))
+		for paragraph in book.ending.paragraphs:
+			parent.add_child(_hint(paragraph))
 
 func _fill_settings(parent: VBoxContainer) -> void:
-	parent.add_child(_hint("设置外壳；音量与减少动画尚未接入音频/动画系统，字号立即可用。"))
-	var volume := HSlider.new()
-	volume.min_value = 0
-	volume.max_value = 100
-	volume.value = 70
-	volume.custom_minimum_size = Vector2(320, 0)
-	parent.add_child(_hint("音量（未接入音频）："))
-	parent.add_child(volume)
-	var reduce := CheckBox.new()
-	reduce.text = "减少动画（未接入动画）"
-	parent.add_child(reduce)
 	parent.add_child(_hint("字号："))
 	var size_pick := OptionButton.new()
 	for item in ["100%", "115%", "130%"]:
 		size_pick.add_item(item)
-	size_pick.item_selected.connect(func(index: int): _apply_font_scale([1.0, 1.15, 1.3][index]))
+	var scales := [1.0, 1.15, 1.3]
+	for i in scales.size():
+		if int(round(15 * scales[i])) == theme.default_font_size:
+			size_pick.select(i)
+	size_pick.item_selected.connect(func(index: int):
+		_apply_font_scale(scales[index])
+		var saved: Dictionary = preferences.set_value("font_scale", scales[index])
+		if not saved.ok:
+			parent.add_child(_hint(saved.message)))
 	parent.add_child(size_pick)
 
 func _apply_font_scale(value: float) -> void:
@@ -784,6 +810,9 @@ func _build_close_dialog() -> void:
 	close_dialog.get_ok_button().text = "保存并退出"
 	close_dialog.get_cancel_button().text = "取消"
 	close_dialog.add_button("直接退出", true, "direct_exit")
+	close_dialog.visibility_changed.connect(func():
+		if not close_dialog.visible:
+			session.set_block("exit", false))
 	close_dialog.confirmed.connect(_on_close_save)
 	close_dialog.custom_action.connect(_on_close_custom)
 	add_child(close_dialog)
