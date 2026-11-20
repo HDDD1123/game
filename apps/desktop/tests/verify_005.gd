@@ -21,6 +21,18 @@ func _shot(path: String) -> void:
 	if img and not img.is_empty():
 		img.save_png(path)
 
+func click_control(control: Control) -> void:
+	var center := control.get_global_rect().get_center()
+	var motion := InputEventMouseMotion.new()
+	motion.position = center
+	root.push_input(motion, true)
+	for down in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.position = center
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = down
+		root.push_input(click, true)
+
 func run() -> void:
 	# 使用专属路径，不删除玩家配置。截图只在图形环境获取。
 	DirAccess.make_dir_recursive_absolute("user://verification")
@@ -36,21 +48,31 @@ func run() -> void:
 	check(scene.info_label.text.contains("粮仓") and scene.info_label.text.contains("待收"), "信息栏含粮仓与待收")
 	check(scene.street_row.visible and not scene.normal_root.visible, "街景视图可见")
 
-	# 农田点击：空田 +5% 进度
-	scene._on_slot_pressed("farm")
+	var before: Dictionary = scene.game.snapshot()
+	click_control(scene.slot_buttons[1])
 	await process_frame
-	check(int(scene.game.view().farm.progress) > 0, "点击空田加速生长")
+	check(scene.detail_panel.visible and scene.game.snapshot() == before, "点击空田只打开详情")
+	check(scene.detail_upgrade_button.is_visible_in_tree() and scene.detail_research_button.is_visible_in_tree(), "升级与研究可见")
+	click_control(scene.detail_assist_button)
+	check(int(scene.game.view().farm.progress) > 0, "选择助耕后加速生长")
+	scene._close_panels()
+	await process_frame
+	await process_frame
 
 	# 推进一月 → 1批待收（并产生流民事件）
 	scene.game.act("advance_month")
 	scene._refresh()
 	check(int(scene.game.view().farm.ready_food) == 12, "一月后1批待收")
 
-	# 点击农田收获
-	scene._on_slot_pressed("farm")
+	# 从成熟农田进入详情，再确认收取
+	click_control(scene.slot_buttons[1])
+	await process_frame
+	await process_frame
+	check(scene.game.view().farm.ready_food == 12 and not scene.detail_harvest_button.disabled, "打开成熟农田保留待收")
+	click_control(scene.detail_harvest_button)
 	await process_frame
 	check(int(scene.game.snapshot().food) == 32, "点击农田收获入库")
-	scene._on_slot_pressed("farm")
+	click_control(scene.detail_harvest_button)
 	await process_frame
 	check(int(scene.game.snapshot().food) == 32, "重复点击不重复加粮")
 
@@ -65,7 +87,7 @@ func run() -> void:
 	await _shot("user://verification/street_005.png")
 
 	# 技能面板
-	scene._open_skills()
+	click_control(scene.detail_research_button)
 	await process_frame
 	await process_frame
 	check(scene.skill_panel.visible, "技能面板打开")

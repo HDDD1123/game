@@ -1,4 +1,7 @@
-# 桌面王国 · 试玩版 2.0
+# 桌面王国 · 2.1 开发分支
+
+[下载农田修正版 2.0.1](../../releases/playtest-2.0.1/KingdomDesktop-2.0.1-Windows-x64.zip) · [2.1 四机周任务](docs/试玩版2.1四机任务.md)
+
 
 [下载 Windows x64 试玩包](../../releases/playtest-2.0/KingdomDesktop-2.0-Windows-x64.zip) · [本版说明与四机计划](../../releases/playtest-2.0/交付与下周计划.md)
 

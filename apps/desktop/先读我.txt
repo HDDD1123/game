@@ -1,4 +1,4 @@
-桌面王国 · 可玩测试版 2.0
+桌面王国 · 可玩测试版 2.0.1
 
 Windows 试玩请解压整个压缩包，双击 KingdomDesktop.exe。操作与旧档说明见「启动说明.txt」。
 源码可用 Godot 4.6.3 标准版打开 project.godot，按 F5 运行。

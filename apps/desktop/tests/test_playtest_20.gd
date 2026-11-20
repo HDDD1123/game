@@ -30,6 +30,8 @@ func run() -> void:
 	scene.street_next_button.pressed.emit()
 	check(scene.street_events.visible and scene.street_next_button.disabled, "流民事件暂停")
 	scene.slot_buttons[1].pressed.emit()
+	scene.detail_harvest_button.pressed.emit()
+	scene._close_panels()
 	scene.street_reject_button.pressed.emit()
 	check(scene.game.view().farm.ready_food == 0 and scene.game.snapshot().pending.is_empty(), "收粮与处理流民")
 	scene._toggle_street()
