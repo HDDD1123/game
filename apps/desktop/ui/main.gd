@@ -64,6 +64,8 @@ var overlay_panel: PanelContainer
 var overlay_title: Label
 var overlay_content: VBoxContainer
 var detail_upgrade_button: Button
+var detail_harvest_button: Button
+var detail_assist_button: Button
 var pin_check: CheckButton
 var street_toggle_button: Button
 var close_dialog: ConfirmationDialog
@@ -218,13 +220,8 @@ func _build_street() -> void:
 
 func _on_slot_pressed(slot_id: String) -> void:
 	if slot_id == "farm":
-		var fv: Dictionary = game.view().farm
-		if int(fv.ready_food) > 0:
-			_act("harvest_farm")
-		else:
-			var r: Dictionary = game.act("assist_farm", {"source": "click", "count": 1})
-			message.text = r.message
-			_refresh(r.state, r.view)
+		# 2.0.1 起：单击只打开详情，四动作由玩家显式选择，单击不直接结算。
+		_open_detail("farm")
 		return
 	if slot_id == "housing" or slot_id == "forge":
 		_open_detail(slot_id)
@@ -249,6 +246,8 @@ func _build_detail() -> void:
 	column.add_child(detail_label)
 	detail_actions = HBoxContainer.new()
 	column.add_child(detail_actions)
+	detail_harvest_button = _button(detail_actions, "收粮", func(): _act("harvest_farm"))
+	detail_assist_button = _button(detail_actions, "助耕", func(): _act("assist_farm", {"source": "click", "count": 1}))
 	detail_upgrade_button = _button(detail_actions, "升级", _upgrade_selected_building)
 	_button(detail_actions, "研究", _open_skills)
 
@@ -267,17 +266,25 @@ func _render_detail(v: Dictionary = {}, s: Dictionary = {}) -> void:
 	if v.is_empty(): v = game.view()
 	if s.is_empty(): s = game.snapshot()
 	if selected_slot == "housing":
+		detail_harvest_button.visible = false
+		detail_assist_button.visible = false
 		detail_label.text = "民居 %d 级\n基础住房 %d，有效容量 %d\n技能点：累计 %d / 可用 %d" % [v.housing_level, s.housing, v.housing_capacity, v.skills.housing.earned, v.skills.housing.available]
 		detail_upgrade_button.text = "扩建住房（%d木材，容量+6）" % v.housing_cost
 		detail_upgrade_button.disabled = housing_button.disabled
 	elif selected_slot == "forge":
+		detail_harvest_button.visible = false
+		detail_assist_button.visible = false
 		detail_label.text = "铁匠铺 %d/3 级\n升级消耗 %d木 + %d矿\n技能点：累计 %d / 可用 %d" % [s.forge, v.forge_cost.wood, v.forge_cost.ore, v.skills.forge.earned, v.skills.forge.available]
 		detail_upgrade_button.text = "升级铁匠铺"
 		detail_upgrade_button.disabled = forge_button.disabled
 	elif selected_slot == "farm":
+		detail_harvest_button.visible = true
+		detail_assist_button.visible = true
 		detail_label.text = "农田 %d 级，每批%d粮\n待收%d/%d批，共%d粮；本月助耕剩余%d%%\n技能点：累计%d / 可用%d。成熟后手动收取；满3批暂停生长。" % [s.agriculture, v.batch_food, v.farm.ready_batches, v.farm.capacity, v.farm.ready_food, int(v.farm.activity_left * 100 / v.farm.full_batch), v.skills.farm.earned, v.skills.farm.available]
 		detail_upgrade_button.text = "改善农业（%d木材）" % v.farm_cost
 		detail_upgrade_button.disabled = farm_button.disabled
+		detail_harvest_button.disabled = int(v.farm.ready_food) <= 0
+		detail_assist_button.disabled = bool(v.farm.full) or int(v.farm.activity_left) <= 0 or not s.pending.is_empty() or bool(s.ended)
 
 # ---------- 技能树 ----------
 func _build_skill_panel() -> void:
@@ -433,6 +440,8 @@ func _refresh(s: Dictionary = {}, v: Dictionary = {}) -> void:
 	for entry in records:
 		lines.append(entry)
 	details.text = "\n".join(lines)
+	if detail_panel != null and detail_panel.visible:
+		_render_detail(v, s)
 	_refresh_street(s, v)
 	if detail_panel.visible:
 		_render_detail(v, s)

@@ -36,23 +36,29 @@ func run() -> void:
 	check(scene.info_label.text.contains("粮仓") and scene.info_label.text.contains("待收"), "信息栏含粮仓与待收")
 	check(scene.street_row.visible and not scene.normal_root.visible, "街景视图可见")
 
-	# 农田点击：空田 +5% 进度
+	# 农田单击只开详情；助耕/收粮为显式动作（2.0.1 起）
 	scene._on_slot_pressed("farm")
 	await process_frame
-	check(int(scene.game.view().farm.progress) > 0, "点击空田加速生长")
+	check(scene.detail_panel.visible and int(scene.game.view().farm.progress) == 0, "单击空田只开详情")
+	scene.detail_assist_button.pressed.emit()
+	await process_frame
+	check(int(scene.game.view().farm.progress) > 0, "详情里助耕+5%")
 
 	# 推进一月 → 1批待收（并产生流民事件）
 	scene.game.act("advance_month")
 	scene._refresh()
 	check(int(scene.game.view().farm.ready_food) == 12, "一月后1批待收")
 
-	# 点击农田收获
+	# 详情里收粮
 	scene._on_slot_pressed("farm")
 	await process_frame
-	check(int(scene.game.snapshot().food) == 32, "点击农田收获入库")
-	scene._on_slot_pressed("farm")
+	check(int(scene.game.snapshot().food) == 20, "单击成熟田不自动收")
+	scene.detail_harvest_button.pressed.emit()
 	await process_frame
-	check(int(scene.game.snapshot().food) == 32, "重复点击不重复加粮")
+	check(int(scene.game.snapshot().food) == 32, "详情里收粮入库")
+	scene.detail_harvest_button.pressed.emit()
+	await process_frame
+	check(int(scene.game.snapshot().food) == 32, "重复点收粮不重复加")
 
 	# 处理流民事件后才可再次推进
 	var pend: Dictionary = scene.game.snapshot().pending
@@ -92,7 +98,7 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	check(Rect2(Vector2.ZERO, Vector2(root.size)).encloses(scene.detail_panel.get_global_rect()), "详情面板完全在窗口内")
-	scene.detail_actions.get_child(0).pressed.emit()
+	scene.detail_upgrade_button.pressed.emit()
 	check(scene.detail_label.text.contains("民居 2 级"), "扩建后详情即时刷新")
 	scene._close_panels()
 	scene._on_slot_pressed("reserved_4")
